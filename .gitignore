@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.development
+.env.staging
+.env.production
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# AI Models (large binary files)
+ai/models/**/*.bin
+ai/models/**/*.pb
+ai/models/**/*.h5
+!ai/models/**/*.json
+
+# Uploads
+uploads/
+temp/
+
+# Docker
+.docker/
+
+# Misc
+*.tgz
+*.gz
+.cache/
+.turbo/

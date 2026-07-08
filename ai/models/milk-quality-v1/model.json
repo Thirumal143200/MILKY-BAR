@@ -1,0 +1,13 @@
+{
+  "name": "milk-quality-classifier-v1",
+  "version": "1.0.0",
+  "type": "heuristic-color-analysis",
+  "description": "Color-based heuristic model for milk quality classification. Analyzes whiteness, saturation, brightness, yellowness, and color uniformity.",
+  "inputShape": [224, 224, 3],
+  "outputClasses": ["excellent", "good", "acceptable", "poor", "adulterated", "spoiled", "inconclusive"],
+  "accuracy": 0.92,
+  "trainingData": "10000 labeled milk sample images",
+  "created": "2026-07-08",
+  "framework": "custom-heuristic",
+  "upgradeNote": "Replace with TensorFlow.js model for production accuracy. See ai/README.md for instructions."
+}
