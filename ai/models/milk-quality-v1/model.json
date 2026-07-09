@@ -4,7 +4,15 @@
   "type": "heuristic-color-analysis",
   "description": "Color-based heuristic model for milk quality classification. Analyzes whiteness, saturation, brightness, yellowness, and color uniformity.",
   "inputShape": [224, 224, 3],
-  "outputClasses": ["excellent", "good", "acceptable", "poor", "adulterated", "spoiled", "inconclusive"],
+  "outputClasses": [
+    "excellent",
+    "good",
+    "acceptable",
+    "poor",
+    "adulterated",
+    "spoiled",
+    "inconclusive"
+  ],
   "accuracy": 0.92,
   "trainingData": "10000 labeled milk sample images",
   "created": "2026-07-08",
