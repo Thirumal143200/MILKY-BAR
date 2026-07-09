@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: milkboy
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/milkboy
+      - JWT_SECRET=change_this_in_production
+      - JWT_REFRESH_SECRET=change_this_in_production
+      - AI_SERVICE_URL=http://ai_service:8000/api/v1
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_NAME=MilkBoy AI
+      - MODEL_VERSION=v1-production
+    volumes:
+      - ./ai_service/models:/app/models
+
+volumes:
+  pgdata:
