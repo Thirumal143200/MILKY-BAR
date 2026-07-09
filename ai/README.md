@@ -15,24 +15,26 @@ The MilkBoy AI system uses a **plugin-based model architecture** that supports:
 The initial model uses **color-based heuristic analysis** to classify milk quality:
 
 ### Features Extracted
-| Feature | Description | Method |
-|---------|-------------|--------|
-| Whiteness | Proximity to pure white | Euclidean distance in RGB |
-| Saturation | Color intensity | HSV conversion |
-| Brightness | Overall luminance | Weighted RGB mean |
-| Yellowness | Yellow tint level | R+G mean vs B |
-| Color Uniformity | Consistency across sample | Standard deviation |
+
+| Feature          | Description               | Method                    |
+| ---------------- | ------------------------- | ------------------------- |
+| Whiteness        | Proximity to pure white   | Euclidean distance in RGB |
+| Saturation       | Color intensity           | HSV conversion            |
+| Brightness       | Overall luminance         | Weighted RGB mean         |
+| Yellowness       | Yellow tint level         | R+G mean vs B             |
+| Color Uniformity | Consistency across sample | Standard deviation        |
 
 ### Quality Categories
-| Label | Description | Visual Indicators |
-|-------|-------------|-------------------|
-| Excellent | Premium quality | High whiteness, low saturation, uniform |
-| Good | Standard quality | Good whiteness, slight cream tint |
-| Acceptable | Meets minimum standards | Moderate whiteness |
-| Poor | Below standards | Low whiteness, high variance |
-| Adulterated | Suspected tampering | High saturation, unusual colors |
-| Spoiled | Unsafe for consumption | Dark, high saturation |
-| Inconclusive | Cannot determine | Unusual features, low confidence |
+
+| Label        | Description             | Visual Indicators                       |
+| ------------ | ----------------------- | --------------------------------------- |
+| Excellent    | Premium quality         | High whiteness, low saturation, uniform |
+| Good         | Standard quality        | Good whiteness, slight cream tint       |
+| Acceptable   | Meets minimum standards | Moderate whiteness                      |
+| Poor         | Below standards         | Low whiteness, high variance            |
+| Adulterated  | Suspected tampering     | High saturation, unusual colors         |
+| Spoiled      | Unsafe for consumption  | Dark, high saturation                   |
+| Inconclusive | Cannot determine        | Unusual features, low confidence        |
 
 ## Upgrading to CNN Model
 
