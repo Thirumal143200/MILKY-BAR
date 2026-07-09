@@ -15,7 +15,7 @@ import { createModuleLogger } from '../../utils/logger.js';
 
 const log = createModuleLogger('image-processor');
 
-interface QualityCheckResult {
+export interface QualityCheckResult {
   blurScore: number;
   lightingScore: number;
   focusScore: number;
@@ -29,7 +29,7 @@ interface QualityCheckResult {
   suggestions: string[];
 }
 
-interface ProcessedImageResult {
+export interface ProcessedImageResult {
   processedPath: string;
   thumbnailPath: string;
   width: number;
@@ -51,9 +51,6 @@ export class ImageProcessorService {
     const fileName = `${generateId()}.jpg`;
     const processedPath = path.join(processedDir, fileName);
     const thumbnailPath = path.join(thumbnailDir, fileName);
-
-    // Get original metadata
-    const metadata = await sharp(originalPath).metadata();
 
     // Process: resize, normalize white balance, remove noise
     await sharp(originalPath)
@@ -157,7 +154,8 @@ export class ImageProcessorService {
       (reflectionDetected ? 0 : 1) * 0.15 +
       (1 - noiseLevel) * 0.15;
 
-    const passed = overallScore >= QUALITY_THRESHOLDS.MIN_OVERALL_SCORE && rejectionReasons.length === 0;
+    const passed =
+      overallScore >= QUALITY_THRESHOLDS.MIN_OVERALL_SCORE && rejectionReasons.length === 0;
 
     if (!passed && suggestions.length === 0) {
       suggestions.push('Please retake the image with better conditions.');
@@ -203,7 +201,12 @@ export class ImageProcessorService {
 
   // ─── Private Analysis Methods ─────────────────────────
 
-  private calculateBlurScore(data: Buffer, width: number, height: number, channels: number): number {
+  private calculateBlurScore(
+    data: Buffer,
+    width: number,
+    height: number,
+    channels: number,
+  ): number {
     // Laplacian variance approximation for blur detection
     let variance = 0;
     let count = 0;
@@ -213,10 +216,26 @@ export class ImageProcessorService {
         const idx = (y * width + x) * channels;
         const gray = (data[idx]! + data[idx + 1]! + data[idx + 2]!) / 3;
 
-        const up = ((data[((y - 1) * width + x) * channels]! + data[((y - 1) * width + x) * channels + 1]! + data[((y - 1) * width + x) * channels + 2]!) / 3);
-        const down = ((data[((y + 1) * width + x) * channels]! + data[((y + 1) * width + x) * channels + 1]! + data[((y + 1) * width + x) * channels + 2]!) / 3);
-        const left = ((data[(y * width + x - 1) * channels]! + data[(y * width + x - 1) * channels + 1]! + data[(y * width + x - 1) * channels + 2]!) / 3);
-        const right = ((data[(y * width + x + 1) * channels]! + data[(y * width + x + 1) * channels + 1]! + data[(y * width + x + 1) * channels + 2]!) / 3);
+        const up =
+          (data[((y - 1) * width + x) * channels]! +
+            data[((y - 1) * width + x) * channels + 1]! +
+            data[((y - 1) * width + x) * channels + 2]!) /
+          3;
+        const down =
+          (data[((y + 1) * width + x) * channels]! +
+            data[((y + 1) * width + x) * channels + 1]! +
+            data[((y + 1) * width + x) * channels + 2]!) /
+          3;
+        const left =
+          (data[(y * width + x - 1) * channels]! +
+            data[(y * width + x - 1) * channels + 1]! +
+            data[(y * width + x - 1) * channels + 2]!) /
+          3;
+        const right =
+          (data[(y * width + x + 1) * channels]! +
+            data[(y * width + x + 1) * channels + 1]! +
+            data[(y * width + x + 1) * channels + 2]!) /
+          3;
 
         const laplacian = Math.abs(up + down + left + right - 4 * gray);
         variance += laplacian * laplacian;
@@ -224,7 +243,7 @@ export class ImageProcessorService {
       }
     }
 
-    const score = Math.min(1, (variance / count) / 1000);
+    const score = Math.min(1, variance / count / 1000);
     return score;
   }
 
@@ -239,13 +258,18 @@ export class ImageProcessorService {
     const avgBrightness = totalBrightness / pixels;
 
     // Score: penalize both too dark and too bright
-    if (avgBrightness < 0.15) return avgBrightness / 0.15 * 0.3;
-    if (avgBrightness > 0.95) return (1 - avgBrightness) / 0.05 * 0.5;
+    if (avgBrightness < 0.15) return (avgBrightness / 0.15) * 0.3;
+    if (avgBrightness > 0.95) return ((1 - avgBrightness) / 0.05) * 0.5;
     if (avgBrightness > 0.4 && avgBrightness < 0.85) return 1.0;
-    return 0.5 + (avgBrightness - 0.15) / 0.25 * 0.5;
+    return 0.5 + ((avgBrightness - 0.15) / 0.25) * 0.5;
   }
 
-  private calculateFocusScore(data: Buffer, width: number, height: number, channels: number): number {
+  private calculateFocusScore(
+    data: Buffer,
+    width: number,
+    height: number,
+    channels: number,
+  ): number {
     // Edge density as a proxy for focus
     let edgeCount = 0;
     const threshold = 30;
@@ -256,17 +280,21 @@ export class ImageProcessorService {
         const nextX = (y * width + x + 1) * channels;
         const nextY = ((y + 1) * width + x) * channels;
 
-        const grayH = Math.abs(
-          (data[idx]! - data[nextX]!) +
-          (data[idx + 1]! - data[nextX + 1]!) +
-          (data[idx + 2]! - data[nextX + 2]!),
-        ) / 3;
+        const grayH =
+          Math.abs(
+            data[idx]! -
+              data[nextX]! +
+              (data[idx + 1]! - data[nextX + 1]!) +
+              (data[idx + 2]! - data[nextX + 2]!),
+          ) / 3;
 
-        const grayV = Math.abs(
-          (data[idx]! - data[nextY]!) +
-          (data[idx + 1]! - data[nextY + 1]!) +
-          (data[idx + 2]! - data[nextY + 2]!),
-        ) / 3;
+        const grayV =
+          Math.abs(
+            data[idx]! -
+              data[nextY]! +
+              (data[idx + 1]! - data[nextY + 1]!) +
+              (data[idx + 2]! - data[nextY + 2]!),
+          ) / 3;
 
         if (grayH > threshold || grayV > threshold) edgeCount++;
       }
@@ -288,7 +316,7 @@ export class ImageProcessorService {
       }
     }
 
-    return (brightPixels / pixels) > QUALITY_THRESHOLDS.REFLECTION_THRESHOLD;
+    return brightPixels / pixels > QUALITY_THRESHOLDS.REFLECTION_THRESHOLD;
   }
 
   private estimateNoise(data: Buffer, width: number, height: number, channels: number): number {
@@ -312,7 +340,7 @@ export class ImageProcessorService {
       }
     }
 
-    return Math.min(1, (totalVariance / count) / 500);
+    return Math.min(1, totalVariance / count / 500);
   }
 
   private checkWhiteBalance(stats: sharp.Stats): boolean {
