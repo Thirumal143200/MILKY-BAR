@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Project monorepo setup with npm workspaces (shared, server, web)
 - Shared TypeScript types for users, scans, predictions, reports, admin
 - Shared Zod validation schemas for all API inputs
@@ -37,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - TBD
 
 ### Planned
+
 - Web dashboard (Next.js 14)
 - Mobile app (React Native + Expo)
 - PDF report generation with QR codes

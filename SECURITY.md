@@ -2,10 +2,10 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-|---------|--------------------|
-| 1.x.x   | ✅ Active support  |
-| < 1.0   | ❌ Not supported   |
+| Version | Supported         |
+| ------- | ----------------- |
+| 1.x.x   | ✅ Active support |
+| < 1.0   | ❌ Not supported  |
 
 ## Reporting a Vulnerability
 
@@ -26,12 +26,12 @@ If you discover a security vulnerability within MilkBoy, please report it respon
 
 ### Response Timeline
 
-| Phase | Timeline |
-|-------|----------|
-| Acknowledgment | Within 48 hours |
-| Initial Assessment | Within 5 business days |
-| Fix Development | Within 14 business days |
-| Public Disclosure | After fix is deployed |
+| Phase              | Timeline                |
+| ------------------ | ----------------------- |
+| Acknowledgment     | Within 48 hours         |
+| Initial Assessment | Within 5 business days  |
+| Fix Development    | Within 14 business days |
+| Public Disclosure  | After fix is deployed   |
 
 ### What to Expect
 
@@ -45,6 +45,7 @@ If you discover a security vulnerability within MilkBoy, please report it respon
 MilkBoy implements the following security measures:
 
 ### Authentication & Authorization
+
 - JWT-based authentication with short-lived access tokens (15 min)
 - Refresh tokens with secure rotation
 - Role-Based Access Control (RBAC) with 5 roles
@@ -53,6 +54,7 @@ MilkBoy implements the following security measures:
 - Session management with max 5 concurrent sessions
 
 ### Data Protection
+
 - Passwords hashed with bcrypt (12 rounds)
 - Sensitive tokens hashed with SHA-256 before storage
 - HTTPS enforcement in production
@@ -61,18 +63,21 @@ MilkBoy implements the following security measures:
 - Rate limiting on all endpoints
 
 ### Input Validation
+
 - Zod schema validation on all API inputs
 - Parameterized queries (Knex.js) — no raw SQL concatenation
 - File upload type validation and size limits
 - XSS protection via output encoding
 
 ### Monitoring & Audit
+
 - Comprehensive audit logging for all user actions
 - Request logging with Winston
 - Error tracking with structured logs
 - Session and device tracking
 
 ### Infrastructure
+
 - Environment-based configuration (no hardcoded secrets)
 - Secrets managed via environment variables
 - Docker support with non-root containers
@@ -92,6 +97,7 @@ MilkBoy implements the following security measures:
 ## Dependencies
 
 We regularly monitor dependencies for known vulnerabilities using:
+
 - `npm audit` in CI/CD pipeline
 - GitHub Dependabot alerts
 - Manual security reviews
@@ -99,6 +105,7 @@ We regularly monitor dependencies for known vulnerabilities using:
 ## Disclosure Policy
 
 We follow a responsible disclosure process:
+
 1. Reporter contacts us with vulnerability details
 2. We acknowledge and assess the report
 3. We develop and test a fix

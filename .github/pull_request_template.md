@@ -19,13 +19,15 @@
 ## Changes Made
 
 <!-- List the key changes -->
-- 
-- 
-- 
+
+-
+-
+-
 
 ## How Has This Been Tested?
 
 <!-- Describe the tests you ran -->
+
 - [ ] Unit tests
 - [ ] Integration tests
 - [ ] Manual testing

@@ -49,14 +49,14 @@ This project adheres to the [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 
 We use **Git Flow** branching strategy:
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production-ready code |
-| `develop` | Integration branch for features |
-| `feature/*` | New features |
-| `bugfix/*` | Bug fixes |
-| `release/*` | Release preparation |
-| `hotfix/*` | Critical production fixes |
+| Branch      | Purpose                         |
+| ----------- | ------------------------------- |
+| `main`      | Production-ready code           |
+| `develop`   | Integration branch for features |
+| `feature/*` | New features                    |
+| `bugfix/*`  | Bug fixes                       |
+| `release/*` | Release preparation             |
+| `hotfix/*`  | Critical production fixes       |
 
 ### Workflow Steps
 
@@ -82,34 +82,34 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Types
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Code style (formatting, semicolons, etc.) |
+| Type       | Description                                             |
+| ---------- | ------------------------------------------------------- |
+| `feat`     | New feature                                             |
+| `fix`      | Bug fix                                                 |
+| `docs`     | Documentation only                                      |
+| `style`    | Code style (formatting, semicolons, etc.)               |
 | `refactor` | Code change that neither fixes a bug nor adds a feature |
-| `perf` | Performance improvement |
-| `test` | Adding or updating tests |
-| `build` | Build system or external dependencies |
-| `ci` | CI/CD configuration |
-| `chore` | Other changes that don't modify src or test files |
-| `revert` | Reverts a previous commit |
+| `perf`     | Performance improvement                                 |
+| `test`     | Adding or updating tests                                |
+| `build`    | Build system or external dependencies                   |
+| `ci`       | CI/CD configuration                                     |
+| `chore`    | Other changes that don't modify src or test files       |
+| `revert`   | Reverts a previous commit                               |
 
 ### Scopes
 
-| Scope | Description |
-|-------|-------------|
-| `server` | Backend API changes |
-| `web` | Web dashboard changes |
-| `mobile` | Mobile app changes |
+| Scope    | Description            |
+| -------- | ---------------------- |
+| `server` | Backend API changes    |
+| `web`    | Web dashboard changes  |
+| `mobile` | Mobile app changes     |
 | `shared` | Shared package changes |
-| `db` | Database changes |
-| `ai` | AI/ML changes |
-| `auth` | Authentication changes |
-| `docs` | Documentation changes |
-| `ci` | CI/CD changes |
-| `deps` | Dependency updates |
+| `db`     | Database changes       |
+| `ai`     | AI/ML changes          |
+| `auth`   | Authentication changes |
+| `docs`   | Documentation changes  |
+| `ci`     | CI/CD changes          |
+| `deps`   | Dependency updates     |
 
 ### Examples
 
@@ -137,18 +137,22 @@ ci: add security scanning to CI pipeline
 
 ```markdown
 ## What does this PR do?
+
 Brief description of the changes.
 
 ## Type of change
+
 - [ ] Bug fix (non-breaking change that fixes an issue)
 - [ ] New feature (non-breaking change that adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to change)
 - [ ] Documentation update
 
 ## How has this been tested?
+
 Describe the tests you ran.
 
 ## Checklist
+
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review
 - [ ] I have added tests that prove my fix/feature works
@@ -198,6 +202,7 @@ npx vitest run path/to/test.ts --workspace=server
 ### Bug Reports
 
 Use the GitHub issue template and include:
+
 - Clear title and description
 - Steps to reproduce
 - Expected vs actual behavior
@@ -207,6 +212,7 @@ Use the GitHub issue template and include:
 ### Feature Requests
 
 Open an issue with the `enhancement` label and include:
+
 - Clear description of the feature
 - Use cases and benefits
 - Any proposed implementation approach

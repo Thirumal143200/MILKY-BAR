@@ -46,27 +46,30 @@
 ## Features
 
 ### Core
-| Feature | Description |
-|---------|-------------|
-| Image Capture | Camera integration for real-time milk sample capture |
-| Gallery Upload | Upload existing images from device gallery |
-| AI Quality Detection | Automated milk quality classification with confidence scores |
-| Image Preprocessing | Blur detection, lighting analysis, focus check, noise removal |
-| Explainable AI | Human-readable explanations for every prediction |
-| PDF Reports | Professional reports with QR codes for easy sharing |
-| Batch Testing | Process multiple samples in a single batch |
-| Scan History | Complete history with search, filter, and export |
+
+| Feature              | Description                                                   |
+| -------------------- | ------------------------------------------------------------- |
+| Image Capture        | Camera integration for real-time milk sample capture          |
+| Gallery Upload       | Upload existing images from device gallery                    |
+| AI Quality Detection | Automated milk quality classification with confidence scores  |
+| Image Preprocessing  | Blur detection, lighting analysis, focus check, noise removal |
+| Explainable AI       | Human-readable explanations for every prediction              |
+| PDF Reports          | Professional reports with QR codes for easy sharing           |
+| Batch Testing        | Process multiple samples in a single batch                    |
+| Scan History         | Complete history with search, filter, and export              |
 
 ### User Roles
-| Role | Access Level |
-|------|-------------|
-| **Super Admin** | Full system access (single account) |
-| **Admin** | Operational management |
-| **Producer** | Upload and manage milk batches |
-| **Consumer** | Scan milk and view personal reports |
-| **Lab Staff** | Validate samples with lab parameters |
+
+| Role            | Access Level                         |
+| --------------- | ------------------------------------ |
+| **Super Admin** | Full system access (single account)  |
+| **Admin**       | Operational management               |
+| **Producer**    | Upload and manage milk batches       |
+| **Consumer**    | Scan milk and view personal reports  |
+| **Lab Staff**   | Validate samples with lab parameters |
 
 ### Security
+
 - Role-Based Access Control (RBAC)
 - JWT + Refresh Token authentication
 - Multi-Factor Authentication (MFA)
@@ -118,18 +121,18 @@
 
 ### Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend API | Express.js 5 + TypeScript |
-| Web Dashboard | Next.js 14 (App Router) |
-| Mobile App | React Native + Expo |
-| Database | PostgreSQL (prod) / SQLite (dev) |
-| Cache | Redis + BullMQ |
-| AI Engine | Sharp.js (color analysis) |
-| PDF Reports | PDFKit + QRCode |
-| Auth | JWT + bcrypt + TOTP |
-| Validation | Zod (shared schemas) |
-| Testing | Vitest + Supertest |
+| Layer         | Technology                       |
+| ------------- | -------------------------------- |
+| Backend API   | Express.js 5 + TypeScript        |
+| Web Dashboard | Next.js 14 (App Router)          |
+| Mobile App    | React Native + Expo              |
+| Database      | PostgreSQL (prod) / SQLite (dev) |
+| Cache         | Redis + BullMQ                   |
+| AI Engine     | Sharp.js (color analysis)        |
+| PDF Reports   | PDFKit + QRCode                  |
+| Auth          | JWT + bcrypt + TOTP              |
+| Validation    | Zod (shared schemas)             |
+| Testing       | Vitest + Supertest               |
 
 ---
 
@@ -164,13 +167,13 @@ npm run dev:web       # Web on http://localhost:3000
 
 ### Default Accounts (Development)
 
-| Role | Email | Password |
-|------|-------|----------|
+| Role        | Email             | Password        |
+| ----------- | ----------------- | --------------- |
 | Super Admin | admin@milkboy.app | SuperAdmin@123! |
-| Admin | admin@demo.com | Test@1234 |
-| Producer | producer@demo.com | Test@1234 |
-| Consumer | consumer@demo.com | Test@1234 |
-| Lab Staff | lab@demo.com | Test@1234 |
+| Admin       | admin@demo.com    | Test@1234       |
+| Producer    | producer@demo.com | Test@1234       |
+| Consumer    | consumer@demo.com | Test@1234       |
+| Lab Staff   | lab@demo.com      | Test@1234       |
 
 > ⚠️ **Change all default credentials before deploying to production!**
 
@@ -199,24 +202,26 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation.
 Base URL: `http://localhost:3001/api/v1`
 
 ### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/auth/register` | Register a new account |
-| POST | `/auth/login` | Login and receive tokens |
-| POST | `/auth/logout` | Invalidate session |
-| POST | `/auth/refresh` | Refresh access token |
-| POST | `/auth/password/forgot` | Request password reset |
-| POST | `/auth/password/reset` | Reset password |
+
+| Method | Endpoint                | Description              |
+| ------ | ----------------------- | ------------------------ |
+| POST   | `/auth/register`        | Register a new account   |
+| POST   | `/auth/login`           | Login and receive tokens |
+| POST   | `/auth/logout`          | Invalidate session       |
+| POST   | `/auth/refresh`         | Refresh access token     |
+| POST   | `/auth/password/forgot` | Request password reset   |
+| POST   | `/auth/password/reset`  | Reset password           |
 
 ### Scans
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/scans` | Create a new scan |
-| GET | `/scans` | List your scans |
-| GET | `/scans/:id` | Get scan details with results |
-| DELETE | `/scans/:id` | Delete a scan |
-| POST | `/scans/:id/images` | Upload image to scan |
-| POST | `/scans/:id/analyze` | Run AI analysis |
+
+| Method | Endpoint             | Description                   |
+| ------ | -------------------- | ----------------------------- |
+| POST   | `/scans`             | Create a new scan             |
+| GET    | `/scans`             | List your scans               |
+| GET    | `/scans/:id`         | Get scan details with results |
+| DELETE | `/scans/:id`         | Delete a scan                 |
+| POST   | `/scans/:id/images`  | Upload image to scan          |
+| POST   | `/scans/:id/analyze` | Run AI analysis               |
 
 See [API_DOCS.md](API_DOCS.md) for the complete API reference.
 
@@ -224,15 +229,15 @@ See [API_DOCS.md](API_DOCS.md) for the complete API reference.
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev:server` | Start backend dev server |
-| `npm run dev:web` | Start web dashboard dev server |
-| `npm run build` | Build all packages |
-| `npm test` | Run all tests |
-| `npm run lint` | Lint all packages |
-| `npm run db:seed` | Run migrations + seed data |
-| `npm run db:reset` | Drop all tables |
+| Command              | Description                    |
+| -------------------- | ------------------------------ |
+| `npm run dev:server` | Start backend dev server       |
+| `npm run dev:web`    | Start web dashboard dev server |
+| `npm run build`      | Build all packages             |
+| `npm test`           | Run all tests                  |
+| `npm run lint`       | Lint all packages              |
+| `npm run db:seed`    | Run migrations + seed data     |
+| `npm run db:reset`   | Drop all tables                |
 
 ---
 
