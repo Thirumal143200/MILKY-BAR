@@ -5,8 +5,6 @@
  */
 
 import knex, { type Knex } from 'knex';
-import path from 'node:path';
-import fs from 'node:fs';
 import { config } from '../config/env.js';
 import { createModuleLogger } from '../utils/logger.js';
 
@@ -14,29 +12,18 @@ const log = createModuleLogger('database');
 
 function getKnexConfig(): Knex.Config {
   if (config.db.client === 'sqlite') {
-    // Ensure the data directory exists
-    const dbDir = path.dirname(config.db.sqliteFilename);
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
-    }
-
     return {
-      client: 'better-sqlite3',
+      client: 'sqlite3',
       connection: {
         filename: config.db.sqliteFilename,
       },
       useNullAsDefault: true,
       pool: {
-        afterCreate: (conn: { pragma: (sql: string) => void }, done: (err: Error | null, conn: unknown) => void) => {
-          // Enable WAL mode and foreign keys for SQLite
-          conn.pragma('journal_mode = WAL');
-          conn.pragma('foreign_keys = ON');
-          done(null, conn);
-        },
+        min: 1,
+        max: 1,
       },
     };
   }
-
   return {
     client: 'pg',
     connection: {
@@ -58,21 +45,30 @@ function getKnexConfig(): Knex.Config {
 export const db: Knex = knex(getKnexConfig());
 
 /**
- * Test the database connection.
+ * Test the database connection with exponential backoff retry.
  */
-export async function testConnection(): Promise<boolean> {
-  try {
-    if (config.db.client === 'sqlite') {
+export async function testConnection(maxRetries = 5): Promise<boolean> {
+  let retries = 0;
+
+  while (retries < maxRetries) {
+    try {
       await db.raw('SELECT 1');
-    } else {
-      await db.raw('SELECT NOW()');
+      log.info(`Database connected (${config.db.client})`);
+      return true;
+    } catch (error) {
+      retries++;
+      log.warn(`Database connection failed (Attempt ${retries}/${maxRetries})`);
+
+      if (retries >= maxRetries) {
+        log.error('Max database connection retries reached', { error });
+        return false;
+      }
+
+      const backoffDelay = Math.pow(2, retries) * 1000;
+      await new Promise((resolve) => setTimeout(resolve, backoffDelay));
     }
-    log.info(`Database connected (${config.db.client})`);
-    return true;
-  } catch (error) {
-    log.error('Database connection failed', { error });
-    return false;
   }
+  return false;
 }
 
 /**

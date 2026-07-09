@@ -31,7 +31,11 @@ export async function up(knex: Knex): Promise<void> {
   // ─── Role-Permission Mapping ────────────────────────────
   await knex.schema.createTable('role_permissions', (t) => {
     t.uuid('role_id').notNullable().references('id').inTable('roles').onDelete('CASCADE');
-    t.uuid('permission_id').notNullable().references('id').inTable('permissions').onDelete('CASCADE');
+    t.uuid('permission_id')
+      .notNullable()
+      .references('id')
+      .inTable('permissions')
+      .onDelete('CASCADE');
     t.primary(['role_id', 'permission_id']);
   });
 

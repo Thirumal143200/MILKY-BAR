@@ -42,11 +42,41 @@ async function seed() {
     const existingRoles = await db('roles').select('name');
     if (existingRoles.length === 0) {
       await db('roles').insert([
-        { id: roleIds.super_admin, name: 'super_admin', display_name: 'Super Administrator', description: 'Full system access. Only one account allowed.', is_system: true },
-        { id: roleIds.admin, name: 'admin', display_name: 'Administrator', description: 'Operational management access.', is_system: true },
-        { id: roleIds.producer, name: 'producer', display_name: 'Producer', description: 'Upload and manage milk batches.', is_system: true },
-        { id: roleIds.consumer, name: 'consumer', display_name: 'Consumer', description: 'Scan milk and view personal reports.', is_system: true },
-        { id: roleIds.lab_staff, name: 'lab_staff', display_name: 'Laboratory Staff', description: 'Validate lab samples.', is_system: true },
+        {
+          id: roleIds.super_admin,
+          name: 'super_admin',
+          display_name: 'Super Administrator',
+          description: 'Full system access. Only one account allowed.',
+          is_system: true,
+        },
+        {
+          id: roleIds.admin,
+          name: 'admin',
+          display_name: 'Administrator',
+          description: 'Operational management access.',
+          is_system: true,
+        },
+        {
+          id: roleIds.producer,
+          name: 'producer',
+          display_name: 'Producer',
+          description: 'Upload and manage milk batches.',
+          is_system: true,
+        },
+        {
+          id: roleIds.consumer,
+          name: 'consumer',
+          display_name: 'Consumer',
+          description: 'Scan milk and view personal reports.',
+          is_system: true,
+        },
+        {
+          id: roleIds.lab_staff,
+          name: 'lab_staff',
+          display_name: 'Laboratory Staff',
+          description: 'Validate lab samples.',
+          is_system: true,
+        },
       ]);
       log.info('Roles seeded');
     } else {
@@ -62,10 +92,21 @@ async function seed() {
     const existingPerms = await db('permissions').select('name');
     if (existingPerms.length === 0) {
       const resources = [
-        'users', 'scans', 'images', 'predictions', 'reports',
-        'batches', 'audit_logs', 'notifications', 'settings',
-        'feature_flags', 'ai_models', 'backups', 'feedback',
-        'lab_validations', 'analytics',
+        'users',
+        'scans',
+        'images',
+        'predictions',
+        'reports',
+        'batches',
+        'audit_logs',
+        'notifications',
+        'settings',
+        'feature_flags',
+        'ai_models',
+        'backups',
+        'feedback',
+        'lab_validations',
+        'analytics',
       ];
       const actions = ['create', 'read', 'update', 'delete', 'manage'];
 
@@ -111,7 +152,8 @@ async function seed() {
       await db('ai_models').insert({
         id: modelId,
         name: 'milk-quality-classifier',
-        description: 'CNN-based milk quality classification model analyzing color, turbidity, and visual markers.',
+        description:
+          'CNN-based milk quality classification model analyzing color, turbidity, and visual markers.',
         type: 'classification',
       });
 
@@ -120,7 +162,7 @@ async function seed() {
         model_id: modelId,
         version: '1.0.0',
         file_path: config.ai.modelPath,
-        accuracy: 0.920,
+        accuracy: 0.92,
         precision_score: 0.915,
         recall: 0.908,
         f1_score: 0.911,
@@ -135,16 +177,66 @@ async function seed() {
     const existingFlags = await db('feature_flags').first();
     if (!existingFlags) {
       await db('feature_flags').insert([
-        { id: generateId(), name: 'batch_testing', description: 'Enable batch milk testing for producers', enabled: true },
-        { id: generateId(), name: 'lab_validation', description: 'Enable laboratory validation workflow', enabled: true },
-        { id: generateId(), name: 'pdf_reports', description: 'Enable PDF report generation with QR codes', enabled: true },
-        { id: generateId(), name: 'dark_mode', description: 'Enable dark mode in web and mobile apps', enabled: true },
-        { id: generateId(), name: 'multi_language', description: 'Enable multi-language support', enabled: true },
-        { id: generateId(), name: 'push_notifications', description: 'Enable push notifications', enabled: false },
-        { id: generateId(), name: 'offline_mode', description: 'Enable offline mode for mobile app', enabled: true },
-        { id: generateId(), name: 'mfa', description: 'Enable multi-factor authentication', enabled: true },
-        { id: generateId(), name: 'ai_explainability', description: 'Show AI prediction explanations', enabled: true },
-        { id: generateId(), name: 'ab_testing', description: 'Enable A/B testing for AI models', enabled: false },
+        {
+          id: generateId(),
+          name: 'batch_testing',
+          description: 'Enable batch milk testing for producers',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'lab_validation',
+          description: 'Enable laboratory validation workflow',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'pdf_reports',
+          description: 'Enable PDF report generation with QR codes',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'dark_mode',
+          description: 'Enable dark mode in web and mobile apps',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'multi_language',
+          description: 'Enable multi-language support',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'push_notifications',
+          description: 'Enable push notifications',
+          enabled: false,
+        },
+        {
+          id: generateId(),
+          name: 'offline_mode',
+          description: 'Enable offline mode for mobile app',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'mfa',
+          description: 'Enable multi-factor authentication',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'ai_explainability',
+          description: 'Show AI prediction explanations',
+          enabled: true,
+        },
+        {
+          id: generateId(),
+          name: 'ab_testing',
+          description: 'Enable A/B testing for AI models',
+          enabled: false,
+        },
       ]);
       log.info('Feature flags seeded');
     }
@@ -153,14 +245,62 @@ async function seed() {
     const existingSettings = await db('system_settings').first();
     if (!existingSettings) {
       await db('system_settings').insert([
-        { id: generateId(), key: 'maintenance_mode', value: 'false', category: 'general', description: 'Enable maintenance mode' },
-        { id: generateId(), key: 'max_upload_size_mb', value: '10', category: 'storage', description: 'Maximum upload file size in MB' },
-        { id: generateId(), key: 'auto_backup_enabled', value: 'true', category: 'general', description: 'Enable automatic backups' },
-        { id: generateId(), key: 'backup_frequency_hours', value: '24', category: 'general', description: 'Backup frequency in hours' },
-        { id: generateId(), key: 'ai_confidence_threshold', value: '0.6', category: 'ai', description: 'Minimum AI confidence threshold' },
-        { id: generateId(), key: 'session_timeout_hours', value: '24', category: 'security', description: 'Session timeout in hours' },
-        { id: generateId(), key: 'max_login_attempts', value: '5', category: 'security', description: 'Maximum login attempts before lockout' },
-        { id: generateId(), key: 'data_retention_days', value: '365', category: 'general', description: 'Default data retention period in days' },
+        {
+          id: generateId(),
+          key: 'maintenance_mode',
+          value: 'false',
+          category: 'general',
+          description: 'Enable maintenance mode',
+        },
+        {
+          id: generateId(),
+          key: 'max_upload_size_mb',
+          value: '10',
+          category: 'storage',
+          description: 'Maximum upload file size in MB',
+        },
+        {
+          id: generateId(),
+          key: 'auto_backup_enabled',
+          value: 'true',
+          category: 'general',
+          description: 'Enable automatic backups',
+        },
+        {
+          id: generateId(),
+          key: 'backup_frequency_hours',
+          value: '24',
+          category: 'general',
+          description: 'Backup frequency in hours',
+        },
+        {
+          id: generateId(),
+          key: 'ai_confidence_threshold',
+          value: '0.6',
+          category: 'ai',
+          description: 'Minimum AI confidence threshold',
+        },
+        {
+          id: generateId(),
+          key: 'session_timeout_hours',
+          value: '24',
+          category: 'security',
+          description: 'Session timeout in hours',
+        },
+        {
+          id: generateId(),
+          key: 'max_login_attempts',
+          value: '5',
+          category: 'security',
+          description: 'Maximum login attempts before lockout',
+        },
+        {
+          id: generateId(),
+          key: 'data_retention_days',
+          value: '365',
+          category: 'general',
+          description: 'Default data retention period in days',
+        },
       ]);
       log.info('System settings seeded');
     }
@@ -169,10 +309,34 @@ async function seed() {
     const existingPolicies = await db('data_retention_policies').first();
     if (!existingPolicies) {
       await db('data_retention_policies').insert([
-        { id: generateId(), resource: 'audit_logs', retention_days: 365, action: 'archive', is_active: true },
-        { id: generateId(), resource: 'scan_images', retention_days: 180, action: 'delete', is_active: true },
-        { id: generateId(), resource: 'notifications', retention_days: 90, action: 'delete', is_active: true },
-        { id: generateId(), resource: 'user_sessions', retention_days: 30, action: 'delete', is_active: true },
+        {
+          id: generateId(),
+          resource: 'audit_logs',
+          retention_days: 365,
+          action: 'archive',
+          is_active: true,
+        },
+        {
+          id: generateId(),
+          resource: 'scan_images',
+          retention_days: 180,
+          action: 'delete',
+          is_active: true,
+        },
+        {
+          id: generateId(),
+          resource: 'notifications',
+          retention_days: 90,
+          action: 'delete',
+          is_active: true,
+        },
+        {
+          id: generateId(),
+          resource: 'user_sessions',
+          retention_days: 30,
+          action: 'delete',
+          is_active: true,
+        },
       ]);
       log.info('Data retention policies seeded');
     }
