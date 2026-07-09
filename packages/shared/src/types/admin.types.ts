@@ -29,6 +29,8 @@ export type AuditAction =
   | 'feature_flag_toggle'
   | 'backup_create'
   | 'backup_restore'
+  | 'feedback_create'
+  | 'feedback_update'
   | 'lab_validate';
 
 /** Audit log entry */
@@ -57,13 +59,7 @@ export interface SystemSetting {
 }
 
 export type SettingCategory =
-  | 'general'
-  | 'security'
-  | 'ai'
-  | 'email'
-  | 'storage'
-  | 'notifications'
-  | 'maintenance';
+  'general' | 'security' | 'ai' | 'email' | 'storage' | 'notifications' | 'maintenance';
 
 /** Feature flag */
 export interface FeatureFlag {
