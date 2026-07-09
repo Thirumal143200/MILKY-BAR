@@ -97,6 +97,7 @@ export const config = {
 
   // AI
   ai: {
+    serviceUrl: env('AI_SERVICE_URL', 'http://127.0.0.1:8000'),
     modelPath: env('AI_MODEL_PATH', './ai/models/milk-quality-v1'),
     confidenceThreshold: parseFloat(env('AI_CONFIDENCE_THRESHOLD', '0.6')),
   },

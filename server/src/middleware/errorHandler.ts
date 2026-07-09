@@ -50,12 +50,7 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
     method: req.method,
   });
 
-  sendError(
-    res,
-    500,
-    'SYS_001',
-    config.isProd ? 'An unexpected error occurred.' : err.message,
-  );
+  sendError(res, 500, 'SYS_001', config.isProd ? 'An unexpected error occurred.' : err.message);
 }
 
 /**

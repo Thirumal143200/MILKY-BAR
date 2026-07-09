@@ -16,7 +16,10 @@ export const emailSchema = z
 
 export const passwordSchema = z
   .string()
-  .min(SECURITY.PASSWORD_MIN_LENGTH, `Password must be at least ${SECURITY.PASSWORD_MIN_LENGTH} characters`)
+  .min(
+    SECURITY.PASSWORD_MIN_LENGTH,
+    `Password must be at least ${SECURITY.PASSWORD_MIN_LENGTH} characters`,
+  )
   .max(SECURITY.PASSWORD_MAX_LENGTH, 'Password is too long')
   .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
@@ -54,7 +57,9 @@ export const mfaSetupSchema = z.object({
 });
 
 export const mfaVerifySchema = z.object({
-  code: z.string().length(SECURITY.MFA_CODE_LENGTH, `Code must be ${SECURITY.MFA_CODE_LENGTH} digits`),
+  code: z
+    .string()
+    .length(SECURITY.MFA_CODE_LENGTH, `Code must be ${SECURITY.MFA_CODE_LENGTH} digits`),
 });
 
 // ─── User Schemas ───────────────────────────────────────────
@@ -80,11 +85,13 @@ export const updateUserAdminSchema = z.object({
 export const createScanSchema = z.object({
   title: z.string().max(200).optional(),
   notes: z.string().max(2000).optional(),
-  location: z.object({
-    latitude: z.number().min(-90).max(90).optional(),
-    longitude: z.number().min(-180).max(180).optional(),
-    address: z.string().max(500).optional(),
-  }).optional(),
+  location: z
+    .object({
+      latitude: z.number().min(-90).max(90).optional(),
+      longitude: z.number().min(-180).max(180).optional(),
+      address: z.string().max(500).optional(),
+    })
+    .optional(),
 });
 
 // ─── Batch Schemas ──────────────────────────────────────────
@@ -98,7 +105,10 @@ export const addScansToBatchSchema = z.object({
   scanIds: z
     .array(z.string().uuid())
     .min(1, 'At least one scan is required')
-    .max(BATCH_CONFIG.MAX_SCANS_PER_BATCH, `Maximum ${BATCH_CONFIG.MAX_SCANS_PER_BATCH} scans per batch`),
+    .max(
+      BATCH_CONFIG.MAX_SCANS_PER_BATCH,
+      `Maximum ${BATCH_CONFIG.MAX_SCANS_PER_BATCH} scans per batch`,
+    ),
 });
 
 // ─── Lab Schemas ────────────────────────────────────────────
@@ -106,16 +116,18 @@ export const addScansToBatchSchema = z.object({
 export const labValidationSchema = z.object({
   result: z.enum(['confirmed', 'rejected', 'inconclusive']),
   notes: z.string().max(2000).optional(),
-  parameters: z.object({
-    fatContent: z.number().min(0).max(100).optional(),
-    proteinContent: z.number().min(0).max(100).optional(),
-    lactoseContent: z.number().min(0).max(100).optional(),
-    snf: z.number().min(0).max(100).optional(),
-    ph: z.number().min(0).max(14).optional(),
-    density: z.number().min(0).optional(),
-    temperature: z.number().min(-50).max(100).optional(),
-    adulterants: z.array(z.string()).optional(),
-  }).optional(),
+  parameters: z
+    .object({
+      fatContent: z.number().min(0).max(100).optional(),
+      proteinContent: z.number().min(0).max(100).optional(),
+      lactoseContent: z.number().min(0).max(100).optional(),
+      snf: z.number().min(0).max(100).optional(),
+      ph: z.number().min(0).max(14).optional(),
+      density: z.number().min(0).optional(),
+      temperature: z.number().min(-50).max(100).optional(),
+      adulterants: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 // ─── Feedback Schemas ───────────────────────────────────────
@@ -141,7 +153,12 @@ export const systemSettingSchema = z.object({
 
 export const paginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(PAGINATION.DEFAULT_PAGE),
-  limit: z.coerce.number().int().min(PAGINATION.MIN_LIMIT).max(PAGINATION.MAX_LIMIT).default(PAGINATION.DEFAULT_LIMIT),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(PAGINATION.MIN_LIMIT)
+    .max(PAGINATION.MAX_LIMIT)
+    .default(PAGINATION.DEFAULT_LIMIT),
   sortBy: z.string().max(50).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   search: z.string().max(200).optional(),

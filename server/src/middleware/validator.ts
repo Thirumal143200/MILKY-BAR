@@ -31,7 +31,7 @@ export function validate(schema: ZodSchema, source: RequestPart = 'body') {
       }
 
       // Replace with parsed (and potentially transformed) data
-      (req as Record<string, unknown>)[source] = result.data;
+      (req as unknown as Record<string, unknown>)[source] = result.data;
       next();
     } catch (error) {
       next(error);

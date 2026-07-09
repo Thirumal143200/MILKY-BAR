@@ -5,23 +5,11 @@
 
 /** Scan status lifecycle */
 export type ScanStatus =
-  | 'created'
-  | 'uploading'
-  | 'preprocessing'
-  | 'analyzing'
-  | 'completed'
-  | 'failed'
-  | 'rejected';
+  'created' | 'uploading' | 'preprocessing' | 'analyzing' | 'completed' | 'failed' | 'rejected';
 
 /** Milk quality classification labels */
 export type QualityLabel =
-  | 'excellent'
-  | 'good'
-  | 'acceptable'
-  | 'poor'
-  | 'adulterated'
-  | 'spoiled'
-  | 'inconclusive';
+  'excellent' | 'good' | 'acceptable' | 'poor' | 'adulterated' | 'spoiled' | 'inconclusive';
 
 /** Image quality status */
 export type ImageQualityStatus = 'passed' | 'warning' | 'rejected';

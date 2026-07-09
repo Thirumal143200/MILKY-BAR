@@ -9,6 +9,7 @@ import { authenticate } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validator.js';
 import { requirePermission } from '../../middleware/rbac.js';
 import { auditMiddleware } from '../../middleware/auditLogger.js';
+import { imageUpload } from '../../middleware/upload.js';
 import { createScanSchema } from '@milkboy/shared';
 
 const router = Router();
@@ -23,11 +24,7 @@ router.post(
   scansController.create.bind(scansController),
 );
 
-router.get(
-  '/',
-  requirePermission('scans', 'read'),
-  scansController.list.bind(scansController),
-);
+router.get('/', requirePermission('scans', 'read'), scansController.list.bind(scansController));
 
 router.get(
   '/:id',
@@ -40,6 +37,21 @@ router.delete(
   requirePermission('scans', 'delete'),
   auditMiddleware('scan_delete', 'scans'),
   scansController.delete.bind(scansController),
+);
+
+router.post(
+  '/:id/images',
+  requirePermission('images', 'create'),
+  imageUpload.single('image'),
+  auditMiddleware('image_upload', 'images'),
+  scansController.uploadImage.bind(scansController),
+);
+
+router.post(
+  '/:id/analyze',
+  requirePermission('scans', 'create'),
+  auditMiddleware('prediction_run', 'predictions'),
+  scansController.analyze.bind(scansController),
 );
 
 export { router as scanRoutes };

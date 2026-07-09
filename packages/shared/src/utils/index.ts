@@ -8,11 +8,7 @@ import type { ResponseMeta } from '../types/api.types.js';
 /**
  * Build pagination metadata from query results.
  */
-export function buildPaginationMeta(
-  total: number,
-  page: number,
-  limit: number,
-): ResponseMeta {
+export function buildPaginationMeta(total: number, page: number, limit: number): ResponseMeta {
   const totalPages = Math.ceil(total / limit);
   return {
     page,
@@ -56,9 +52,10 @@ export function slugify(text: string): string {
 export function maskEmail(email: string): string {
   const [local, domain] = email.split('@');
   if (!local || !domain) return email;
-  const masked = local.length > 2
-    ? `${local[0]}${'*'.repeat(local.length - 2)}${local[local.length - 1]}`
-    : `${local[0]}${'*'.repeat(Math.max(local.length - 1, 1))}`;
+  const masked =
+    local.length > 2
+      ? `${local[0]}${'*'.repeat(local.length - 2)}${local[local.length - 1]}`
+      : `${local[0]}${'*'.repeat(Math.max(local.length - 1, 1))}`;
   return `${masked}@${domain}`;
 }
 
@@ -135,7 +132,9 @@ export function deepClone<T>(obj: T): T {
  * Generate a random hex color.
  */
 export function randomColor(): string {
-  return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+  return `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, '0')}`;
 }
 
 /**

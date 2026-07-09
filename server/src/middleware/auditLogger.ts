@@ -52,7 +52,7 @@ export function auditMiddleware(action: AuditAction, resource: string) {
     // Record after response is sent
     res.on('finish', () => {
       if (res.statusCode < 400) {
-        const resourceId = req.params['id'] ?? null;
+        const resourceId = req.params['id'] ? String(req.params['id']) : null;
         void recordAuditLog(
           req.user?.id ?? null,
           req.user?.email ?? null,
