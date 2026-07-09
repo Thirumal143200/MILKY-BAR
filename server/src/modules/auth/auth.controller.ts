@@ -35,13 +35,18 @@ export class AuthController {
         return;
       }
 
-      sendSuccess(res, {
-        user: result.user,
-        tokens: {
-          ...result.tokens,
-          tokenType: 'Bearer',
+      sendSuccess(
+        res,
+        {
+          user: result.user,
+          tokens: {
+            ...result.tokens,
+            tokenType: 'Bearer',
+          },
         },
-      }, 200, 'Login successful.');
+        200,
+        'Login successful.',
+      );
     } catch (error) {
       next(error);
     }
@@ -83,6 +88,24 @@ export class AuthController {
   async resetPassword(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await authService.resetPassword(req.body.token, req.body.newPassword);
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async setupMfa(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await authService.setupMfa(req.user!.id, req.user!.email);
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyMfa(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await authService.verifyMfa(req.user!.id, req.body.token);
       sendSuccess(res, result);
     } catch (error) {
       next(error);

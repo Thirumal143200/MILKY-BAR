@@ -17,7 +17,9 @@ import { AppError } from '../utils/AppError.js';
 export function requireRole(...roles: UserRole[]) {
   return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return next(AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'));
+      return next(
+        AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'),
+      );
     }
 
     const userRole = req.user.role as UserRole;
@@ -41,7 +43,9 @@ export function requireRole(...roles: UserRole[]) {
 export function requireMinRole(minimumRole: UserRole) {
   return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return next(AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'));
+      return next(
+        AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'),
+      );
     }
 
     const userRole = req.user.role as UserRole;
@@ -65,7 +69,9 @@ export function requireMinRole(minimumRole: UserRole) {
 export function requirePermission(resource: string, action: string) {
   return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return next(AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'));
+      return next(
+        AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'),
+      );
     }
 
     const userRole = req.user.role as UserRole;
@@ -90,7 +96,9 @@ export function requirePermission(resource: string, action: string) {
 export function requireOwnerOrAdmin(paramName = 'userId') {
   return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return next(AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'));
+      return next(
+        AppError.unauthorized(ERROR_CODES.AUTH_TOKEN_INVALID, 'Authentication required.'),
+      );
     }
 
     const resourceOwnerId = req.params[paramName];
