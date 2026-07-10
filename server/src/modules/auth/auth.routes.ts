@@ -15,7 +15,13 @@ import {
   resetPasswordSchema,
 } from '@milkboy/shared';
 
+import { z } from 'zod';
+
 const router = Router();
+
+const verifyEmailSchema = z.object({
+  token: z.string().min(1, 'Token is required'),
+});
 
 // Public routes (rate limited)
 router.post(
@@ -29,6 +35,12 @@ router.post(
   authLimiter,
   validate(loginSchema),
   authController.login.bind(authController),
+);
+router.post(
+  '/verify-email',
+  authLimiter,
+  validate(verifyEmailSchema),
+  authController.verifyEmail.bind(authController),
 );
 router.post(
   '/password/forgot',

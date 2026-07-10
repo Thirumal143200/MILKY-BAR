@@ -13,6 +13,7 @@ vi.mock('../auth.service.js', () => {
       refreshToken: vi.fn(),
       forgotPassword: vi.fn(),
       resetPassword: vi.fn(),
+      verifyEmail: vi.fn(),
     },
   };
 });
@@ -110,5 +111,27 @@ describe('Auth Endpoints', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.tokens.accessToken).toBe('mock-access-token');
+  });
+
+  it('should fail email verification with missing token', async () => {
+    const res = await request.post('/api/v1/auth/verify-email').send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
+
+  it('should verify email successfully', async () => {
+    vi.mocked(authService.verifyEmail).mockResolvedValue({
+      message: 'Email verified successfully.',
+    });
+
+    const res = await request.post('/api/v1/auth/verify-email').send({
+      token: 'valid-verify-token',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.message).toBe('Email verified successfully.');
+    expect(authService.verifyEmail).toHaveBeenCalledWith('valid-verify-token');
   });
 });

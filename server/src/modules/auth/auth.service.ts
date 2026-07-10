@@ -482,6 +482,31 @@ export class AuthService {
 
     return { message: 'MFA enabled successfully.' };
   }
+
+  /**
+   * Verify user email using token.
+   */
+  async verifyEmail(token: string) {
+    const tokenHash = hashToken(token);
+
+    const user = await db('users').where('email_verify_token', tokenHash).first();
+
+    if (!user) {
+      throw AppError.badRequest(
+        ERROR_CODES.AUTH_TOKEN_INVALID,
+        'Invalid or expired email verification token.',
+      );
+    }
+
+    await db('users').where('id', user.id).update({
+      email_verified: true,
+      email_verify_token: null,
+    });
+
+    log.info(`Email verified for user: ${user.email}`);
+
+    return { message: 'Email verified successfully.' };
+  }
 }
 
 export const authService = new AuthService();

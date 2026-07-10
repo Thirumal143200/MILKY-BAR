@@ -111,6 +111,15 @@ export class AuthController {
       next(error);
     }
   }
+
+  async verifyEmail(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await authService.verifyEmail(req.body.token);
+      sendSuccess(res, result, 200, 'Email verified successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const authController = new AuthController();
