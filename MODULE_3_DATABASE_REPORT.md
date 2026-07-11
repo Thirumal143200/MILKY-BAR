@@ -87,3 +87,63 @@ All database integration tests, backup tests, and formatting audits run automati
 - **GitHub Actions Status**: **100% Green / Success** ✅
   - Main CI Workflow Run #35: **Success**
   - Backend CI/CD Workflow Run #21: **Success**
+
+---
+
+## 9. Implementation Evidence
+
+### 1. Files Modified & Created
+
+- **Modified**:
+  - [001_initial_schema.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/database/migrations/001_initial_schema.ts) — Added `deleted_at` soft delete columns and `sync_queue` table definition.
+  - [env.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/config/env.ts) — Central environment selector implementing `NODE_ENV` switching.
+  - [backup.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/scripts/backup.ts) — Enhanced script for SQLite and PG backups with DB logging.
+- **Created**:
+  - [backup-restore.test.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/database/__tests__/backup-restore.test.ts) — E2E test suite for backups and disaster recovery.
+  - [DATABASE_ARCHITECTURE.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/DATABASE_ARCHITECTURE.md)
+  - [DATABASE_BACKUP_GUIDE.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/DATABASE_BACKUP_GUIDE.md)
+  - [DATABASE_MIGRATION_GUIDE.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/DATABASE_MIGRATION_GUIDE.md)
+  - [DATABASE_SCHEMA.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/DATABASE_SCHEMA.md)
+  - [ER_DIAGRAM.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/ER_DIAGRAM.md)
+
+### 2. Commit Hashes
+
+- `3f13a1c` — "feat(db): complete database layer and migration/backup automation"
+- `b5eccae` — "fix(test): clean up empty blocks and unused variables in backup-restore test"
+- `90e28f9` — "style: format database docs and backup script with Prettier"
+- `3c7118d` — "docs: generate Module 3 Database Report and update PROJECT_STATUS.md"
+
+### 3. Test Command Executed
+
+- Local Backup/Restore specific test:
+  `npx vitest run src/database/__tests__/backup-restore.test.ts`
+- Workspace-wide test verification:
+  `npm test --workspace=server`
+
+### 4. Test Output Summary (Local & CI)
+
+- **Local Test Suite run results**:
+  ```
+  ✓ src/database/__tests__/backup-restore.test.ts (2 tests) 7444ms
+    ✓ Database Backup & Restore System > should successfully run backup script, create SQL file, and log to backup_logs (3585ms)
+    ✓ Database Backup & Restore System > should successfully restore database back to backup state (2684ms)
+  ```
+- **Full Suite**: **34 passed (34)** in `server` workspace.
+
+### 5. GitHub Actions Run Details
+
+- **CI Workflow**: Run #35 and #36 (100% Success)
+- **Backend CI/CD Workflow**: Run #21 (100% Success)
+
+### 6. Database Migrations
+
+- **Migration Module**: `001_initial_schema.ts` (sets up initial schema and creates all tables).
+
+### 7. Backup and Restore Test Evidence
+
+Programmatically verified in `backup-restore.test.ts`. During the test, a backup file is generated under `server/backups/`, the live database is modified (a dummy setting is written), a restore command is run copying the backup file back over the sqlite DB, and queries confirm that the dummy setting is successfully deleted/restored to the previous state.
+
+### 8. Known Limitations & Remaining Risks
+
+- **SQLite Locking**: The development SQLite database uses single-writer locks. Multiple concurrent writers can trigger lock contention if the pool max connection size exceeds `1`. The application must maintain `pool: { min: 1, max: 1 }` in development/testing.
+- **Production Tooling Dependencies**: The backup/restore scripts rely on `pg_dump` and `pg_restore` command-line binaries. In production, these binaries must be present on the host system execution PATH.
