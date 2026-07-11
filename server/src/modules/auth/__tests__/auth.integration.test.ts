@@ -1,15 +1,13 @@
-// Set environment variables for in-memory SQLite testing before imports
-process.env.NODE_ENV = 'test';
-process.env.DB_CLIENT = 'sqlite';
-process.env.SQLITE_FILENAME = ':memory:';
+import './setup-auth-env.js';
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import fs from 'node:fs';
 import request from 'supertest';
+import { authenticator } from 'otplib';
 import { app } from '../../../app.js';
 import { db } from '../../../database/connection.js';
 import { up, down } from '../../../database/migrations/001_initial_schema.js';
 import { authService } from '../auth.service.js';
-import { authenticator } from 'otplib';
 
 describe('Auth & Security Integration Tests (Real DB)', () => {
   let adminRoleId: string;
@@ -53,7 +51,13 @@ describe('Auth & Security Integration Tests (Real DB)', () => {
   });
 
   afterAll(async () => {
-    await db.destroy();
+    try {
+      if (fs.existsSync('./data/milkboy_auth_test.sqlite')) {
+        fs.unlinkSync('./data/milkboy_auth_test.sqlite');
+      }
+    } catch {
+      // ignore
+    }
   });
 
   describe('Registration Flow', () => {
@@ -170,7 +174,7 @@ describe('Auth & Security Integration Tests (Real DB)', () => {
 
       expect(finalRes.status).toBe(429);
       expect(finalRes.body.error.message).toContain('Too many authentication attempts');
-    });
+    }, 15000);
   });
 
   describe('JWT Access Token and RBAC Flow', () => {

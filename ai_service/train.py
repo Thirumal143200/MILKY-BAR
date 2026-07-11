@@ -64,7 +64,8 @@ def main():
         )
         
         evaluate_model(best_model, val_loader, device, full_dataset.classes)
-        export_model(best_model, save_path="models/best_model.pt")
+        export_model(best_model, save_path="models/milk-quality-v1/best_model.pt")
+
         
     except Exception as e:
         print(f"\nPipeline Failed: {e}")
