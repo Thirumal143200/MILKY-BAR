@@ -49,6 +49,17 @@ gantt
   - PDFKit-based PDF report generation with embedded QR codes (`pdf.service.ts`)
   - End-to-end scans and reports integration test suite (`scans.integration.test.ts`)
 
+### Database & Data Layer
+
+- **Status**: 100% Complete ✅
+- **Description**: Build a production-grade database layer supporting both SQLite (development) and PostgreSQL (production) with automatic environment switching, connection pooling, optimized indexes, programmatic migration validation, E2E backup/restore scripts, and comprehensive verification tests.
+- **Key Deliverables**:
+  - Programmable forward/rollback migration scripts (`migrate.ts`, `reset.ts`)
+  - Automatable shell/TypeScript backup and recovery scripts (`backup.ts`, `restore.ts`)
+  - Centralized schema and architecture guides (`DATABASE_SCHEMA.md`, `DATABASE_ARCHITECTURE.md`)
+  - Integration backup/restore test suite (`backup-restore.test.ts`)
+  - `MODULE_3_DATABASE_REPORT.md`
+
 ### Module 4: Producer & Lab Workflows
 
 - **Status**: 0% Complete (Ready to Start) ⏳
@@ -58,7 +69,7 @@ gantt
 
 ## 📈 Quality Metrics
 
-- **Total Unit/Integration Tests**: 32 tests (**100% passing**)
+- **Total Unit/Integration Tests**: 36 tests (**100% passing**)
 - **Type-Checking**: Zero errors (all workspaces)
 - **ESLint**: Clean check (0 errors, 0 warnings)
 - **Formatting**: 100% formatted via Prettier
