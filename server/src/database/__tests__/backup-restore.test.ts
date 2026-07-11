@@ -13,7 +13,9 @@ process.env.SQLITE_FILENAME = './data/milkboy_backup_test.sqlite';
 const dir = path.dirname(process.env.SQLITE_FILENAME);
 try {
   await fs.mkdir(dir, { recursive: true });
-} catch {}
+} catch {
+  // ignore
+}
 
 const execAsync = promisify(exec);
 
@@ -36,7 +38,9 @@ describe('Database Backup & Restore System', () => {
 
     try {
       await fs.rm(backupsDir, { recursive: true, force: true });
-    } catch {}
+    } catch {
+      // ignore
+    }
   });
 
   afterAll(async () => {
@@ -46,16 +50,20 @@ describe('Database Backup & Restore System', () => {
     // Clean up test DB file
     try {
       await fs.unlink(process.env.SQLITE_FILENAME!);
-    } catch {}
+    } catch {
+      // ignore
+    }
     // Clean up backups
     try {
       await fs.rm(backupsDir, { recursive: true, force: true });
-    } catch {}
+    } catch {
+      // ignore
+    }
   });
 
   it('should successfully run backup script, create SQL file, and log to backup_logs', async () => {
     // 1. Run the backup command
-    const { stdout, stderr } = await execAsync('npx tsx scripts/backup.ts');
+    const { stderr } = await execAsync('npx tsx scripts/backup.ts');
     expect(stderr).toBeFalsy();
 
     // 2. Read backups directory to find the backup file
@@ -100,7 +108,7 @@ describe('Database Backup & Restore System', () => {
     await db.destroy();
 
     // 4. Run the restore command
-    const { stdout, stderr } = await execAsync(`npx tsx scripts/restore.ts ${backupFile}`);
+    const { stderr } = await execAsync(`npx tsx scripts/restore.ts ${backupFile}`);
     expect(stderr).toBeFalsy();
 
     // Re-initialize db connection to verify content
