@@ -147,4 +147,41 @@ describe('Scans Endpoints', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data.scan.id).toBe(scanId);
   });
+
+  it('should upload an image to scan', async () => {
+    const mockImageResult = {
+      imageId: 'image-123',
+      qualityCheck: { passed: true, overallScore: 0.95 },
+    };
+
+    vi.mocked(scansService.addImage).mockResolvedValue(mockImageResult);
+
+    const res = await request
+      .post(`/api/v1/scans/${scanId}/images`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach('image', Buffer.from('fake-image-binary-data'), 'milk_sample.jpg');
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.imageId).toBe('image-123');
+    expect(scansService.addImage).toHaveBeenCalledWith(scanId, userId, expect.any(Object));
+  });
+
+  it('should trigger AI analysis on scan', async () => {
+    const mockPredictions = [
+      { id: 'pred-123', imageId: 'image-123', qualityLabel: 'good', confidence: 0.91 },
+    ];
+
+    vi.mocked(scansService.analyze).mockResolvedValue(mockPredictions);
+
+    const res = await request
+      .post(`/api/v1/scans/${scanId}/analyze`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.length).toBe(1);
+    expect(res.body.data[0].qualityLabel).toBe('good');
+    expect(scansService.analyze).toHaveBeenCalledWith(scanId, userId);
+  });
 });
