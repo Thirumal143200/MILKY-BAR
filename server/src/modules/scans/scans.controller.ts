@@ -73,6 +73,26 @@ export class ScansController {
       next(error);
     }
   }
+
+  async getPrediction(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const isAdmin = req.user!.role === 'admin' || req.user!.role === 'super_admin';
+      const userId = isAdmin ? undefined : req.user!.id;
+      const predictions = await scansService.getPrediction(String(req.params.id), userId);
+      sendSuccess(res, predictions);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async retry(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const predictions = await scansService.retry(String(req.params.id), req.user!.id);
+      sendSuccess(res, predictions, 200, 'Scan analysis retried successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const scansController = new ScansController();

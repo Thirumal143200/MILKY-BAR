@@ -120,6 +120,15 @@ export class AuthController {
       next(error);
     }
   }
+
+  async logoutAllDevices(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await authService.logoutAllDevices(req.user!.id);
+      sendSuccess(res, result, 200, 'Logged out of all devices successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const authController = new AuthController();

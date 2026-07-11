@@ -1,0 +1,351 @@
+openapi: 3.0.0
+info:
+  title: MilkBoy Enterprise API
+  description: API Documentation for the MilkBoy mobile scanner and laboratory validation application.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Local Server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, firstName, lastName, role]
+              properties:
+                email: { type: string }
+                password: { type: string }
+                firstName: { type: string }
+                lastName: { type: string }
+                role: { type: string, enum: [producer, consumer, lab_staff, admin, super_admin] }
+  /auth/login:
+    post:
+      summary: Login to application
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+                mfaCode: { type: string }
+  /auth/logout:
+    post:
+      summary: Revoke active session
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+  /auth/forgot-password:
+    post:
+      summary: Forgot password request
+      tags:
+        - Authentication
+  /auth/reset-password:
+    post:
+      summary: Reset password using token
+      tags:
+        - Authentication
+  /auth/verify-email:
+    post:
+      summary: Verify email address
+      tags:
+        - Authentication
+  /auth/verify-mfa:
+    post:
+      summary: Verify MFA token
+      tags:
+        - Authentication
+  /auth/logout-all-devices:
+    delete:
+      summary: Log out from all sessions
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+
+  /users/me:
+    get:
+      summary: Get user profile details
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+  /users/profile:
+    put:
+      summary: Update user profile
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+  /users/change-password:
+    put:
+      summary: Change active password
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+
+  /scans:
+    post:
+      summary: Create a new milk scan record
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+    get:
+      summary: List user's scans
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+  /scans/{id}:
+    get:
+      summary: Get scan details
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+    delete:
+      summary: Soft delete scan
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+  /scans/{id}/images:
+    post:
+      summary: Upload scan image
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+  /scans/{id}/analyze:
+    post:
+      summary: Trigger AI analysis on scan
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+  /scans/{id}/prediction:
+    get:
+      summary: Retrieve prediction results
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+  /scans/{id}/retry:
+    post:
+      summary: Retry failed analysis
+      tags:
+        - Scans
+      security:
+        - BearerAuth: []
+
+  /ai/predict:
+    post:
+      summary: Predict quality directly from image
+      tags:
+        - AI
+      security:
+        - BearerAuth: []
+  /ai/model-status:
+    get:
+      summary: Active AI model status
+      tags:
+        - AI
+      security:
+        - BearerAuth: []
+  /ai/model-versions:
+    get:
+      summary: Available AI model versions
+      tags:
+        - AI
+      security:
+        - BearerAuth: []
+  /ai/model-health:
+    get:
+      summary: Check model service health
+      tags:
+        - AI
+      security:
+        - BearerAuth: []
+
+  /reports/generate/{scanId}:
+    post:
+      summary: Generate PDF report for scan
+      tags:
+        - Reports
+      security:
+        - BearerAuth: []
+  /reports/{id}/download:
+    get:
+      summary: Download PDF report file
+      tags:
+        - Reports
+      security:
+        - BearerAuth: []
+  /reports/{id}/qr:
+    get:
+      summary: Get PDF QR code verification image
+      tags:
+        - Reports
+      security:
+        - BearerAuth: []
+
+  /notifications:
+    get:
+      summary: List notifications
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+    delete:
+      summary: Clear all notifications
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+  /notifications/{id}/read:
+    patch:
+      summary: Mark notification as read
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+  /notifications/preferences:
+    get:
+      summary: Get notification preferences
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+    put:
+      summary: Update notification preferences
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+
+  /lab/pending:
+    get:
+      summary: Get pending validations list
+      tags:
+        - Lab
+      security:
+        - BearerAuth: []
+  /lab/validate/{scanId}:
+    post:
+      summary: Record custom validation parameters
+      tags:
+        - Lab
+      security:
+        - BearerAuth: []
+  /lab/validate/{scanId}/approve:
+    post:
+      summary: Approve sample alias
+      tags:
+        - Lab
+      security:
+        - BearerAuth: []
+  /lab/validate/{scanId}/reject:
+    post:
+      summary: Reject sample alias
+      tags:
+        - Lab
+      security:
+        - BearerAuth: []
+  /lab/compare:
+    get:
+      summary: AI vs Lab Validation stats comparison
+      tags:
+        - Lab
+      security:
+        - BearerAuth: []
+
+  /admin/analytics/users:
+    get:
+      summary: User registration stats
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+  /admin/analytics/milk:
+    get:
+      summary: Milk scan statistics
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+  /admin/system/database:
+    get:
+      summary: Database row counts status
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+  /admin/system/ai:
+    get:
+      summary: Model monitoring details
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+  /admin/settings:
+    get:
+      summary: Get application configuration settings
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+    put:
+      summary: Update system setting
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+  /admin/backups:
+    post:
+      summary: Run full system backup
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+    get:
+      summary: List backup logs history
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -39,6 +39,51 @@ export class LabController {
       next(error);
     }
   }
+
+  async approve(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await labService.validate(String(req.params.scanId), req.user!.id, {
+        result: 'confirmed',
+        notes: req.body.notes,
+        parameters: req.body.parameters,
+      });
+      sendSuccess(res, result, 200, 'Sample approved successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async reject(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await labService.validate(String(req.params.scanId), req.user!.id, {
+        result: 'rejected',
+        notes: req.body.notes,
+        parameters: req.body.parameters,
+      });
+      sendSuccess(res, result, 200, 'Sample rejected successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async compare(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await labService.compareAiVsLab();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async reports(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const params = paginationSchema.parse(req.query);
+      const result = await labService.getHistory(params);
+      sendSuccess(res, result.data, 200, undefined, result.meta);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const labController = new LabController();

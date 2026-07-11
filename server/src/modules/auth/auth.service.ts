@@ -507,6 +507,16 @@ export class AuthService {
 
     return { message: 'Email verified successfully.' };
   }
+
+  /**
+   * Logout from all devices (revoke all sessions)
+   */
+  async logoutAllDevices(userId: string) {
+    await db('user_sessions').where('user_id', userId).delete();
+    log.info(`All devices logged out for user ${userId}`);
+    return { message: 'Logged out of all devices successfully.' };
+  }
 }
+
 
 export const authService = new AuthService();

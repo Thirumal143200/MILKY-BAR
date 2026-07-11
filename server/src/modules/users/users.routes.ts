@@ -19,6 +19,17 @@ router.patch(
   auditMiddleware('user_update', 'users'),
   usersController.updateProfile.bind(usersController),
 );
+router.put(
+  '/profile',
+  auditMiddleware('user_update', 'users'),
+  usersController.updateProfile.bind(usersController),
+);
+router.put(
+  '/change-password',
+  auditMiddleware('user_update', 'users'),
+  usersController.changePassword.bind(usersController),
+);
+
 
 // Sessions
 router.get('/me/sessions', usersController.listSessions.bind(usersController));

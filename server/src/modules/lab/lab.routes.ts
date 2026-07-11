@@ -19,6 +19,32 @@ router.get(
   labController.getPending.bind(labController),
 );
 
+router.get(
+  '/compare',
+  requirePermission('lab_validations', 'read'),
+  labController.compare.bind(labController),
+);
+
+router.get(
+  '/reports',
+  requirePermission('lab_validations', 'read'),
+  labController.reports.bind(labController),
+);
+
+router.post(
+  '/validate/:scanId/approve',
+  requirePermission('lab_validations', 'create'),
+  auditMiddleware('lab_validate', 'lab_validations'),
+  labController.approve.bind(labController),
+);
+
+router.post(
+  '/validate/:scanId/reject',
+  requirePermission('lab_validations', 'create'),
+  auditMiddleware('lab_validate', 'lab_validations'),
+  labController.reject.bind(labController),
+);
+
 router.post(
   '/validate/:scanId',
   requirePermission('lab_validations', 'create'),

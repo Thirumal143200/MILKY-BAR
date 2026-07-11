@@ -54,4 +54,17 @@ router.post(
   scansController.analyze.bind(scansController),
 );
 
+router.get(
+  '/:id/prediction',
+  requirePermission('scans', 'read'),
+  scansController.getPrediction.bind(scansController),
+);
+
+router.post(
+  '/:id/retry',
+  requirePermission('scans', 'create'),
+  auditMiddleware('prediction_run', 'predictions'),
+  scansController.retry.bind(scansController),
+);
+
 export { router as scanRoutes };

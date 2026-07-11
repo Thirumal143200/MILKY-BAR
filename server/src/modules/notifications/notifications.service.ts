@@ -104,6 +104,79 @@ export class NotificationsService {
 
     log.debug(`All notifications marked as read for user ${userId}`);
   }
+
+  /**
+   * Delete a single notification.
+   */
+  async delete(userId: string, notificationId: string) {
+    const deleted = await db('notifications')
+      .where({ id: notificationId, user_id: userId })
+      .delete();
+
+    if (!deleted) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Notification not found.');
+    }
+
+    log.info(`Notification ${notificationId} deleted by user ${userId}`);
+  }
+
+  /**
+   * Delete all notifications for a user.
+   */
+  async deleteAll(userId: string) {
+    await db('notifications').where('user_id', userId).delete();
+    log.info(`All notifications deleted for user ${userId}`);
+  }
+
+  /**
+   * Get notification preferences.
+   */
+  async getPreferences(userId: string) {
+    const preference = await db('system_settings')
+      .where('key', `user:preferences:${userId}`)
+      .first();
+
+    if (!preference) {
+      return {
+        email: true,
+        push: true,
+        sms: false,
+      };
+    }
+
+    return JSON.parse(preference.value);
+  }
+
+  /**
+   * Update notification preferences.
+   */
+  async updatePreferences(userId: string, preferences: { email?: boolean; push?: boolean; sms?: boolean }) {
+    const key = `user:preferences:${userId}`;
+    const current = await this.getPreferences(userId);
+    const updated = { ...current, ...preferences };
+
+    const existing = await db('system_settings').where('key', key).first();
+    if (existing) {
+      await db('system_settings')
+        .where('key', key)
+        .update({
+          value: JSON.stringify(updated),
+          updated_at: new Date().toISOString(),
+        });
+    } else {
+      await db('system_settings').insert({
+        id: generateId(),
+        key,
+        value: JSON.stringify(updated),
+        category: 'notification',
+        description: `Notification preferences for user ${userId}`,
+        updated_at: new Date().toISOString(),
+      });
+    }
+
+    log.info(`Notification preferences updated for user ${userId}`);
+    return updated;
+  }
 }
 
 export const notificationsService = new NotificationsService();

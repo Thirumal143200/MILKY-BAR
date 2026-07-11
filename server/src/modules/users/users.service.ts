@@ -4,7 +4,7 @@
  */
 
 import { db } from '../../database/connection.js';
-import { generateId } from '../../utils/crypto.js';
+import { generateId, comparePassword, hashPassword } from '../../utils/crypto.js';
 import { AppError } from '../../utils/AppError.js';
 import { ERROR_CODES } from '@milkboy/shared';
 import { createModuleLogger } from '../../utils/logger.js';
@@ -171,6 +171,33 @@ export class UsersService {
     }
 
     log.info(`Device ${deviceId} removed for user: ${userId}`);
+  }
+
+  /**
+   * Change user password.
+   */
+  async changePassword(userId: string, data: { oldPassword?: string; newPassword?: string }) {
+    if (!data.oldPassword || !data.newPassword) {
+      throw AppError.badRequest(ERROR_CODES.VAL_MISSING_FIELD, 'Old and new passwords are required.');
+    }
+
+    const user = await db('users').where('id', userId).first();
+    if (!user) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'User not found.');
+    }
+
+    const validPassword = await comparePassword(data.oldPassword, user.password_hash);
+    if (!validPassword) {
+      throw AppError.unauthorized(ERROR_CODES.AUTH_INVALID_CREDENTIALS, 'Invalid old password.');
+    }
+
+    const passwordHash = await hashPassword(data.newPassword);
+    await db('users').where('id', userId).update({
+      password_hash: passwordHash,
+      updated_at: new Date().toISOString(),
+    });
+
+    log.info(`Password changed for user ${userId}`);
   }
 }
 

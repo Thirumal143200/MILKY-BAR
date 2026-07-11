@@ -111,6 +111,54 @@ export class ReportsController {
       next(error);
     }
   }
+
+  async list(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const isAdmin = req.user!.role === 'admin' || req.user!.role === 'super_admin';
+      let query = db('reports')
+        .join('scans', 'reports.scan_id', 'scans.id')
+        .select('reports.*', 'scans.title as scan_title', 'scans.user_id');
+
+      if (!isAdmin) {
+        query = query.where('scans.user_id', req.user!.id);
+      }
+
+      const list = await query.orderBy('reports.generated_at', 'desc');
+      sendSuccess(res, list);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async export(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const isAdmin = req.user!.role === 'admin' || req.user!.role === 'super_admin';
+      let query = db('reports')
+        .join('scans', 'reports.scan_id', 'scans.id')
+        .select('reports.*', 'scans.title as scan_title', 'scans.user_id');
+
+      if (!isAdmin) {
+        query = query.where('scans.user_id', req.user!.id);
+      }
+
+      const list = await query.orderBy('reports.generated_at', 'desc');
+
+      sendSuccess(res, {
+        exportedAt: new Date().toISOString(),
+        format: 'JSON',
+        count: list.length,
+        reports: list.map((r) => ({
+          id: r.id,
+          scanId: r.scan_id,
+          scanTitle: r.scan_title,
+          fileSize: r.file_size,
+          generatedAt: r.generated_at,
+        })),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const reportsController = new ReportsController();

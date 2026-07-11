@@ -46,4 +46,10 @@ router.post(
   batchesController.analyze.bind(batchesController),
 );
 
+router.get(
+  '/:id/results',
+  requirePermission('batches', 'read'),
+  batchesController.getResults.bind(batchesController),
+);
+
 export { router as batchRoutes };

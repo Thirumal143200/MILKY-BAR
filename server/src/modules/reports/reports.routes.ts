@@ -20,6 +20,12 @@ router.post(
 );
 
 router.get(
+  '/export',
+  requirePermission('reports', 'read'),
+  reportsController.export.bind(reportsController),
+);
+
+router.get(
   '/:id',
   requirePermission('reports', 'read'),
   reportsController.getById.bind(reportsController),
@@ -34,6 +40,12 @@ router.get(
   '/:id/qr',
   requirePermission('reports', 'read'),
   reportsController.getQrCode.bind(reportsController),
+);
+
+router.get(
+  '/',
+  requirePermission('reports', 'read'),
+  reportsController.list.bind(reportsController),
 );
 
 export { router as reportRoutes };

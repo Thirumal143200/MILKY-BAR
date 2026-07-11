@@ -38,6 +38,42 @@ export class NotificationsController {
       next(error);
     }
   }
+
+  async delete(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      await notificationsService.delete(req.user!.id, String(req.params.id));
+      sendSuccess(res, null, 200, 'Notification deleted successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteAll(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      await notificationsService.deleteAll(req.user!.id);
+      sendSuccess(res, null, 200, 'All notifications cleared.');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getPreferences(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const preferences = await notificationsService.getPreferences(req.user!.id);
+      sendSuccess(res, preferences);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updatePreferences(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const preferences = await notificationsService.updatePreferences(req.user!.id, req.body);
+      sendSuccess(res, preferences, 200, 'Notification preferences updated successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const notificationsController = new NotificationsController();

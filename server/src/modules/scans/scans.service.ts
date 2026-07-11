@@ -384,6 +384,44 @@ export class ScansService {
       generatedAt: row.generated_at,
     };
   }
+
+  /**
+   * Get prediction for a scan.
+   */
+  async getPrediction(scanId: string, userId?: string) {
+    let query = db('scans').where('id', scanId);
+    if (userId) query = query.where('user_id', userId);
+    const scan = await query.first();
+    if (!scan) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Scan not found.');
+    }
+
+    const predictions = await db('predictions').where('scan_id', scanId);
+    return predictions.map((p: Record<string, unknown>) => this.formatPrediction(p));
+  }
+
+  /**
+   * Retry failed/rejected scan analysis.
+   */
+  async retry(scanId: string, userId: string) {
+    const scan = await db('scans').where({ id: scanId, user_id: userId }).first();
+    if (!scan) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Scan not found.');
+    }
+
+    if (scan.status !== 'failed' && scan.status !== 'rejected') {
+      throw AppError.badRequest(
+        ERROR_CODES.RES_CONFLICT,
+        'Only failed or rejected scans can be retried.',
+      );
+    }
+
+    // Reset status to created
+    await this.updateStatus(scanId, 'created');
+
+    // Re-run analysis
+    return this.analyze(scanId, userId);
+  }
 }
 
 export const scansService = new ScansService();

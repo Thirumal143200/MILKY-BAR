@@ -8,6 +8,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import fs from 'node:fs';
+import path from 'node:path';
 import { config } from './config/env.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
@@ -20,6 +22,7 @@ import { notificationRoutes } from './modules/notifications/notifications.routes
 import { feedbackRoutes } from './modules/feedback/feedback.routes.js';
 import { labRoutes } from './modules/lab/lab.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
+import { aiRoutes } from './modules/ai/ai.routes.js';
 import { sendSuccess } from './utils/response.js';
 
 const app = express();
@@ -76,6 +79,54 @@ app.use(`${apiPrefix}/notifications`, notificationRoutes);
 app.use(`${apiPrefix}/feedback`, feedbackRoutes);
 app.use(`${apiPrefix}/lab`, labRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
+app.use(`${apiPrefix}/ai`, aiRoutes);
+
+app.get(`${apiPrefix}/openapi.yaml`, (_req, res) => {
+  const filePath = path.resolve('OPENAPI_SPEC.yaml');
+  if (fs.existsSync(filePath)) {
+    res.setHeader('Content-Type', 'text/yaml');
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send('Spec not found.');
+  }
+});
+
+app.get(`${apiPrefix}/docs`, (_req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>MilkBoy API Documentation</title>
+      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+      <style>
+        html { box-sizing: border-box; overflow: -inherit; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body { margin: 0; background: #fafafa; }
+      </style>
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+      <script>
+        window.onload = () => {
+          window.ui = SwaggerUIBundle({
+            url: '${apiPrefix}/openapi.yaml',
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+              SwaggerUIBundle.presets.apis,
+            ],
+            layout: "BaseLayout"
+          });
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
 
 // ─── Static Files (uploads) ──────────────────────────────
 app.use('/uploads', express.static(config.storage.localPath));

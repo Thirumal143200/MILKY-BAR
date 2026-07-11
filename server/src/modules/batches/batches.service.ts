@@ -234,6 +234,64 @@ export class BatchesService {
       completedAt: row.completed_at,
     };
   }
+
+  /**
+   * Get consolidated results/statistics for a batch.
+   */
+  async getBatchResults(batchId: string, userId: string) {
+    const batch = await db('batches').where({ id: batchId, user_id: userId }).first();
+    if (!batch) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Batch not found.');
+    }
+
+    const scanMappings = await db('batch_scans').where('batch_id', batchId).select('scan_id');
+    const scanIds = scanMappings.map((m) => m.scan_id);
+
+    if (scanIds.length === 0) {
+      return {
+        batch: this.formatBatch(batch),
+        statistics: {
+          total: 0,
+          completed: 0,
+          qualityDistribution: {},
+        },
+        scans: [],
+      };
+    }
+
+    const scans = await db('scans')
+      .leftJoin('predictions', 'scans.id', 'predictions.scan_id')
+      .whereIn('scans.id', scanIds)
+      .select('scans.*', 'predictions.quality_label', 'predictions.confidence');
+
+    const qualityDistribution: Record<string, number> = {};
+    let completedCount = 0;
+
+    for (const scan of scans) {
+      if (scan.status === 'completed') {
+        completedCount++;
+        const label = String(scan.quality_label ?? 'unknown');
+        qualityDistribution[label] = (qualityDistribution[label] || 0) + 1;
+      }
+    }
+
+    return {
+      batch: this.formatBatch(batch),
+      statistics: {
+        total: scanIds.length,
+        completed: completedCount,
+        qualityDistribution,
+      },
+      scans: scans.map((s) => ({
+        id: s.id,
+        status: s.status,
+        title: s.title,
+        qualityLabel: s.quality_label,
+        confidence: s.confidence ? Number(s.confidence) : undefined,
+        createdAt: s.created_at,
+      })),
+    };
+  }
 }
 
 export const batchesService = new BatchesService();

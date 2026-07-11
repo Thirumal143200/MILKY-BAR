@@ -165,6 +165,47 @@ export class LabService {
       meta: buildPaginationMeta(total, params.page, params.limit),
     };
   }
+
+  /**
+   * Compare AI predictions vs Lab validations.
+   */
+  async compareAiVsLab() {
+    const validations = await db('lab_validations')
+      .join('predictions', 'lab_validations.scan_id', 'predictions.scan_id')
+      .select('lab_validations.result as lab_result', 'predictions.quality_label as ai_label');
+
+    const total = validations.length;
+    let matches = 0;
+    let discrepancies = 0;
+    const matrix: Record<string, Record<string, number>> = {};
+
+    for (const v of validations) {
+      const ai = String(v.ai_label);
+      const lab = String(v.lab_result);
+
+      if (!matrix[ai]) matrix[ai] = {};
+      matrix[ai][lab] = (matrix[ai][lab] || 0) + 1;
+
+      const isPositiveAi = ['excellent', 'good', 'acceptable'].includes(ai);
+      const isPositiveLab = lab === 'confirmed';
+      const isNegativeAi = ['poor', 'adulterated', 'spoiled'].includes(ai);
+      const isNegativeLab = lab === 'rejected';
+
+      if ((isPositiveAi && isPositiveLab) || (isNegativeAi && isNegativeLab)) {
+        matches++;
+      } else {
+        discrepancies++;
+      }
+    }
+
+    return {
+      total,
+      matches,
+      discrepancies,
+      accuracyRate: total > 0 ? matches / total : 1.0,
+      discrepancyMatrix: matrix,
+    };
+  }
 }
 
 export const labService = new LabService();

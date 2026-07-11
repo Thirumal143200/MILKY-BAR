@@ -62,6 +62,15 @@ export class BatchesController {
       next(error);
     }
   }
+
+  async getResults(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await batchesService.getBatchResults(String(req.params.id), req.user!.id);
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const batchesController = new BatchesController();

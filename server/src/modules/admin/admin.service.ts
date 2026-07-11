@@ -8,7 +8,7 @@ import { AppError } from '../../utils/AppError.js';
 import { ERROR_CODES, buildPaginationMeta, calculateOffset } from '@milkboy/shared';
 import type { PaginationInput } from '@milkboy/shared';
 import { createModuleLogger } from '../../utils/logger.js';
-import { generateId } from '../../utils/crypto.js';
+import { generateId, hashPassword } from '../../utils/crypto.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { config } from '../../config/env.js';
@@ -92,6 +92,178 @@ export class AdminService {
     await db('users').where('id', userId).update(updates);
     log.info(`User ${userId} updated by Admin`);
   }
+
+  /**
+   * Create a new user.
+   */
+  async createUser(data: {
+    email: string;
+    password?: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    status?: string;
+  }) {
+    const existing = await db('users').where('email', data.email).first();
+    if (existing) {
+      throw AppError.badRequest(ERROR_CODES.RES_CONFLICT, 'Email already in use.');
+    }
+
+    const role = await db('roles').where('name', data.role).first();
+    if (!role) {
+      throw AppError.badRequest(ERROR_CODES.VAL_INVALID_INPUT, 'Invalid role.');
+    }
+
+    const userId = generateId();
+    const password = data.password ?? 'Test@1234!';
+    const passwordHash = await hashPassword(password);
+
+    await db('users').insert({
+      id: userId,
+      email: data.email,
+      password_hash: passwordHash,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      role_id: role.id,
+      status: data.status ?? 'active',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    log.info(`User created by Admin: ${userId}`);
+    return this.getUserById(userId);
+  }
+
+  /**
+   * Delete a user (soft delete).
+   */
+  async deleteUser(userId: string) {
+    const user = await db('users').where('id', userId).first();
+    if (!user) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'User not found.');
+    }
+
+    await db('users').where('id', userId).update({
+      deleted_at: new Date().toISOString(),
+      status: 'deleted',
+      updated_at: new Date().toISOString(),
+    });
+
+    log.info(`User ${userId} soft deleted by Admin`);
+  }
+
+  /**
+   * Deactivate a user.
+   */
+  async deactivateUser(userId: string) {
+    const user = await db('users').where('id', userId).first();
+    if (!user) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'User not found.');
+    }
+
+    await db('users').where('id', userId).update({
+      status: 'deactivated',
+      updated_at: new Date().toISOString(),
+    });
+
+    log.info(`User ${userId} deactivated by Admin`);
+  }
+
+  /**
+   * Reactivate a user.
+   */
+  async reactivateUser(userId: string) {
+    const user = await db('users').where('id', userId).first();
+    if (!user) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'User not found.');
+    }
+
+    await db('users').where('id', userId).update({
+      status: 'active',
+      updated_at: new Date().toISOString(),
+    });
+
+    log.info(`User ${userId} reactivated by Admin`);
+  }
+
+  /**
+   * Get user by ID.
+   */
+  async getUserById(userId: string) {
+    const user = await db('users')
+      .join('roles', 'users.role_id', 'roles.id')
+      .where('users.id', userId)
+      .select('users.*', 'roles.name as role_name')
+      .first();
+
+    if (!user) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'User not found.');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      role: user.role_name,
+      status: user.status,
+      mfaEnabled: Boolean(user.mfa_enabled),
+      createdAt: user.created_at,
+      lastLoginAt: user.last_login_at,
+      deletedAt: user.deleted_at,
+    };
+  }
+
+  /**
+   * List all permissions.
+   */
+  async listPermissions() {
+    return db('permissions').orderBy('resource', 'asc').orderBy('action', 'asc');
+  }
+
+  /**
+   * List all roles.
+   */
+  async listRoles() {
+    return db('roles').orderBy('name', 'asc');
+  }
+
+  /**
+   * List permissions of a role.
+   */
+  async listRolePermissions(roleId: string) {
+    return db('role_permissions')
+      .join('permissions', 'role_permissions.permission_id', 'permissions.id')
+      .where('role_permissions.role_id', roleId)
+      .select('permissions.*');
+  }
+
+  /**
+   * Update/sync permissions of a role.
+   */
+  async updateRolePermissions(roleId: string, permissionIds: string[]) {
+    const role = await db('roles').where('id', roleId).first();
+    if (!role) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Role not found.');
+    }
+
+    await db.transaction(async (trx) => {
+      // Clear existing
+      await trx('role_permissions').where('role_id', roleId).delete();
+
+      // Insert new mappings
+      if (permissionIds.length > 0) {
+        const mappings = permissionIds.map((pId) => ({
+          role_id: roleId,
+          permission_id: pId,
+        }));
+        await trx('role_permissions').insert(mappings);
+      }
+    });
+
+    log.info(`Permissions updated for role ${roleId}`);
+  }
+
 
   /**
    * Get audit logs.
@@ -315,6 +487,128 @@ export class AdminService {
    */
   async listBackups() {
     return db('backup_logs').orderBy('created_at', 'desc');
+  }
+
+  /**
+   * Get advanced user analytics.
+   */
+  async getUserAnalytics() {
+    const roles = await db('roles').select('id', 'name');
+    const counts = await db('users')
+      .select('role_id', 'status')
+      .count('* as count')
+      .groupBy('role_id', 'status');
+
+    const totalUsers = await db('users').count('* as count').first();
+    const activeUsers = await db('users').where('status', 'active').count('* as count').first();
+
+    return {
+      total: Number(totalUsers?.count ?? 0),
+      active: Number(activeUsers?.count ?? 0),
+      byRoleAndStatus: counts.map((c) => {
+        const role = roles.find((r) => r.id === c.role_id);
+        return {
+          role: role ? role.name : 'unknown',
+          status: c.status,
+          count: Number(c.count),
+        };
+      }),
+    };
+  }
+
+  /**
+   * Get advanced milk quality and confidence analytics.
+   */
+  async getMilkAnalytics() {
+    const avgConfidence = await db('predictions').avg('confidence as avg').first();
+    const labelCounts = await db('predictions')
+      .select('quality_label')
+      .count('* as count')
+      .groupBy('quality_label');
+
+    return {
+      averageConfidence: Number(avgConfidence?.avg ?? 0),
+      byLabel: labelCounts.map((l) => ({
+        label: l.quality_label,
+        count: Number(l.count),
+      })),
+    };
+  }
+
+  /**
+   * Get database client details and table row statistics.
+   */
+  async getDatabaseStatus() {
+    const tables = [
+      'roles',
+      'permissions',
+      'users',
+      'scans',
+      'predictions',
+      'reports',
+      'lab_validations',
+      'audit_logs',
+      'notifications',
+      'system_settings',
+      'feature_flags',
+    ];
+
+    const rowCounts: Record<string, number> = {};
+    for (const table of tables) {
+      try {
+        const count = await db(table).count('* as count').first();
+        rowCounts[table] = Number(count?.count ?? 0);
+      } catch {
+        rowCounts[table] = 0;
+      }
+    }
+
+    return {
+      client: db.client.config.client,
+      environment: config.nodeEnv,
+      tables: rowCounts,
+    };
+  }
+
+  /**
+   * Get AI model monitoring performance stats.
+   */
+  async getAiModelMonitoring() {
+    const avgResponseTime = await db('predictions').avg('processing_time_ms as avg').first();
+    const totalPredictions = await db('predictions').count('* as count').first();
+    const activeModel = await this.getActiveModelStatus();
+
+    return {
+      totalPredictions: Number(totalPredictions?.count ?? 0),
+      averageProcessingTimeMs: Number(avgResponseTime?.avg ?? 0),
+      activeModel,
+    };
+  }
+
+  /**
+   * List all general system settings (excluding user preferences).
+   */
+  async getSettings() {
+    return db('system_settings').whereNot('key', 'like', 'user:preferences:%');
+  }
+
+  /**
+   * Update a system setting.
+   */
+  async updateSettings(key: string, value: string, updatedBy: string) {
+    const setting = await db('system_settings').where('key', key).first();
+    if (!setting) {
+      throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Setting not found.');
+    }
+
+    await db('system_settings').where('key', key).update({
+      value,
+      updated_by: updatedBy,
+      updated_at: new Date().toISOString(),
+    });
+
+    log.info(`Setting ${key} updated by Admin user ${updatedBy}`);
+    return db('system_settings').where('key', key).first();
   }
 
   private getDirSize(dirPath: string): number {
