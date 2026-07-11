@@ -37,7 +37,7 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
     loadNotifications();
   }, []);
 
-  const handleMarkAsRead = async (id: string) => {
+  const _handleMarkAsRead = async (id: string) => {
     try {
       await apiClient.patch(`/notifications/${id}/read`);
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));

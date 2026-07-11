@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 
 const slides = [
   {

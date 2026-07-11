@@ -9,7 +9,7 @@ export default function MfaVerificationScreen({ navigation, route }: { navigatio
   const setSession = useAuthStore((state) => state.setSession);
 
   // We expect user credentials details passed from login screen if MFA is required
-  const { email, password, mfaRequiredToken } = route.params || {};
+  const { email, password, mfaRequiredToken: _mfaRequiredToken } = route.params || {};
 
   const handleVerifyOtp = async () => {
     if (!code) {

@@ -12,7 +12,7 @@ export default function ReportDetailsScreen({ navigation, route }: { navigation:
       try {
         const res = await apiClient.get(`/reports/${reportId}`);
         setReport(res.data.data || res.data);
-      } catch (error: any) {
+      } catch (_error: any) {
         Alert.alert('Error', 'Failed to fetch report details.');
         navigation.goBack();
       } finally {

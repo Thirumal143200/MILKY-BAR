@@ -4,7 +4,7 @@ import { apiClient } from '../api/client.js';
 
 export default function SecurityScreen({ navigation }: { navigation: any }) {
   const [mfaEnabled, setMfaEnabled] = useState(false);
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [_sessions, _setSessions] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchSecurityInfo = async () => {
@@ -15,7 +15,7 @@ export default function SecurityScreen({ navigation }: { navigation: any }) {
 
         // Fetch active sessions
         const sessionsRes = await apiClient.get('/admin/audit-logs?limit=5'); // Fetch logs as session alias
-        setSessions(sessionsRes.data.data || []);
+        _setSessions(sessionsRes.data.data || []);
       } catch {
         // ignore
       }
