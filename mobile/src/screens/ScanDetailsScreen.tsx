@@ -12,7 +12,7 @@ export default function ScanDetailsScreen({ navigation, route }: { navigation: a
       try {
         const res = await apiClient.get(`/scans/${scanId}`);
         setScan(res.data.data || res.data);
-      } catch (_error: any) {
+      } catch {
         Alert.alert('Error', 'Failed to fetch scan details.');
         navigation.goBack();
       } finally {
