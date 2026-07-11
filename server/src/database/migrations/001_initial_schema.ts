@@ -63,8 +63,10 @@ export async function up(knex: Knex): Promise<void> {
     t.timestamp('last_login_at');
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+    t.timestamp('deleted_at');
 
     t.index('email');
+
     t.index('status');
     t.index('role_id');
   });
@@ -113,8 +115,10 @@ export async function up(knex: Knex): Promise<void> {
     t.timestamp('completed_at');
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+    t.timestamp('deleted_at');
 
     t.index('user_id');
+
     t.index('status');
     t.index('created_at');
   });
@@ -239,8 +243,10 @@ export async function up(knex: Knex): Promise<void> {
     t.timestamp('completed_at');
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+    t.timestamp('deleted_at');
 
     t.index('user_id');
+
     t.index('status');
   });
 
@@ -360,12 +366,30 @@ export async function up(knex: Knex): Promise<void> {
     t.boolean('is_active').notNullable().defaultTo(true);
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
   });
+
+  // ─── Sync Queue ─────────────────────────────────────────
+  await knex.schema.createTable('sync_queue', (t) => {
+    t.uuid('id').primary().defaultTo(knex.fn.uuid());
+    t.string('action', 100).notNullable();
+    t.json('payload').notNullable();
+    t.string('status', 30).notNullable().defaultTo('pending'); // pending, processing, completed, failed
+    t.integer('attempts').notNullable().defaultTo(0);
+    t.text('last_error');
+    t.timestamp('run_at').notNullable().defaultTo(knex.fn.now());
+    t.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+    t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+
+    t.index('status');
+    t.index('run_at');
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
   const tables = [
+    'sync_queue',
     'data_retention_policies',
     'backup_logs',
+
     'feedback',
     'feature_flags',
     'system_settings',

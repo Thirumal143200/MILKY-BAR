@@ -44,7 +44,9 @@ export const config = {
 
   // Database
   db: {
-    client: env('DB_CLIENT', 'sqlite') as 'sqlite' | 'postgresql',
+    client: (process.env.NODE_ENV === 'production'
+      ? 'postgresql'
+      : (process.env.DB_CLIENT ?? 'sqlite')) as 'sqlite' | 'postgresql',
     host: env('DB_HOST', 'localhost'),
     port: envInt('DB_PORT', 5432),
     name: env('DB_NAME', 'milkboy'),
