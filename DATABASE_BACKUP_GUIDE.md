@@ -12,13 +12,16 @@ It supports both SQLite (direct file copies) and PostgreSQL (compressed custom f
 ### Executing a Backup
 
 To execute a backup, run:
+
 ```bash
 # Run from the server directory
 npm run db:backup
 ```
-*(Or manually run `npx tsx scripts/backup.ts`)*
+
+_(Or manually run `npx tsx scripts/backup.ts`)_
 
 ### Backup Actions Flow
+
 1. Resolves a `backups/` directory inside the workspace.
 2. Formats a timestamped backup name: `backup_<db_name>_<timestamp>.sql`.
 3. Inserts an initial transaction record into the database table `backup_logs` with a status of `pending`.
@@ -37,26 +40,29 @@ It supports both SQLite file restoration and PostgreSQL structural restoration u
 ### Executing a Restore
 
 To restore the database to a specific snapshot, run:
+
 ```bash
 # Run from the server directory, passing the filename of the SQL backup
 npx tsx scripts/restore.ts <backup_filename.sql>
 ```
 
 ### Recovery Actions Flow
+
 1. Confirms the existence of the file in the `backups/` folder.
 2. **SQLite Restoration**:
-   * Copies the backup file directly over the active database path.
+   - Copies the backup file directly over the active database path.
 3. **PostgreSQL Restoration**:
-   * Triggers `pg_restore` using standard connection parameters:
+   - Triggers `pg_restore` using standard connection parameters:
      `pg_restore -h <host> -p <port> -U <user> -d <name> -1 -c <backup_file_path>`
-   * `-1` enforces single-transaction restoration.
-   * `-c` drops database objects before recreation.
+   - `-1` enforces single-transaction restoration.
+   - `-c` drops database objects before recreation.
 
 ---
 
 ## 3. Disaster Recovery Verification
 
 To perform routine backup and restore verification:
+
 1. Trigger a manual backup: `npx tsx scripts/backup.ts`.
 2. Retrieve the latest file from `server/backups/`.
 3. Make temporary, verifiable modifications to system settings or flags.

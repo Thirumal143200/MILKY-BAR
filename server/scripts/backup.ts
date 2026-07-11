@@ -44,13 +44,11 @@ async function backup() {
     }
 
     const stat = await fs.stat(filePath);
-    await db('backup_logs')
-      .where('id', logId)
-      .update({
-        file_size: stat.size,
-        status: 'success',
-        completed_at: new Date(),
-      });
+    await db('backup_logs').where('id', logId).update({
+      file_size: stat.size,
+      status: 'success',
+      completed_at: new Date(),
+    });
 
     log.info(`Database backup completed successfully: ${filePath}`);
   } catch (error: any) {
