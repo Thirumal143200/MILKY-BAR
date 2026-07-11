@@ -101,7 +101,7 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => !item.read && handleMarkAsRead(item.id)}
+              onPress={() => navigation.navigate('NotificationDetails', { alert: item })}
               className={`p-4 rounded-2xl mb-3 border flex-row items-start ${
                 item.read
                   ? 'bg-gray-800/20 border-gray-800/50 opacity-60'

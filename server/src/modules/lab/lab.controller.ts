@@ -66,7 +66,7 @@ export class LabController {
     }
   }
 
-  async compare(req: AuthRequest, res: Response, next: NextFunction) {
+  async compare(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await labService.compareAiVsLab();
       sendSuccess(res, result);

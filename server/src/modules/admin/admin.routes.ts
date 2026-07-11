@@ -75,7 +75,7 @@ router.get(
 router.post(
   '/roles/:id/permissions',
   requirePermission('permissions', 'update'),
-  auditMiddleware('role_permission_update', 'roles'),
+  auditMiddleware('user_update', 'roles'),
   adminController.updateRolePermissions.bind(adminController),
 );
 

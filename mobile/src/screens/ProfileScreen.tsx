@@ -226,6 +226,18 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
             )}
           </View>
 
+          {/* Security Navigation Link */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Security')}
+            className="bg-gray-800/40 border border-gray-800 rounded-3xl p-5 mb-6 flex-row justify-between items-center"
+          >
+            <View>
+              <Text className="text-white font-bold text-base">Security Settings</Text>
+              <Text className="text-gray-400 text-xs mt-1">Manage MFA, active sessions, and password updates</Text>
+            </View>
+            <Text className="text-blue-500 font-extrabold text-lg">›</Text>
+          </TouchableOpacity>
+
           {/* Sessions Card */}
           {sessions.length > 0 && (
             <View className="bg-gray-800/40 border border-gray-800 rounded-3xl p-6 mb-10">

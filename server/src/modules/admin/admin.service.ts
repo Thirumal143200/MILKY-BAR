@@ -576,7 +576,7 @@ export class AdminService {
   async getAiModelMonitoring() {
     const avgResponseTime = await db('predictions').avg('processing_time_ms as avg').first();
     const totalPredictions = await db('predictions').count('* as count').first();
-    const activeModel = await this.getActiveModelStatus();
+    const activeModel = await db('ai_model_versions').where('is_active', true).first();
 
     return {
       totalPredictions: Number(totalPredictions?.count ?? 0),

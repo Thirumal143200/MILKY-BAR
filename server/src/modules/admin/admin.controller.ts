@@ -77,7 +77,7 @@ export class AdminController {
     }
   }
 
-  async listPermissions(req: AuthRequest, res: Response, next: NextFunction) {
+  async listPermissions(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const permissions = await svc.listPermissions();
       sendSuccess(res, permissions);
@@ -86,7 +86,7 @@ export class AdminController {
     }
   }
 
-  async listRoles(req: AuthRequest, res: Response, next: NextFunction) {
+  async listRoles(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const roles = await svc.listRoles();
       sendSuccess(res, roles);

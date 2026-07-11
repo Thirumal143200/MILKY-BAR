@@ -53,7 +53,10 @@ export default function ReportsScreen({ navigation }: { navigation: any }) {
           data={reports}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity className="bg-gray-800 p-4 rounded-xl mb-3">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ReportDetails', { reportId: item.id })}
+              className="bg-gray-800 p-4 rounded-xl mb-3"
+            >
               <Text className="text-white font-bold text-lg">{item.title}</Text>
               <Text className="text-gray-400 mt-1">
                 Date: {new Date(item.createdAt).toLocaleDateString()}

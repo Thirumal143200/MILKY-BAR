@@ -24,6 +24,8 @@ export class AiService {
     // Run inference
     const predictionResult = await inferenceService.predict(processed.processedPath);
 
+    log.info(`Direct prediction completed for ${file.originalname}`);
+
     return {
       filename: file.originalname,
       processed: {
@@ -32,7 +34,7 @@ export class AiService {
         qualityCheck: {
           overallScore: processed.qualityCheck.overallScore,
           passed: processed.qualityCheck.passed,
-          rejectionReasons: processed.qualityCheck.reasons,
+          rejectionReasons: processed.qualityCheck.rejectionReasons,
         },
       },
       prediction: {

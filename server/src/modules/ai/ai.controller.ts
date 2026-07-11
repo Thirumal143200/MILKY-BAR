@@ -22,7 +22,7 @@ export class AiController {
     }
   }
 
-  async getActiveModelStatus(req: AuthRequest, res: Response, next: NextFunction) {
+  async getActiveModelStatus(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await aiService.getActiveModelStatus();
       sendSuccess(res, result);
@@ -31,7 +31,7 @@ export class AiController {
     }
   }
 
-  async getModelVersions(req: AuthRequest, res: Response, next: NextFunction) {
+  async getModelVersions(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await aiService.getModelVersions();
       sendSuccess(res, result);
@@ -40,7 +40,7 @@ export class AiController {
     }
   }
 
-  async getModelHealth(req: AuthRequest, res: Response, next: NextFunction) {
+  async getModelHealth(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await aiService.getModelHealth();
       sendSuccess(res, result);
@@ -49,7 +49,7 @@ export class AiController {
     }
   }
 
-  async getConfidenceScoreMetrics(req: AuthRequest, res: Response, next: NextFunction) {
+  async getConfidenceScoreMetrics(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await aiService.getConfidenceScoreMetrics();
       sendSuccess(res, result);
@@ -58,7 +58,7 @@ export class AiController {
     }
   }
 
-  async getPredictionExplanation(req: AuthRequest, res: Response, next: NextFunction) {
+  async getPredictionExplanation(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await aiService.getPredictionExplanation();
       sendSuccess(res, result);

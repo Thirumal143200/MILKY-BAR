@@ -147,18 +147,7 @@ export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
           }
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() =>
-                item.status === 'completed' || item.status === 'synced'
-                  ? navigation.navigate('Result', {
-                      scanId: item.id,
-                      prediction: {
-                        qualityLabel: item.qualityLabel,
-                        confidence: item.confidence,
-                        explanation: item.notes || 'Scan successfully retrieved from database.',
-                      },
-                    })
-                  : null
-              }
+              onPress={() => navigation.navigate('ScanDetails', { scanId: item.id })}
               className="bg-gray-800/40 border border-gray-800 p-4 mb-3 rounded-2xl flex-row justify-between items-center"
             >
               <View className="flex-1">
