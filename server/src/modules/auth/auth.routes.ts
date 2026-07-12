@@ -74,6 +74,10 @@ router.post('/refresh-token', authController.refreshToken.bind(authController));
 router.post('/mfa/setup', authenticate, authController.setupMfa.bind(authController));
 router.post('/mfa/verify', authenticate, authController.verifyMfa.bind(authController));
 router.post('/verify-mfa', authenticate, authController.verifyMfa.bind(authController));
-router.delete('/logout-all-devices', authenticate, authController.logoutAllDevices.bind(authController));
+router.delete(
+  '/logout-all-devices',
+  authenticate,
+  authController.logoutAllDevices.bind(authController),
+);
 
 export { router as authRoutes };

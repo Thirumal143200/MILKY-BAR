@@ -211,7 +211,7 @@ export class AdminController {
       const result = await svc.updateSettings(
         String(req.body.key),
         String(req.body.value),
-        req.user!.id
+        req.user!.id,
       );
       sendSuccess(res, result, 200, 'Setting updated successfully.');
     } catch (error) {

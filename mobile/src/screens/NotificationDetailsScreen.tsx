@@ -2,7 +2,13 @@ import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useNotificationStore } from '../store/notificationStore.js';
 
-export default function NotificationDetailsScreen({ navigation, route }: { navigation: any; route: any }) {
+export default function NotificationDetailsScreen({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: any;
+}) {
   const { alert } = route.params || {};
   const markAsRead = useNotificationStore((state) => state.markAsRead);
 

@@ -17,7 +17,12 @@ export class AiService {
   /**
    * Run prediction directly on an uploaded image file without creating a full scan.
    */
-  async predictDirect(file: { path: string; originalname: string; mimetype: string; size: number }) {
+  async predictDirect(file: {
+    path: string;
+    originalname: string;
+    mimetype: string;
+    size: number;
+  }) {
     // Process image
     const processed = await imageProcessor.processImage(file.path, 'direct-inference');
 
@@ -134,7 +139,9 @@ export class AiService {
   async getModelHealth() {
     let fastapiStatus: 'up' | 'down' = 'up';
     try {
-      const response = await fetch(`${config.ai.serviceUrl}/health`, { signal: AbortSignal.timeout(2000) });
+      const response = await fetch(`${config.ai.serviceUrl}/health`, {
+        signal: AbortSignal.timeout(2000),
+      });
       if (!response.ok) fastapiStatus = 'down';
     } catch {
       fastapiStatus = 'down';
@@ -167,7 +174,8 @@ export class AiService {
         spoiled: 0.5,
       },
       calculationMethod: 'Softmax Probability Output',
-      description: 'Minimum confidence scores represent the probability margin required to output a label without flagging warning states.',
+      description:
+        'Minimum confidence scores represent the probability margin required to output a label without flagging warning states.',
     };
   }
 
@@ -211,12 +219,14 @@ export class AiService {
         perspectiveOk: Boolean(qualityCheck.perspective_ok),
         whiteBalanceOk: Boolean(qualityCheck.white_balance_ok),
       },
-      rejectionReasons: typeof qualityCheck.rejection_reasons === 'string'
-        ? JSON.parse(qualityCheck.rejection_reasons)
-        : qualityCheck.rejection_reasons,
-      suggestions: typeof qualityCheck.suggestions === 'string'
-        ? JSON.parse(qualityCheck.suggestions)
-        : qualityCheck.suggestions,
+      rejectionReasons:
+        typeof qualityCheck.rejection_reasons === 'string'
+          ? JSON.parse(qualityCheck.rejection_reasons)
+          : qualityCheck.rejection_reasons,
+      suggestions:
+        typeof qualityCheck.suggestions === 'string'
+          ? JSON.parse(qualityCheck.suggestions)
+          : qualityCheck.suggestions,
       createdAt: qualityCheck.created_at,
     };
   }

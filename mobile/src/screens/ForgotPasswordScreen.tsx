@@ -15,9 +15,11 @@ export default function ForgotPasswordScreen({ navigation }: { navigation: any }
     setIsLoading(true);
     try {
       await apiClient.post('/auth/forgot-password', { email });
-      Alert.alert('Success', 'If the email matches a registered account, you will receive a reset link/OTP shortly.', [
-        { text: 'OK', onPress: () => navigation.navigate('ResetPassword') },
-      ]);
+      Alert.alert(
+        'Success',
+        'If the email matches a registered account, you will receive a reset link/OTP shortly.',
+        [{ text: 'OK', onPress: () => navigation.navigate('ResetPassword') }],
+      );
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.message || 'Failed to submit request.');
     } finally {

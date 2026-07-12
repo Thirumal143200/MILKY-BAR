@@ -150,7 +150,10 @@ export class NotificationsService {
   /**
    * Update notification preferences.
    */
-  async updatePreferences(userId: string, preferences: { email?: boolean; push?: boolean; sms?: boolean }) {
+  async updatePreferences(
+    userId: string,
+    preferences: { email?: boolean; push?: boolean; sms?: boolean },
+  ) {
     const key = `user:preferences:${userId}`;
     const current = await this.getPreferences(userId);
     const updated = { ...current, ...preferences };

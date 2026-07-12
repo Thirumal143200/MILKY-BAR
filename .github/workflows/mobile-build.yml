@@ -9,9 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./mobile
 
     steps:
       - name: Checkout repository
@@ -35,9 +32,11 @@ jobs:
 
       - name: Type Check & Lint
         run: |
-          npx tsc --noEmit
-          npx eslint src/ --ext .ts,.tsx
+          npm run type-check --workspace=mobile
+          npm run lint --workspace=mobile
 
       - name: Build Android (EAS)
         if: github.ref == 'refs/heads/main'
-        run: eas build --platform android --profile production --non-interactive
+        run: |
+          cd mobile
+          eas build --platform android --profile production --non-interactive

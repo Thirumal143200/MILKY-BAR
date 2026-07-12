@@ -30,7 +30,6 @@ router.put(
   usersController.changePassword.bind(usersController),
 );
 
-
 // Sessions
 router.get('/me/sessions', usersController.listSessions.bind(usersController));
 router.delete(

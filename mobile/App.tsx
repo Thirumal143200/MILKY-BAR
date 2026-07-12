@@ -78,7 +78,6 @@ export default function App() {
               />
               <Stack.Screen
                 name="Preview"
-                // @ts-expect-error - Expected navigation types
                 component={PreviewScreen}
                 options={{ presentation: 'fullScreenModal' }}
               />

@@ -35,8 +35,18 @@ describe('Admin User & Permission Management Integration Tests', () => {
       { id: 'perm-users-create', name: 'users:create', resource: 'users', action: 'create' },
       { id: 'perm-users-update', name: 'users:update', resource: 'users', action: 'update' },
       { id: 'perm-users-delete', name: 'users:delete', resource: 'users', action: 'delete' },
-      { id: 'perm-permissions-read', name: 'permissions:read', resource: 'permissions', action: 'read' },
-      { id: 'perm-permissions-update', name: 'permissions:update', resource: 'permissions', action: 'update' },
+      {
+        id: 'perm-permissions-read',
+        name: 'permissions:read',
+        resource: 'permissions',
+        action: 'read',
+      },
+      {
+        id: 'perm-permissions-update',
+        name: 'permissions:update',
+        resource: 'permissions',
+        action: 'update',
+      },
       { id: 'perm-roles-read', name: 'roles:read', resource: 'roles', action: 'read' },
     ]);
 

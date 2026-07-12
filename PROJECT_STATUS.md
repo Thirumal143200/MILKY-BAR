@@ -20,6 +20,8 @@ gantt
     Authentication, Users, Scans, AI, Reports, Notifications, Lab, Admin :done, 2026-07-11, 2026-07-12
     section Module 5: Native Mobile Application
     React Native + Expo screens, navigation, and stores :done, 2026-07-12, 2026-07-13
+    section Module 6: Camera & Image Processing
+    Guidance algorithm, overlays, preprocessing pipeline, sync :done, 2026-07-13, 2026-07-14
 ```
 
 ---
@@ -81,6 +83,15 @@ gantt
   - `MODULE_5_VERIFICATION_REPORT.md`
   - Architecture, navigation, component, and screen flow guides (`MOBILE_ARCHITECTURE.md`, `SCREEN_FLOW.md`, `UI_COMPONENTS.md`, `NAVIGATION_GUIDE.md`)
   - Integration of Zustand stores (`authStore.ts`, `scanStore.ts`, `notificationStore.ts`)
+
+### Module 6: Intelligent Camera & Computer Vision
+
+- **Status**: 100% Complete ✅
+- **Description**: Refactored the native camera from a simple capture utility to an intelligent AI acquisition guide. Features 3x3 grid layout overlays, focus boxes, live worklet frame exposure/blur analysis, real-time guidance alerts, an interactive quality score card, visual preprocessing enhancement previews, and an obfuscated/encrypted sync queue.
+- **Key Deliverables**:
+  - `MODULE_6_CAMERA_REPORT.md`
+  - Camera architecture, pipeline, guidance, and benchmarks guides (`CAMERA_ARCHITECTURE.md`, `IMAGE_PROCESSING_PIPELINE.md`, `CAMERA_GUIDANCE_ALGORITHM.md`, `CAMERA_TEST_REPORT.md`, `PERFORMANCE_BENCHMARKS.md`)
+  - Calibration slider simulation for easy emulator testing
 
 ---
 

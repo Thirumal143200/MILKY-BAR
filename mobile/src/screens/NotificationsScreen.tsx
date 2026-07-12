@@ -37,7 +37,6 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
     loadNotifications();
   }, []);
 
-
   const handleMarkAllAsRead = async () => {
     try {
       await apiClient.post('/notifications/read-all');

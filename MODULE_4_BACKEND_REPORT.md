@@ -9,6 +9,7 @@ This report summarizes the implementation, documentation, and verification of **
 We created/exposed the following endpoints under `/api/v1`:
 
 ### 1.1 Authentication & Session Control
+
 - `POST /auth/register` — Registers new users with secure password hashing.
 - `POST /auth/login` — Sign-in with session initialization and MFA detection.
 - `POST /auth/logout` — Revokes the active user session.
@@ -20,6 +21,7 @@ We created/exposed the following endpoints under `/api/v1`:
 - `DELETE /auth/logout-all-devices` — Revokes all sessions for the authenticated user.
 
 ### 1.2 User & Admin Management
+
 - `GET /users/me` — Fetches profile details.
 - `PUT /users/profile` — Modifies names, phone numbers, language, or theme.
 - `PUT /users/change-password` — Updates password validating old credentials.
@@ -34,11 +36,13 @@ We created/exposed the following endpoints under `/api/v1`:
 - `POST /admin/roles/:id/permissions` — Syncs permissions of a role inside a transaction.
 
 ### 1.3 Scans & Batches
+
 - `GET /scans/:id/prediction` — Retrieves prediction details.
 - `POST /scans/:id/retry` — Resets failed scans to re-analyze.
 - `GET /batches/:id/results` — Returns batch scanning quality statistics.
 
 ### 1.4 Preprocessing & Machine Learning (AI Module)
+
 - `POST /ai/predict` — Direct quality inference from image upload.
 - `GET /ai/model-status` — Details of the default active model version.
 - `GET /ai/model-versions` — History of all model versions.
@@ -48,6 +52,7 @@ We created/exposed the following endpoints under `/api/v1`:
 - `GET /ai/preprocessing-status/:imageId` — Image processing score metrics.
 
 ### 1.5 Reports, Notifications, & Laboratory
+
 - `GET /reports` — Listing of generated PDF reports.
 - `GET /reports/export` — JSON metadata listing for exporting.
 - `DELETE /notifications/:id` — Deletes a notification.
@@ -60,6 +65,7 @@ We created/exposed the following endpoints under `/api/v1`:
 - `GET /lab/reports` — Consolidated list of lab validations.
 
 ### 1.6 Admin System Extensions
+
 - `GET /admin/analytics/users` — User growth analytics.
 - `GET /admin/analytics/milk` — Average confidence and scans per label.
 - `GET /admin/system/database` — Row count status per table.
@@ -72,6 +78,7 @@ We created/exposed the following endpoints under `/api/v1`:
 ## 2. Technical Architecture
 
 ### 2.1 Controllers & Services
+
 - Organized under `server/src/modules/` inside their respective folder modules:
   - `auth/` (routes, controller, service)
   - `users/` (routes, controller, service)
@@ -84,6 +91,7 @@ We created/exposed the following endpoints under `/api/v1`:
   - `admin/` (routes, controller, service)
 
 ### 2.2 Middleware & Validation
+
 - **Authentication**: JWT token verification and extraction.
 - **RBAC**: Checks user role permissions using hardcoded matrices and database mappings.
 - **Validation**: Strict input validation using Zod schemas.
@@ -94,7 +102,9 @@ We created/exposed the following endpoints under `/api/v1`:
 ## 3. Verification & CI/CD Status
 
 ### 3.1 Test Results (Vitest)
+
 All **47 tests** across all 8 test files in the workspace passed successfully (100% Green):
+
 - `auth.integration.test.ts` (13 passed)
 - `admin-user-management.integration.test.ts` (8 passed)
 - `scans.integration.test.ts` (6 passed)
@@ -105,6 +115,7 @@ All **47 tests** across all 8 test files in the workspace passed successfully (1
 - `integration.test.ts` (2 passed)
 
 ### 3.2 Dynamic Documentation Verification
+
 - Serves dynamic CDN Swagger UI at `/api/v1/docs` correctly.
 - Runs `/api/v1/openapi.yaml` endpoint sending correct spec data.
 - Built auto-compilation files at workspace root: `OPENAPI_SPEC.yaml`, `POSTMAN_COLLECTION.json`, `API_DOCUMENTATION.md`, `API_ENDPOINTS.md`, and `ERROR_CODES.md`.

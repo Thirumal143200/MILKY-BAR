@@ -3,7 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from 're
 import { apiClient } from '../api/client.js';
 import { useAuthStore } from '../store/authStore.js';
 
-export default function MfaVerificationScreen({ navigation, route }: { navigation: any; route: any }) {
+export default function MfaVerificationScreen({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: any;
+}) {
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const setSession = useAuthStore((state) => state.setSession);
@@ -29,10 +35,13 @@ export default function MfaVerificationScreen({ navigation, route }: { navigatio
       const data = response.data.data || response.data;
       await setSession(data.accessToken, data.refreshToken, data.user);
       Alert.alert('Authenticated', 'Access granted.', [
-        { text: 'OK', onPress: () => navigation.replace('Home') }
+        { text: 'OK', onPress: () => navigation.replace('Home') },
       ]);
     } catch (error: any) {
-      Alert.alert('Verification Failed', error.response?.data?.message || 'Invalid verification code.');
+      Alert.alert(
+        'Verification Failed',
+        error.response?.data?.message || 'Invalid verification code.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -76,9 +85,7 @@ export default function MfaVerificationScreen({ navigation, route }: { navigatio
         </View>
 
         <TouchableOpacity onPress={() => navigation.replace('Login')} className="mt-6">
-          <Text className="text-blue-600 dark:text-blue-400 text-center font-medium">
-            Cancel
-          </Text>
+          <Text className="text-blue-600 dark:text-blue-400 text-center font-medium">Cancel</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

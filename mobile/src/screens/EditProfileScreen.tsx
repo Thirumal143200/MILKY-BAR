@@ -22,7 +22,7 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
       await apiClient.put('/users/profile', { firstName, lastName });
       await loadSession(); // Refresh profile state in store
       Alert.alert('Success', 'Profile updated successfully.', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.message || 'Failed to update profile.');

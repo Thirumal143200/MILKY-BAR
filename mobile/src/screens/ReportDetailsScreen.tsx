@@ -1,8 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, Alert, SafeAreaView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 import { apiClient, API_URL } from '../api/client.js';
 
-export default function ReportDetailsScreen({ navigation, route }: { navigation: any; route: any }) {
+export default function ReportDetailsScreen({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: any;
+}) {
   const { reportId } = route.params || {};
   const [report, setReport] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,10 +66,14 @@ export default function ReportDetailsScreen({ navigation, route }: { navigation:
         <View className="space-y-4">
           <View className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
             <Text className="text-sm font-semibold text-gray-400 mb-1">REPORT ID</Text>
-            <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">{report?.id}</Text>
+            <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+              {report?.id}
+            </Text>
 
             <Text className="text-sm font-semibold text-gray-400 mb-1">SCAN TITLE</Text>
-            <Text className="text-base text-gray-900 dark:text-white mb-4">{report?.scanTitle || 'Milk Sample Scan'}</Text>
+            <Text className="text-base text-gray-900 dark:text-white mb-4">
+              {report?.scanTitle || 'Milk Sample Scan'}
+            </Text>
 
             <Text className="text-sm font-semibold text-gray-400 mb-1">QUALITY PREDICTION</Text>
             <Text className="text-base font-bold text-blue-600 dark:text-blue-400 mb-4 uppercase">
@@ -70,7 +88,9 @@ export default function ReportDetailsScreen({ navigation, route }: { navigation:
 
           {/* Verification QR section */}
           <View className="items-center bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-2">
-            <Text className="text-base font-bold text-gray-900 dark:text-white">QR Code Verification</Text>
+            <Text className="text-base font-bold text-gray-900 dark:text-white">
+              QR Code Verification
+            </Text>
             <Text className="text-xs text-gray-400 text-center mb-4">
               Scan this code to verify the authenticity of this milk quality report.
             </Text>

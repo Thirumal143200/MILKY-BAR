@@ -9,12 +9,14 @@ const slides = [
   },
   {
     title: 'Laboratory Validations',
-    description: 'Ensure safety and verification by integrating directly with laboratory verification queues.',
+    description:
+      'Ensure safety and verification by integrating directly with laboratory verification queues.',
     icon: '🔬',
   },
   {
     title: 'Secure & Transparent Logs',
-    description: 'Audit logs, secure MFA verification, and tamper-proof PDF reports protect your logs.',
+    description:
+      'Audit logs, secure MFA verification, and tamper-proof PDF reports protect your logs.',
     icon: '🛡️',
   },
 ];

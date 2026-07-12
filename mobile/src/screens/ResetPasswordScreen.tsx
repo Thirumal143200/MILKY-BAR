@@ -16,9 +16,11 @@ export default function ResetPasswordScreen({ navigation }: { navigation: any })
     setIsLoading(true);
     try {
       await apiClient.post('/auth/reset-password', { token, password });
-      Alert.alert('Success', 'Your password has been reset successfully. Please login with your new credentials.', [
-        { text: 'OK', onPress: () => navigation.replace('Login') },
-      ]);
+      Alert.alert(
+        'Success',
+        'Your password has been reset successfully. Please login with your new credentials.',
+        [{ text: 'OK', onPress: () => navigation.replace('Login') }],
+      );
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.message || 'Failed to reset password.');
     } finally {

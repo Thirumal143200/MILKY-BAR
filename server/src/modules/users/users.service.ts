@@ -178,7 +178,10 @@ export class UsersService {
    */
   async changePassword(userId: string, data: { oldPassword?: string; newPassword?: string }) {
     if (!data.oldPassword || !data.newPassword) {
-      throw AppError.badRequest(ERROR_CODES.VAL_MISSING_FIELD, 'Old and new passwords are required.');
+      throw AppError.badRequest(
+        ERROR_CODES.VAL_MISSING_FIELD,
+        'Old and new passwords are required.',
+      );
     }
 
     const user = await db('users').where('id', userId).first();

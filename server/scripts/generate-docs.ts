@@ -384,13 +384,17 @@ const postmanCollection = {
             header: [{ key: 'Content-Type', value: 'application/json' }],
             body: {
               mode: 'raw',
-              raw: JSON.stringify({
-                email: 'producer@milkboy.com',
-                password: 'Password@123!',
-                firstName: 'John',
-                lastName: 'Doe',
-                role: 'producer',
-              }, null, 2),
+              raw: JSON.stringify(
+                {
+                  email: 'producer@milkboy.com',
+                  password: 'Password@123!',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  role: 'producer',
+                },
+                null,
+                2,
+              ),
             },
             url: { host: ['{{host}}'], path: ['api', 'v1', 'auth', 'register'] },
           },
@@ -402,10 +406,14 @@ const postmanCollection = {
             header: [{ key: 'Content-Type', value: 'application/json' }],
             body: {
               mode: 'raw',
-              raw: JSON.stringify({
-                email: 'producer@milkboy.com',
-                password: 'Password@123!',
-              }, null, 2),
+              raw: JSON.stringify(
+                {
+                  email: 'producer@milkboy.com',
+                  password: 'Password@123!',
+                },
+                null,
+                2,
+              ),
             },
             url: { host: ['{{host}}'], path: ['api', 'v1', 'auth', 'login'] },
           },
@@ -425,10 +433,14 @@ const postmanCollection = {
             ],
             body: {
               mode: 'raw',
-              raw: JSON.stringify({
-                title: 'Morning Collection',
-                notes: 'Sample from Batch #12',
-              }, null, 2),
+              raw: JSON.stringify(
+                {
+                  title: 'Morning Collection',
+                  notes: 'Sample from Batch #12',
+                },
+                null,
+                2,
+              ),
             },
             url: { host: ['{{host}}'], path: ['api', 'v1', 'scans'] },
           },
@@ -497,7 +509,10 @@ const errorCodes = `# MilkBoy System Error Codes
 
 // Write files to project root
 fs.writeFileSync(path.join(projectRoot, 'OPENAPI_SPEC.yaml'), openapiSpec);
-fs.writeFileSync(path.join(projectRoot, 'POSTMAN_COLLECTION.json'), JSON.stringify(postmanCollection, null, 2));
+fs.writeFileSync(
+  path.join(projectRoot, 'POSTMAN_COLLECTION.json'),
+  JSON.stringify(postmanCollection, null, 2),
+);
 fs.writeFileSync(path.join(projectRoot, 'API_DOCUMENTATION.md'), apiDocumentation);
 fs.writeFileSync(path.join(projectRoot, 'API_ENDPOINTS.md'), apiEndpoints);
 fs.writeFileSync(path.join(projectRoot, 'ERROR_CODES.md'), errorCodes);

@@ -23,6 +23,7 @@ mobile/
 ## 2. State Management & Data Flows
 
 We utilize **Zustand** for state stores:
+
 - **useAuthStore**: Handles session state, token persistence, and role-based permissions filtering.
 - **useScanStore**: Manages current scan captures, uploads queue, and prediction results.
 - **useNotificationStore**: Manages notifications list and user configurations.

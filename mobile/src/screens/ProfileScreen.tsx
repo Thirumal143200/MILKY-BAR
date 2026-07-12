@@ -233,7 +233,9 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
           >
             <View>
               <Text className="text-white font-bold text-base">Security Settings</Text>
-              <Text className="text-gray-400 text-xs mt-1">Manage MFA, active sessions, and password updates</Text>
+              <Text className="text-gray-400 text-xs mt-1">
+                Manage MFA, active sessions, and password updates
+              </Text>
             </View>
             <Text className="text-blue-500 font-extrabold text-lg">›</Text>
           </TouchableOpacity>

@@ -264,7 +264,6 @@ export class AdminService {
     log.info(`Permissions updated for role ${roleId}`);
   }
 
-
   /**
    * Get audit logs.
    */

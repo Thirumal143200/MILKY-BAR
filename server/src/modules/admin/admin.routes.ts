@@ -79,7 +79,6 @@ router.post(
   adminController.updateRolePermissions.bind(adminController),
 );
 
-
 // Audit Logs
 router.get(
   '/audit-logs',

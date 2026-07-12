@@ -47,9 +47,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     try {
       await apiClient.patch(`/notifications/${id}/read`);
       set((state) => {
-        const updated = state.notifications.map((n) =>
-          n.id === id ? { ...n, read: true } : n,
-        );
+        const updated = state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
         const unread = updated.filter((n) => !n.read).length;
         return { notifications: updated, unreadCount: unread };
       });

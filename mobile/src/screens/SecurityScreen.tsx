@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Switch, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Switch,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 import { apiClient } from '../api/client.js';
 
 export default function SecurityScreen({ navigation }: { navigation: any }) {
@@ -27,7 +35,10 @@ export default function SecurityScreen({ navigation }: { navigation: any }) {
         // Request MFA setup secret
         const res = await apiClient.post('/auth/mfa/setup');
         const secret = res.data.secret || res.data.data?.secret;
-        Alert.alert('MFA Secret', `Setup secret key: ${secret}\n\nPlease enter this key in your Google Authenticator app, then verify a code.`);
+        Alert.alert(
+          'MFA Secret',
+          `Setup secret key: ${secret}\n\nPlease enter this key in your Google Authenticator app, then verify a code.`,
+        );
         navigation.navigate('MfaVerification', { mfaRequiredToken: secret });
       } else {
         // Disable MFA
@@ -64,7 +75,9 @@ export default function SecurityScreen({ navigation }: { navigation: any }) {
           {/* MFA Toggle */}
           <View className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 flex-row items-center justify-between">
             <View className="flex-1 pr-4">
-              <Text className="text-lg font-bold text-gray-900 dark:text-white">Multi-Factor Auth (MFA)</Text>
+              <Text className="text-lg font-bold text-gray-900 dark:text-white">
+                Multi-Factor Auth (MFA)
+              </Text>
               <Text className="text-xs text-gray-400 mt-1">
                 Protect your account with verification code prompts during login.
               </Text>
@@ -78,8 +91,12 @@ export default function SecurityScreen({ navigation }: { navigation: any }) {
             className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 flex-row items-center justify-between"
           >
             <View>
-              <Text className="text-lg font-bold text-gray-900 dark:text-white">Change Password</Text>
-              <Text className="text-xs text-gray-400 mt-1">Update your password security credentials.</Text>
+              <Text className="text-lg font-bold text-gray-900 dark:text-white">
+                Change Password
+              </Text>
+              <Text className="text-xs text-gray-400 mt-1">
+                Update your password security credentials.
+              </Text>
             </View>
             <Text className="text-blue-600 dark:text-blue-400 font-bold text-base">&gt;</Text>
           </TouchableOpacity>
@@ -87,7 +104,9 @@ export default function SecurityScreen({ navigation }: { navigation: any }) {
           {/* Active Sessions list */}
           <View className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-4">
             <View className="flex-row items-center justify-between">
-              <Text className="text-lg font-bold text-gray-900 dark:text-white">Active Sessions</Text>
+              <Text className="text-lg font-bold text-gray-900 dark:text-white">
+                Active Sessions
+              </Text>
               <TouchableOpacity onPress={handleLogoutAll}>
                 <Text className="text-red-500 font-semibold text-xs">Revoke All</Text>
               </TouchableOpacity>
@@ -95,11 +114,15 @@ export default function SecurityScreen({ navigation }: { navigation: any }) {
 
             <View className="space-y-2">
               <View className="py-2 border-b border-gray-100 dark:border-gray-700 flex-row justify-between">
-                <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">Android Emulator</Text>
+                <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Android Emulator
+                </Text>
                 <Text className="text-xs text-gray-400">Current Session</Text>
               </View>
               <View className="py-2 flex-row justify-between">
-                <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">Web Portal</Text>
+                <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Web Portal
+                </Text>
                 <Text className="text-xs text-gray-400">Active 2 hours ago</Text>
               </View>
             </View>
