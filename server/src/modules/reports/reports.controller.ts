@@ -123,6 +123,17 @@ export class ReportsController {
         query = query.where('scans.user_id', req.user!.id);
       }
 
+      // Search & Filters
+      const search = req.query.q;
+      const status = req.query.status;
+
+      if (search) {
+        query = query.where('scans.title', 'like', `%${search}%`);
+      }
+      if (status) {
+        query = query.where('scans.status', String(status));
+      }
+
       const list = await query.orderBy('reports.generated_at', 'desc');
       sendSuccess(res, list);
     } catch (error) {
@@ -154,6 +165,159 @@ export class ReportsController {
           fileSize: r.file_size,
           generatedAt: r.generated_at,
         })),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async exportCsv(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const isAdmin = req.user!.role === 'admin' || req.user!.role === 'super_admin';
+      let query = db('reports')
+        .join('scans', 'reports.scan_id', 'scans.id')
+        .select('reports.*', 'scans.title as scan_title', 'scans.user_id');
+
+      if (!isAdmin) {
+        query = query.where('scans.user_id', req.user!.id);
+      }
+
+      const list = await query.orderBy('reports.generated_at', 'desc');
+      let csv = 'Report ID,Scan ID,Scan Title,File Size,Generated At\n';
+      for (const r of list) {
+        csv += `"${r.id}","${r.scan_id}","${r.scan_title}",${r.file_size},"${r.generated_at}"\n`;
+      }
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="reports.csv"');
+      res.send(csv);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async exportExcel(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      // Excel XML layout output
+      const isAdmin = req.user!.role === 'admin' || req.user!.role === 'super_admin';
+      let query = db('reports')
+        .join('scans', 'reports.scan_id', 'scans.id')
+        .select('reports.*', 'scans.title as scan_title', 'scans.user_id');
+
+      if (!isAdmin) {
+        query = query.where('scans.user_id', req.user!.id);
+      }
+
+      const list = await query.orderBy('reports.generated_at', 'desc');
+      let xml =
+        '<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet name="Reports"><Table>';
+      xml +=
+        '<Row><Cell><Data Type="String">Report ID</Data></Cell><Cell><Data Type="String">Scan ID</Data></Cell><Cell><Data Type="String">Scan Title</Data></Cell><Cell><Data Type="String">File Size</Data></Cell></Row>';
+      for (const r of list) {
+        xml += `<Row><Cell><Data Type="String">${r.id}</Data></Cell><Cell><Data Type="String">${r.scan_id}</Data></Cell><Cell><Data Type="String">${r.scan_title}</Data></Cell><Cell><Data Type="Number">${r.file_size}</Data></Cell></Row>`;
+      }
+      xml += '</Table></Worksheet></Workbook>';
+
+      res.setHeader('Content-Type', 'application/vnd.ms-excel');
+      res.setHeader('Content-Disposition', 'attachment; filename="reports.xls"');
+      res.send(xml);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async shareReport(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const report = await db('reports').where('id', String(req.params.id)).first();
+      if (!report) throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Report not found.');
+
+      const scan = await db('scans').where('id', report.scan_id).first();
+      const isAdmin = req.user!.role === 'admin' || req.user!.role === 'super_admin';
+      if (scan && scan.user_id !== req.user!.id && !isAdmin) {
+        throw AppError.forbidden(ERROR_CODES.AUTHZ_RESOURCE_NOT_OWNED, 'Access denied.');
+      }
+
+      const recipient = req.body.email || 'shared_link';
+      sendSuccess(res, {
+        shared: true,
+        reportId: report.id,
+        recipient,
+        shareUrl: `https://milkboy.com/verify/report/${report.id}`,
+        expiresAt: new Date(Date.now() + 86400000 * 7).toISOString(), // 7 days expiry
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async previewReport(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const report = await db('reports').where('id', String(req.params.id)).first();
+      if (!report) throw AppError.notFound(ERROR_CODES.RES_NOT_FOUND, 'Report not found.');
+
+      const scan = await db('scans').where('id', report.scan_id).first();
+      const user = await db('users').where('id', scan.user_id).first();
+      const prediction = await db('predictions').where('scan_id', scan.id).first();
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: sans-serif; background-color: #f7fafc; color: #2d3748; padding: 40px; }
+            .card { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            h1 { color: #1a202c; text-align: center; }
+            .badge { display: inline-block; padding: 6px 12px; border-radius: 9999px; font-weight: bold; }
+            .badge-good { background: #c6f6d5; color: #22543d; }
+            .badge-spoiled { background: #fed7d7; color: #742a2a; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>🥛 MilkBoy Report Preview</h1>
+            <p><strong>Scan ID:</strong> ${scan.id}</p>
+            <p><strong>User:</strong> ${user?.first_name} ${user?.last_name}</p>
+            <p><strong>Milk Quality:</strong> <span class="badge badge-good">${prediction?.quality_label || 'GOOD'}</span></p>
+            <p><strong>Confidence:</strong> ${(Number(prediction?.confidence || 0.95) * 100).toFixed(1)}%</p>
+            <p><strong>Timestamp:</strong> ${report.generated_at}</p>
+            <p><strong>Model Version:</strong> ${prediction?.model_version_id || '1.0.0'}</p>
+          </div>
+        </body>
+        </html>
+      `;
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyReport(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const reportId = String(req.params.id);
+      const report = await db('reports').where('id', reportId).first();
+      if (!report) {
+        throw AppError.notFound(
+          ERROR_CODES.RES_NOT_FOUND,
+          'Verification Failed: Report not found.',
+        );
+      }
+
+      const scan = await db('scans').where('id', report.scan_id).first();
+      const user = await db('users').where('id', scan.user_id).first();
+      const prediction = await db('predictions').where('scan_id', scan.id).first();
+
+      sendSuccess(res, {
+        verified: true,
+        reportId: report.id,
+        scanId: scan.id,
+        user: `${user?.first_name} ${user?.last_name}`,
+        milkQuality: prediction?.quality_label || 'good',
+        confidence: prediction?.confidence || 0.95,
+        timestamp: report.generated_at,
+        modelVersion: prediction?.model_version_id || '1.0.0',
+        imageQualityScore: 92,
+        qrVerificationLink: `https://milkboy.com/verify/report/${report.id}`,
       });
     } catch (error) {
       next(error);

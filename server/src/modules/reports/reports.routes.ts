@@ -20,9 +20,35 @@ router.post(
 );
 
 router.get(
+  '/export/csv',
+  requirePermission('reports', 'read'),
+  reportsController.exportCsv.bind(reportsController),
+);
+
+router.get(
+  '/export/excel',
+  requirePermission('reports', 'read'),
+  reportsController.exportExcel.bind(reportsController),
+);
+
+router.get(
   '/export',
   requirePermission('reports', 'read'),
   reportsController.export.bind(reportsController),
+);
+
+router.get('/verify/:id', reportsController.verifyReport.bind(reportsController));
+
+router.get(
+  '/:id/preview',
+  requirePermission('reports', 'read'),
+  reportsController.previewReport.bind(reportsController),
+);
+
+router.post(
+  '/:id/share',
+  requirePermission('reports', 'read'),
+  reportsController.shareReport.bind(reportsController),
 );
 
 router.get(
