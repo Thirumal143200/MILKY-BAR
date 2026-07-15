@@ -22,7 +22,13 @@ interface SyncState {
 // Simple base64 shift visual obfuscation to simulate local file path encryption
 const encryptPath = (path: string): string => {
   try {
-    return 'obf:' + path.split('').map((c) => String.fromCharCode(c.charCodeAt(0) + 1)).join('');
+    return (
+      'obf:' +
+      path
+        .split('')
+        .map((c) => String.fromCharCode(c.charCodeAt(0) + 1))
+        .join('')
+    );
   } catch {
     return path;
   }
@@ -31,7 +37,11 @@ const encryptPath = (path: string): string => {
 const decryptPath = (obfPath: string): string => {
   if (obfPath.startsWith('obf:')) {
     try {
-      return obfPath.substring(4).split('').map((c) => String.fromCharCode(c.charCodeAt(0) - 1)).join('');
+      return obfPath
+        .substring(4)
+        .split('')
+        .map((c) => String.fromCharCode(c.charCodeAt(0) - 1))
+        .join('');
     } catch {
       return obfPath;
     }
