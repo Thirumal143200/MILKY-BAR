@@ -101,3 +101,42 @@ export interface ReportSummary {
   qrCodeUrl?: string;
   generatedAt: string;
 }
+
+/** Offline scan item submitted in a batch sync request */
+export interface BatchSyncItem {
+  clientScanId: string;
+  timestamp: number;
+  title?: string;
+  notes?: string;
+  location?: ScanLocation;
+  imageData?: {
+    filename: string;
+    mimeType: string;
+    base64Data?: string;
+    size?: number;
+  };
+}
+
+/** Payload for POST /api/v1/scans/batch-sync */
+export interface BatchSyncPayload {
+  scans: BatchSyncItem[];
+}
+
+/** Result for a single item in a batch sync response */
+export interface BatchSyncResultItem {
+  clientScanId: string;
+  serverId?: string;
+  status: 'synced' | 'duplicate' | 'failed';
+  error?: string;
+  scanResult?: ScanResult;
+}
+
+/** Response for POST /api/v1/scans/batch-sync */
+export interface BatchSyncResponse {
+  syncedCount: number;
+  duplicateCount: number;
+  failedCount: number;
+  totalProcessed: number;
+  results: BatchSyncResultItem[];
+}
+

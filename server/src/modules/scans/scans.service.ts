@@ -3,11 +3,13 @@
  * Scan management business logic.
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
 import { db } from '../../database/connection.js';
 import { generateId } from '../../utils/crypto.js';
 import { AppError } from '../../utils/AppError.js';
 import { ERROR_CODES, buildPaginationMeta, calculateOffset } from '@milkboy/shared';
-import type { PaginationInput } from '@milkboy/shared';
+import type { PaginationInput, BatchSyncPayload, BatchSyncResponse, BatchSyncResultItem } from '@milkboy/shared';
 import { createModuleLogger } from '../../utils/logger.js';
 import { imageProcessor } from '../../services/image/processor.service.js';
 import { inferenceService } from '../../services/ai/inference.service.js';
@@ -422,6 +424,121 @@ export class ScansService {
     // Re-run analysis
     return this.analyze(scanId, userId);
   }
+
+  /**
+   * Process a batch of offline scans submitted by client.
+   * Handles idempotency, duplicate detection, and per-item partial success.
+   */
+  async batchSync(userId: string, payload: BatchSyncPayload): Promise<BatchSyncResponse> {
+    const items = payload.scans || [];
+    const results: BatchSyncResultItem[] = [];
+    let syncedCount = 0;
+    let duplicateCount = 0;
+    let failedCount = 0;
+
+    for (const item of items) {
+      try {
+        if (!item.clientScanId) {
+          results.push({
+            clientScanId: item.clientScanId || 'unknown',
+            status: 'failed',
+            error: 'Missing clientScanId',
+          });
+          failedCount++;
+          continue;
+        }
+
+        // Idempotency check — check if scan already exists for this user and clientScanId
+        const existing = await db('scans')
+          .where({ user_id: userId, client_scan_id: item.clientScanId })
+          .first();
+
+        if (existing) {
+          const scanResult = await this.getById(existing.id, userId).catch(() => undefined);
+          results.push({
+            clientScanId: item.clientScanId,
+            serverId: existing.id,
+            status: 'duplicate',
+            scanResult,
+          });
+          duplicateCount++;
+          continue;
+        }
+
+        // Create scan record
+        const scanId = generateId();
+        const createdAt = item.timestamp ? new Date(item.timestamp).toISOString() : new Date().toISOString();
+
+        await db('scans').insert({
+          id: scanId,
+          user_id: userId,
+          client_scan_id: item.clientScanId,
+          status: 'created',
+          title: item.title || `Offline Scan ${item.clientScanId.substring(0, 8)}`,
+          notes: item.notes || null,
+          latitude: item.location?.latitude || null,
+          longitude: item.location?.longitude || null,
+          address: item.location?.address || null,
+          image_count: 0,
+          created_at: createdAt,
+          updated_at: createdAt,
+        });
+
+        // Process base64 image if attached
+        if (item.imageData?.base64Data) {
+          const uploadsDir = path.join(process.cwd(), 'uploads');
+          if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+          }
+
+          const filename = item.imageData.filename || `${scanId}_image.jpg`;
+          const tempPath = path.join(uploadsDir, `offline_${filename}`);
+          const imageBuffer = Buffer.from(item.imageData.base64Data, 'base64');
+          fs.writeFileSync(tempPath, imageBuffer);
+
+          await this.addImage(scanId, userId, {
+            path: tempPath,
+            originalname: filename,
+            mimetype: item.imageData.mimeType || 'image/jpeg',
+            size: imageBuffer.length,
+          });
+
+          // Run AI analysis
+          await this.analyze(scanId, userId);
+        }
+
+        const scanResult = await this.getById(scanId, userId);
+
+        results.push({
+          clientScanId: item.clientScanId,
+          serverId: scanId,
+          status: 'synced',
+          scanResult,
+        });
+        syncedCount++;
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : 'Batch sync processing failed';
+        log.error(`Batch sync item error (${item.clientScanId}): ${errorMsg}`);
+        results.push({
+          clientScanId: item.clientScanId,
+          status: 'failed',
+          error: errorMsg,
+        });
+        failedCount++;
+      }
+    }
+
+    log.info(`Batch sync completed for user ${userId}: ${syncedCount} synced, ${duplicateCount} duplicates, ${failedCount} failed.`);
+
+    return {
+      syncedCount,
+      duplicateCount,
+      failedCount,
+      totalProcessed: items.length,
+      results,
+    };
+  }
 }
 
 export const scansService = new ScansService();
+

@@ -24,6 +24,13 @@ router.post(
   scansController.create.bind(scansController),
 );
 
+router.post(
+  '/batch-sync',
+  requirePermission('scans', 'create'),
+  auditMiddleware('scan_create', 'scans'),
+  scansController.batchSync.bind(scansController),
+);
+
 router.get('/', requirePermission('scans', 'read'), scansController.list.bind(scansController));
 
 router.get(

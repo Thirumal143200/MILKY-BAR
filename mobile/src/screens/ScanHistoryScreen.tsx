@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { apiListScans } from '../api/client';
+import { OfflineSyncBanner } from '../components/OfflineSyncBanner';
 
 export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
   const insets = useSafeAreaInsets();
@@ -82,12 +83,15 @@ export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
   return (
     <View style={{ paddingTop: insets.top }} className="flex-1 bg-gray-900 px-4">
       {/* Header */}
-      <View className="flex-row items-center mb-6 mt-2">
+      <View className="flex-row items-center mb-4 mt-2">
         <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
           <Text className="text-white text-lg">← Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-3xl font-bold">Scan History</Text>
       </View>
+
+      {/* Offline Sync Status & Queue Banner */}
+      <OfflineSyncBanner />
 
       {/* Search Input */}
       <View className="mb-4">

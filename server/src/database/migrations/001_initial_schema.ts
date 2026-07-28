@@ -111,6 +111,7 @@ export async function up(knex: Knex): Promise<void> {
     t.decimal('latitude', 10, 7);
     t.decimal('longitude', 10, 7);
     t.string('address', 500);
+    t.string('client_scan_id', 200);
     t.integer('image_count').notNullable().defaultTo(0);
     t.timestamp('completed_at');
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
@@ -118,7 +119,8 @@ export async function up(knex: Knex): Promise<void> {
     t.timestamp('deleted_at');
 
     t.index('user_id');
-
+    t.index('client_scan_id');
+    t.index(['user_id', 'client_scan_id']);
     t.index('status');
     t.index('created_at');
   });

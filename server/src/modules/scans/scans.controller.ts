@@ -93,6 +93,15 @@ export class ScansController {
       next(error);
     }
   }
+
+  async batchSync(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await scansService.batchSync(req.user!.id, req.body);
+      sendSuccess(res, result, 200, 'Batch synchronization processed successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const scansController = new ScansController();
