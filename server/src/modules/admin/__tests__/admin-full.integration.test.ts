@@ -21,7 +21,9 @@ describe('Enterprise Super Admin Dashboard Integration Tests', () => {
   beforeAll(async () => {
     try {
       await down(db);
-    } catch {}
+    } catch {
+      // ignore rollback error if tables do not exist
+    }
     await up(db);
 
     // Seed roles
@@ -44,7 +46,7 @@ describe('Enterprise Super Admin Dashboard Integration Tests', () => {
     await db('permissions').insert(perms);
 
     await db('role_permissions').insert(
-      perms.map((p) => ({ role_id: adminRoleId, permission_id: p.id }))
+      perms.map((p) => ({ role_id: adminRoleId, permission_id: p.id })),
     );
 
     adminUserId = 'user-super-admin-001';

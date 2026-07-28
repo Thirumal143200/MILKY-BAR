@@ -139,4 +139,3 @@ export interface BatchSyncResponse {
   totalProcessed: number;
   results: BatchSyncResultItem[];
 }
-

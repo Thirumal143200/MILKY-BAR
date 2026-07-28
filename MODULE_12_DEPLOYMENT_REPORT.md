@@ -31,18 +31,18 @@ This report summarizes the design, implementation, container optimization, disas
 
 ## 2. Technical Evidence Matrix
 
-| Component | File / Asset | Status |
-| :--- | :--- | :--- |
-| Server Dockerfile | `server/Dockerfile` | Optimized Multi-stage |
-| AI Service Dockerfile | `ai_service/Dockerfile` | Optimized Multi-stage |
-| Web Dockerfile | `web/Dockerfile` | Optimized Multi-stage |
-| Development Compose | `docker-compose.yml` | Verified |
-| Production Compose | `docker-compose.prod.yml` | Verified |
-| Server Probes | `server/src/app.ts` (`/health`, `/liveness`, `/readiness`) | 200 OK Verified |
-| AI Service Probes | `ai_service/main.py` (`/health`, `/liveness`, `/readiness`) | 200 OK Verified |
-| CLI Backup Script | `server/scripts/backup-db.ts` | Verified |
-| CLI Restore Script | `server/scripts/restore-db.ts` | Verified |
-| Integration Tests | `server/src/modules/admin/__tests__/deployment.integration.test.ts` | 5 / 5 Passed |
+| Component             | File / Asset                                                        | Status                |
+| :-------------------- | :------------------------------------------------------------------ | :-------------------- |
+| Server Dockerfile     | `server/Dockerfile`                                                 | Optimized Multi-stage |
+| AI Service Dockerfile | `ai_service/Dockerfile`                                             | Optimized Multi-stage |
+| Web Dockerfile        | `web/Dockerfile`                                                    | Optimized Multi-stage |
+| Development Compose   | `docker-compose.yml`                                                | Verified              |
+| Production Compose    | `docker-compose.prod.yml`                                           | Verified              |
+| Server Probes         | `server/src/app.ts` (`/health`, `/liveness`, `/readiness`)          | 200 OK Verified       |
+| AI Service Probes     | `ai_service/main.py` (`/health`, `/liveness`, `/readiness`)         | 200 OK Verified       |
+| CLI Backup Script     | `server/scripts/backup-db.ts`                                       | Verified              |
+| CLI Restore Script    | `server/scripts/restore-db.ts`                                      | Verified              |
+| Integration Tests     | `server/src/modules/admin/__tests__/deployment.integration.test.ts` | 5 / 5 Passed          |
 
 ---
 

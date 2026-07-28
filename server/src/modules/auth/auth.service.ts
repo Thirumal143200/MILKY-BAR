@@ -90,19 +90,23 @@ export class AuthService {
 
     log.info(`User registered: ${data.email} (${roleName})`);
 
-    notificationDispatcher.dispatch({
-      event: 'auth:register',
-      userId: user.id,
-      title: 'Welcome to MilkBoy!',
-      message: `Your ${roleName} account has been created successfully.`,
-    }).catch(() => {});
+    notificationDispatcher
+      .dispatch({
+        event: 'auth:register',
+        userId: user.id,
+        title: 'Welcome to MilkBoy!',
+        message: `Your ${roleName} account has been created successfully.`,
+      })
+      .catch(() => {});
 
-    notificationDispatcher.dispatch({
-      event: 'admin:new_user',
-      role: 'admin',
-      title: 'New User Registered',
-      message: `User ${user.email} (${roleName}) has registered.`,
-    }).catch(() => {});
+    notificationDispatcher
+      .dispatch({
+        event: 'admin:new_user',
+        role: 'admin',
+        title: 'New User Registered',
+        message: `User ${user.email} (${roleName}) has registered.`,
+      })
+      .catch(() => {});
 
     return {
       id: user.id,

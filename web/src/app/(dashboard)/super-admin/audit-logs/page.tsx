@@ -3,9 +3,9 @@
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { ShieldCheck, Search, Filter, Download } from 'lucide-react';
+import { ShieldCheck, Search, Download } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +31,6 @@ export default function AuditLogsPage() {
   if (isLoading && !data) return <PageSkeleton />;
 
   const logs = data?.data || [];
-  const meta = data?.meta;
 
   const exportJSON = () => {
     const jsonStr = JSON.stringify(logs, null, 2);
@@ -52,7 +51,8 @@ export default function AuditLogsPage() {
             Security & Audit Logs
           </h1>
           <p className="text-muted-foreground text-sm mt-0.5">
-            Immutable audit record of all administrative operations, authentication events, and scan activities
+            Immutable audit record of all administrative operations, authentication events, and scan
+            activities
           </p>
         </div>
 
@@ -84,10 +84,18 @@ export default function AuditLogsPage() {
             <table className="w-full caption-bottom text-sm">
               <thead className="[&_tr]:border-b bg-muted/30">
                 <tr className="border-b transition-colors hover:bg-muted/50">
-                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Timestamp</th>
-                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Action</th>
-                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Resource</th>
-                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">User / IP</th>
+                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
+                    Timestamp
+                  </th>
+                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
+                    Action
+                  </th>
+                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
+                    Resource
+                  </th>
+                  <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
+                    User / IP
+                  </th>
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
@@ -98,22 +106,29 @@ export default function AuditLogsPage() {
                     </td>
                   </tr>
                 ) : (
-                  logs.map((log: any) => (
-                    <tr key={log.id} className="border-b transition-colors hover:bg-muted/50">
-                      <td className="p-4 font-mono text-xs text-muted-foreground">
-                        {new Date(log.createdAt).toLocaleString()}
-                      </td>
-                      <td className="p-4">
-                        <Badge variant="outline" className="font-mono text-xs">
-                          {log.action}
-                        </Badge>
-                      </td>
-                      <td className="p-4 font-medium">{log.resource}</td>
-                      <td className="p-4 text-xs font-mono text-muted-foreground">
-                        {log.userEmail || log.userId || 'Anonymous'} ({log.ipAddress || '127.0.0.1'})
-                      </td>
-                    </tr>
-                  ))
+                  logs.map((logItem: unknown) => {
+                    const log = logItem as Record<string, unknown>;
+                    return (
+                      <tr
+                        key={String(log.id)}
+                        className="border-b transition-colors hover:bg-muted/50"
+                      >
+                        <td className="p-4 font-mono text-xs text-muted-foreground">
+                          {new Date(String(log.createdAt)).toLocaleString()}
+                        </td>
+                        <td className="p-4">
+                          <Badge variant="outline" className="font-mono text-xs">
+                            {String(log.action)}
+                          </Badge>
+                        </td>
+                        <td className="p-4 font-medium">{String(log.resource)}</td>
+                        <td className="p-4 text-xs font-mono text-muted-foreground">
+                          {String(log.userEmail || log.userId || 'Anonymous')} (
+                          {String(log.ipAddress || '127.0.0.1')})
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

@@ -5,13 +5,7 @@
 
 /** High-level notification categories */
 export type NotificationCategory =
-  | 'auth'
-  | 'scan'
-  | 'report'
-  | 'sync'
-  | 'laboratory'
-  | 'admin'
-  | 'system';
+  'auth' | 'scan' | 'report' | 'sync' | 'laboratory' | 'admin' | 'system';
 
 /** System priority levels */
 export type NotificationPriority = 'low' | 'normal' | 'high' | 'urgent';
@@ -77,7 +71,7 @@ export interface NotificationPreferences {
   quietHours: {
     enabled: boolean;
     startTime: string; // e.g. "22:00"
-    endTime: string;   // e.g. "07:00"
+    endTime: string; // e.g. "07:00"
   };
   categories: Record<NotificationCategory, boolean>;
 }

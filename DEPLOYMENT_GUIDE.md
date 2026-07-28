@@ -17,12 +17,14 @@ This document provides step-by-step instructions for deploying **MilkBoy** acros
 ## 2. Local Development Deployment
 
 To start the local development stack with hot-reloading:
+
 ```bash
 # Start all services (Backend, AI Service, Web Dashboard)
 docker-compose -f docker-compose.yml up --build -d
 ```
 
 Services will be accessible at:
+
 - **Express Backend**: `http://localhost:4000`
 - **FastAPI AI Service**: `http://localhost:8000`
 - **Next.js Web Dashboard**: `http://localhost:3000`
@@ -32,6 +34,7 @@ Services will be accessible at:
 ## 3. Production Multi-Container Deployment
 
 To deploy the production-ready stack with PostgreSQL and Redis:
+
 ```bash
 # 1. Export environment variables
 export POSTGRES_PASSWORD=your_secure_password
@@ -51,6 +54,7 @@ curl http://localhost:8000/health
 ## 4. Mobile Application Release Builds (Expo EAS)
 
 For Android APK and App Bundle (AAB) compilation:
+
 ```bash
 cd mobile
 

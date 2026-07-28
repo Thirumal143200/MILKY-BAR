@@ -31,7 +31,9 @@ This guide details server provisioning, PostgreSQL database setup, SSL proxy con
 
 1. Ensure PostgreSQL 15 instance is running.
 2. Execute automated Knex migrations on deployment:
+
 ```bash
 npm run migrate --workspace=server
 ```
+
 3. Set environment variable `DB_CLIENT=pg` and `DATABASE_URL=postgresql://user:pass@host:5432/milkboy_prod`.

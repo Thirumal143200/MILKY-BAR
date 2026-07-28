@@ -42,7 +42,9 @@ export class NotificationsService {
 
     // 1. Master toggle check
     if (prefs.enableNotifications === false) {
-      log.debug(`Notification skipped for user ${userId}: Notifications globally disabled in preferences.`);
+      log.debug(
+        `Notification skipped for user ${userId}: Notifications globally disabled in preferences.`,
+      );
       return null;
     }
 
@@ -50,7 +52,9 @@ export class NotificationsService {
 
     // 2. Category preference check
     if (prefs.categories && prefs.categories[category] === false) {
-      log.debug(`Notification skipped for user ${userId}: Category '${category}' disabled in preferences.`);
+      log.debug(
+        `Notification skipped for user ${userId}: Category '${category}' disabled in preferences.`,
+      );
       return null;
     }
 
@@ -146,7 +150,11 @@ export class NotificationsService {
    */
   async listByUser(
     userId: string,
-    params: PaginationInput & { unreadOnly?: boolean; category?: NotificationCategory; search?: string },
+    params: PaginationInput & {
+      unreadOnly?: boolean;
+      category?: NotificationCategory;
+      search?: string;
+    },
   ) {
     let query = db('notifications').where('user_id', userId);
 
@@ -286,11 +294,9 @@ export class NotificationsService {
       .first();
 
     if (existing) {
-      await db('user_devices')
-        .where('id', existing.id)
-        .update({
-          last_active_at: new Date().toISOString(),
-        });
+      await db('user_devices').where('id', existing.id).update({
+        last_active_at: new Date().toISOString(),
+      });
       log.info(`Push token updated for device ${existing.id}`);
       return existing;
     }

@@ -159,4 +159,3 @@ gantt
 - **ESLint**: Clean check (0 errors, 0 warnings)
 - **Formatting**: 100% formatted via Prettier
 - **CI Pipelines**: 100% Green on GitHub Actions (`develop` branch)
-

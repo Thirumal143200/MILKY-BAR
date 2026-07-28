@@ -20,7 +20,7 @@ class NetworkService {
     type: 'wifi',
   };
   private listeners: Set<Listener> = new Set();
-  private netInfoModule: typeof import('@react-native-community/netinfo') | null = null;
+  private netInfoModule: any = null;
   private unsubscribeNetInfo: (() => void) | null = null;
 
   constructor() {
@@ -29,11 +29,14 @@ class NetworkService {
 
   private async initNetInfo() {
     try {
-      const NetInfo = await import('@react-native-community/netinfo');
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const NetInfo = await import('@react-native-community/netinfo').catch(() => null);
+      if (!NetInfo) return;
       this.netInfoModule = NetInfo;
 
       // Subscribe to NetInfo state updates
-      this.unsubscribeNetInfo = NetInfo.addEventListener((state) => {
+      this.unsubscribeNetInfo = NetInfo.addEventListener((state: any) => {
         const isConnected = Boolean(state.isConnected);
         const isInternetReachable = state.isInternetReachable ?? isConnected;
         let type: ConnectionType = 'unknown';

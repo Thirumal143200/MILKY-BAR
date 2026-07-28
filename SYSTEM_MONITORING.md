@@ -19,6 +19,7 @@ This document explains system resource tracking, database diagnostics, memory he
 ## 2. API Diagnostics Endpoint (`GET /api/v1/admin/monitoring`)
 
 Sample JSON response:
+
 ```json
 {
   "success": true,

@@ -30,19 +30,19 @@ This report summarizes the design, implementation, verification, and completion 
 
 ## 2. Technical Evidence Matrix
 
-| Component | File / Endpoint | Status |
-| :--- | :--- | :--- |
-| Admin Service | `server/src/modules/admin/admin.service.ts` | Verified & Live |
-| Admin Controller & Routes | `server/src/modules/admin/admin.controller.ts` & `admin.routes.ts` | Active & Mounted |
-| Web Admin API Client | `web/src/lib/api/admin.ts` | Active |
-| Overview Dashboard | `web/src/app/(dashboard)/super-admin/page.tsx` | Built & Rendered |
-| Users Portal | `web/src/app/(dashboard)/super-admin/users/page.tsx` | Built & Rendered |
-| Producers Portal | `web/src/app/(dashboard)/super-admin/producers/page.tsx` | Built & Rendered |
-| Lab Overview | `web/src/app/(dashboard)/super-admin/laboratory/page.tsx` | Built & Rendered |
-| AI Monitoring | `web/src/app/(dashboard)/super-admin/ai/page.tsx` | Built & Rendered |
-| Monitoring Dashboard | `web/src/app/(dashboard)/super-admin/monitoring/page.tsx` | Built & Rendered |
-| Audit Logs Viewer | `web/src/app/(dashboard)/super-admin/audit-logs/page.tsx` | Built & Rendered |
-| Integration Tests | `server/src/modules/admin/__tests__/admin-full.integration.test.ts` | 10 / 10 Passed |
+| Component                 | File / Endpoint                                                     | Status           |
+| :------------------------ | :------------------------------------------------------------------ | :--------------- |
+| Admin Service             | `server/src/modules/admin/admin.service.ts`                         | Verified & Live  |
+| Admin Controller & Routes | `server/src/modules/admin/admin.controller.ts` & `admin.routes.ts`  | Active & Mounted |
+| Web Admin API Client      | `web/src/lib/api/admin.ts`                                          | Active           |
+| Overview Dashboard        | `web/src/app/(dashboard)/super-admin/page.tsx`                      | Built & Rendered |
+| Users Portal              | `web/src/app/(dashboard)/super-admin/users/page.tsx`                | Built & Rendered |
+| Producers Portal          | `web/src/app/(dashboard)/super-admin/producers/page.tsx`            | Built & Rendered |
+| Lab Overview              | `web/src/app/(dashboard)/super-admin/laboratory/page.tsx`           | Built & Rendered |
+| AI Monitoring             | `web/src/app/(dashboard)/super-admin/ai/page.tsx`                   | Built & Rendered |
+| Monitoring Dashboard      | `web/src/app/(dashboard)/super-admin/monitoring/page.tsx`           | Built & Rendered |
+| Audit Logs Viewer         | `web/src/app/(dashboard)/super-admin/audit-logs/page.tsx`           | Built & Rendered |
+| Integration Tests         | `server/src/modules/admin/__tests__/admin-full.integration.test.ts` | 10 / 10 Passed   |
 
 ---
 

@@ -8,20 +8,20 @@ Base URL: `/api/v1/notifications`
 
 ## 1. Endpoints Overview
 
-| Method | Endpoint | Description | Auth Required | Permission |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/` | List paginated notifications (supports `category`, `search`, `unreadOnly`) | Yes | `notifications:read` |
-| `GET` | `/unread` | Retrieve unread notifications and total unread count | Yes | `notifications:read` |
-| `PUT` | `/read` | Mark a notification as read | Yes | `notifications:update` |
-| `PUT` | `/:id/read` | Mark single notification as read | Yes | `notifications:update` |
-| `PATCH`| `/:id/read` | Alias to mark single notification as read | Yes | `notifications:update` |
-| `PUT` | `/read-all` | Mark all notifications as read for current user | Yes | `notifications:update` |
-| `POST`| `/read-all` | Alias to mark all notifications as read | Yes | `notifications:update` |
-| `DELETE`| `/:id` | Delete a single notification | Yes | `notifications:delete` |
-| `DELETE`| `/` | Clear all notifications for current user | Yes | `notifications:delete` |
-| `GET` | `/preferences` | Retrieve user notification preference settings | Yes | `notifications:read` |
-| `PUT` | `/preferences` | Update user notification preference settings | Yes | `notifications:update` |
-| `POST`| `/tokens` | Register a device push notification token | Yes | `notifications:update` |
+| Method   | Endpoint       | Description                                                                | Auth Required | Permission             |
+| :------- | :------------- | :------------------------------------------------------------------------- | :------------ | :--------------------- |
+| `GET`    | `/`            | List paginated notifications (supports `category`, `search`, `unreadOnly`) | Yes           | `notifications:read`   |
+| `GET`    | `/unread`      | Retrieve unread notifications and total unread count                       | Yes           | `notifications:read`   |
+| `PUT`    | `/read`        | Mark a notification as read                                                | Yes           | `notifications:update` |
+| `PUT`    | `/:id/read`    | Mark single notification as read                                           | Yes           | `notifications:update` |
+| `PATCH`  | `/:id/read`    | Alias to mark single notification as read                                  | Yes           | `notifications:update` |
+| `PUT`    | `/read-all`    | Mark all notifications as read for current user                            | Yes           | `notifications:update` |
+| `POST`   | `/read-all`    | Alias to mark all notifications as read                                    | Yes           | `notifications:update` |
+| `DELETE` | `/:id`         | Delete a single notification                                               | Yes           | `notifications:delete` |
+| `DELETE` | `/`            | Clear all notifications for current user                                   | Yes           | `notifications:delete` |
+| `GET`    | `/preferences` | Retrieve user notification preference settings                             | Yes           | `notifications:read`   |
+| `PUT`    | `/preferences` | Update user notification preference settings                               | Yes           | `notifications:update` |
+| `POST`   | `/tokens`      | Register a device push notification token                                  | Yes           | `notifications:update` |
 
 ---
 
@@ -30,6 +30,7 @@ Base URL: `/api/v1/notifications`
 ### 2.1 Register Device Push Token (`POST /api/v1/notifications/tokens`)
 
 **Request Payload:**
+
 ```json
 {
   "token": "fcm_eKx92jL0PqZ:APA91bH...",
@@ -39,6 +40,7 @@ Base URL: `/api/v1/notifications`
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "success": true,
@@ -57,6 +59,7 @@ Base URL: `/api/v1/notifications`
 ### 2.2 Update Preferences (`PUT /api/v1/notifications/preferences`)
 
 **Request Payload:**
+
 ```json
 {
   "enableNotifications": true,
@@ -77,6 +80,7 @@ Base URL: `/api/v1/notifications`
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,

@@ -2,10 +2,9 @@
 
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
-import { Activity, Server, Database, HardDrive, Cpu, Clock, RefreshCw } from 'lucide-react';
+import { Activity, Server, Database, HardDrive, Cpu, Clock } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { adminApi } from '@/lib/api/admin';
 
 export default function SystemMonitoringPage() {
@@ -28,7 +27,11 @@ export default function SystemMonitoringPage() {
 
   if (isLoading && !monitoring) return <PageSkeleton />;
 
-  const mem = (monitoring?.memory as any) || { rssMb: 0, heapTotalMb: 0, heapUsedMb: 0 };
+  const mem = (monitoring?.memory as Record<string, unknown>) || {
+    rssMb: 0,
+    heapTotalMb: 0,
+    heapUsedMb: 0,
+  };
   const uptime = Number(monitoring?.uptimeSeconds ?? 0);
   const uptimeHours = (uptime / 3600).toFixed(1);
   const activeSessions = Number(monitoring?.activeSessionsCount ?? 0);
@@ -42,7 +45,8 @@ export default function SystemMonitoringPage() {
           System Health & Resource Monitoring
         </h1>
         <p className="text-muted-foreground text-sm mt-0.5">
-          Live process memory usage, active sessions, database table sizes, and node runtime diagnostics
+          Live process memory usage, active sessions, database table sizes, and node runtime
+          diagnostics
         </p>
       </div>
 
@@ -60,18 +64,24 @@ export default function SystemMonitoringPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Memory Heap Used</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Memory Heap Used
+            </CardTitle>
             <Cpu className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-display">{mem.heapUsedMb} MB</div>
-            <p className="text-xs text-muted-foreground mt-1">Total Heap: {mem.heapTotalMb} MB</p>
+            <div className="text-2xl font-bold font-display">{String(mem.heapUsedMb ?? 0)} MB</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Total Heap: {String(mem.heapTotalMb ?? 0)} MB
+            </p>
           </CardContent>
         </Card>
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Active Sessions
+            </CardTitle>
             <Server className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -82,12 +92,18 @@ export default function SystemMonitoringPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Database Engine</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Database Engine
+            </CardTitle>
             <Database className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-display capitalize">{String(dbStatus?.client || 'SQLite')}</div>
-            <p className="text-xs text-muted-foreground mt-1">Environment: {String(monitoring?.environment || 'development')}</p>
+            <div className="text-2xl font-bold font-display capitalize">
+              {String(dbStatus?.client || 'SQLite')}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Environment: {String(monitoring?.environment || 'development')}
+            </p>
           </CardContent>
         </Card>
       </div>

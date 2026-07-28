@@ -47,7 +47,9 @@ async function runBackup() {
       dumpData[table] = await db(table).select('*');
       log.info(`Backed up ${dumpData[table].length} records from table '${table}'`);
     } catch (error) {
-      log.warn(`Table '${table}' skip or empty: ${error instanceof Error ? error.message : 'Unknown'}`);
+      log.warn(
+        `Table '${table}' skip or empty: ${error instanceof Error ? error.message : 'Unknown'}`,
+      );
       dumpData[table] = [];
     }
   }
@@ -55,7 +57,9 @@ async function runBackup() {
   fs.writeFileSync(backupFile, JSON.stringify(dumpData, null, 2));
   const fileSize = fs.statSync(backupFile).size;
 
-  log.info(`Database backup completed successfully: ${backupFile} (${(fileSize / 1024).toFixed(1)} KB)`);
+  log.info(
+    `Database backup completed successfully: ${backupFile} (${(fileSize / 1024).toFixed(1)} KB)`,
+  );
   process.exit(0);
 }
 

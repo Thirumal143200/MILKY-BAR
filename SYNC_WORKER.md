@@ -1,6 +1,7 @@
 # 🔄 Sync Worker Engine Documentation
 
 ## Component Overview
+
 The `SyncWorker` engine (`mobile/src/services/syncWorker.ts`) manages offline scan payload transmission between mobile clients and the MilkBoy API server.
 
 ---
@@ -12,12 +13,14 @@ When an upload attempt fails due to a network interruption or server timeout, `S
 $$\text{Delay} = \min\left(\text{MAX\_DELAY}, \text{BASE\_DELAY} \times 2^{\text{retryCount}} + \text{random}(0, \text{JITTER})\right)$$
 
 ### Backoff Delay Parameters
+
 - `BASE_DELAY`: $1000 \text{ ms}$ (1 second)
 - `MAX_DELAY`: $60000 \text{ ms}$ (60 seconds)
 - `JITTER`: $500 \text{ ms}$
 - `MAX_RETRIES`: 5 attempts before scan is marked as permanently failed requiring manual user retry.
 
 ### Exponential Schedule Example
+
 - **Attempt 0**: Immediate
 - **Attempt 1**: $\sim 2.0 - 2.5 \text{ seconds}$
 - **Attempt 2**: $\sim 4.0 - 4.5 \text{ seconds}$
@@ -30,6 +33,7 @@ $$\text{Delay} = \min\left(\text{MAX\_DELAY}, \text{BASE\_DELAY} \times 2^{\text
 ## Batch Payload Protocol
 
 ### Request Payload (`POST /api/v1/scans/batch-sync`)
+
 ```json
 {
   "scans": [
@@ -53,6 +57,7 @@ $$\text{Delay} = \min\left(\text{MAX\_DELAY}, \text{BASE\_DELAY} \times 2^{\text
 ```
 
 ### Server Response Payload
+
 ```json
 {
   "success": true,

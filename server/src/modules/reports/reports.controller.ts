@@ -39,22 +39,27 @@ export class ReportsController {
 
       const result = await pdfService.generateReport(scanId);
 
-      const { notificationDispatcher } = await import('../../services/notifications/notificationDispatcher.js');
-      notificationDispatcher.dispatch({
-        event: 'report:pdf_generated',
-        userId: req.user!.id,
-        title: 'PDF Report Generated',
-        message: `Official A4 PDF report generated for scan '${scanId.substring(0, 8)}'.`,
-        data: { reportId: result.id, scanId },
-      }).catch(() => {});
+      const { notificationDispatcher } =
+        await import('../../services/notifications/notificationDispatcher.js');
+      notificationDispatcher
+        .dispatch({
+          event: 'report:pdf_generated',
+          userId: req.user!.id,
+          title: 'PDF Report Generated',
+          message: `Official A4 PDF report generated for scan '${scanId.substring(0, 8)}'.`,
+          data: { reportId: result.reportId, scanId },
+        })
+        .catch(() => {});
 
-      notificationDispatcher.dispatch({
-        event: 'report:ready',
-        userId: req.user!.id,
-        title: 'Report Ready',
-        message: 'Your milk quality report is ready for download or sharing.',
-        data: { reportId: result.id },
-      }).catch(() => {});
+      notificationDispatcher
+        .dispatch({
+          event: 'report:ready',
+          userId: req.user!.id,
+          title: 'Report Ready',
+          message: 'Your milk quality report is ready for download or sharing.',
+          data: { reportId: result.reportId },
+        })
+        .catch(() => {});
 
       sendCreated(res, result, 'Report generated successfully.');
     } catch (error) {

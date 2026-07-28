@@ -20,7 +20,9 @@ export const OfflineSyncBanner: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const pendingCount = queue.filter((item) => item.status === 'pending' || item.status === 'failed').length;
+  const pendingCount = queue.filter(
+    (item) => item.status === 'pending' || item.status === 'failed',
+  ).length;
   const failedCount = queue.filter((item) => item.status === 'failed').length;
 
   if (netState.isConnected && pendingCount === 0) {
@@ -44,15 +46,15 @@ export const OfflineSyncBanner: React.FC = () => {
             {!netState.isConnected
               ? '⚡ Operating Offline'
               : isSyncing
-              ? '🔄 Syncing Queue...'
-              : '📦 Offline Queue Pending'}
+                ? '🔄 Syncing Queue...'
+                : '📦 Offline Queue Pending'}
           </Text>
           <Text style={styles.subtitle}>
             {!netState.isConnected
               ? `${pendingCount} scan(s) queued locally.`
               : isSyncing
-              ? `Synchronizing ${pendingCount} item(s) to server...`
-              : `${pendingCount} scan(s) waiting (${failedCount} failed retry).`}
+                ? `Synchronizing ${pendingCount} item(s) to server...`
+                : `${pendingCount} scan(s) waiting (${failedCount} failed retry).`}
           </Text>
         </View>
 

@@ -7,7 +7,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type OfflineScanStatus = 'pending' | 'uploading' | 'synced' | 'failed' | 'cancelled';
+export type OfflineScanStatus =
+  'pending' | 'uploading' | 'syncing' | 'synced' | 'failed' | 'cancelled';
 
 export type OfflineScan = {
   id: string; // clientScanId

@@ -64,6 +64,11 @@ export function apiPatch<T>(path: string, body: unknown, token?: string): Promis
   return fetchJson<T>(path, { method: 'PATCH', body: JSON.stringify(body), token });
 }
 
+/** Typed PUT request */
+export function apiPut<T>(path: string, body: unknown, token?: string): Promise<T> {
+  return fetchJson<T>(path, { method: 'PUT', body: JSON.stringify(body), token });
+}
+
 /** Typed DELETE request */
 export function apiDelete<T = void>(path: string, token?: string): Promise<T> {
   return fetchJson<T>(path, { method: 'DELETE', token });

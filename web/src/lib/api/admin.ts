@@ -6,8 +6,8 @@ interface PaginatedResponse<T> {
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-interface AdminUser extends User {
-  roleId: string;
+interface AdminUser extends Omit<User, 'role' | 'status'> {
+  roleId?: string;
   role: string;
   status: string;
 }
@@ -75,8 +75,13 @@ export const adminApi = {
   updateUser: (token: string, userId: string, data: Record<string, unknown>) =>
     apiPatch<AdminUser>(`/admin/users/${userId}`, data, token),
 
-  deleteUser: (token: string, userId: string) =>
-    apiDelete<null>(`/admin/users/${userId}`, token),
+  updateUserRole: (token: string, userId: string, role: string) =>
+    apiPatch<AdminUser>(`/admin/users/${userId}`, { role }, token),
+
+  updateUserStatus: (token: string, userId: string, status: string) =>
+    apiPatch<AdminUser>(`/admin/users/${userId}`, { status }, token),
+
+  deleteUser: (token: string, userId: string) => apiDelete<null>(`/admin/users/${userId}`, token),
 
   deactivateUser: (token: string, userId: string) =>
     apiPost<null>(`/admin/users/${userId}/deactivate`, {}, token),
@@ -96,19 +101,23 @@ export const adminApi = {
 
   systemMonitoring: (token: string) => apiGet<Record<string, unknown>>('/admin/monitoring', token),
 
-  databaseStatus: (token: string) => apiGet<Record<string, unknown>>('/admin/system/database', token),
+  databaseStatus: (token: string) =>
+    apiGet<Record<string, unknown>>('/admin/system/database', token),
 
   aiModelMonitoring: (token: string) => apiGet<Record<string, unknown>>('/admin/system/ai', token),
 
   analytics: (token: string) => apiGet<AnalyticsMetrics>('/admin/analytics', token),
 
-  producersAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/producers', token),
+  producersAnalytics: (token: string) =>
+    apiGet<Record<string, unknown>>('/admin/analytics/producers', token),
 
-  consumersAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/consumers', token),
+  consumersAnalytics: (token: string) =>
+    apiGet<Record<string, unknown>>('/admin/analytics/consumers', token),
 
   labAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/lab', token),
 
-  reportAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/reports', token),
+  reportAnalytics: (token: string) =>
+    apiGet<Record<string, unknown>>('/admin/analytics/reports', token),
 
   featureFlags: (token: string) => apiGet<Record<string, unknown>[]>('/admin/feature-flags', token),
 
@@ -117,6 +126,5 @@ export const adminApi = {
 
   backupsList: (token: string) => apiGet<Record<string, unknown>[]>('/admin/backups', token),
 
-  triggerBackup: (token: string) =>
-    apiPost<Record<string, unknown>>('/admin/backups', {}, token),
+  triggerBackup: (token: string) => apiPost<Record<string, unknown>>('/admin/backups', {}, token),
 };

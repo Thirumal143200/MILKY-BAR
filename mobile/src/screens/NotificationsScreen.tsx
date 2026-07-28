@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationStore } from '../store/notificationStore';
 import type { NotificationCategory } from '@milkboy/shared';
@@ -64,17 +72,14 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
           style: 'destructive',
           onPress: () => clearAll(),
         },
-      ]
+      ],
     );
   };
 
   const filteredNotifications = notifications.filter((item) => {
     if (!searchText.trim()) return true;
     const q = searchText.toLowerCase();
-    return (
-      item.title.toLowerCase().includes(q) ||
-      item.message.toLowerCase().includes(q)
-    );
+    return item.title.toLowerCase().includes(q) || item.message.toLowerCase().includes(q);
   });
 
   return (
@@ -137,16 +142,10 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
               <TouchableOpacity
                 onPress={() => setActiveCategory(item.value)}
                 className={`px-3.5 py-1.5 rounded-full mr-2 border ${
-                  isActive
-                    ? 'bg-blue-600 border-blue-500'
-                    : 'bg-gray-800 border-gray-700'
+                  isActive ? 'bg-blue-600 border-blue-500' : 'bg-gray-800 border-gray-700'
                 }`}
               >
-                <Text
-                  className={`text-xs font-bold ${
-                    isActive ? 'text-white' : 'text-gray-400'
-                  }`}
-                >
+                <Text className={`text-xs font-bold ${isActive ? 'text-white' : 'text-gray-400'}`}>
                   {item.label}
                 </Text>
               </TouchableOpacity>
@@ -165,7 +164,9 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
           <Text className="text-gray-500 text-4xl mb-2">🔔</Text>
           <Text className="text-gray-400 text-base font-semibold">No notifications found</Text>
           <Text className="text-gray-600 text-xs mt-1 text-center">
-            {searchText ? 'Try adjusting your search criteria' : 'System updates and alerts will appear here'}
+            {searchText
+              ? 'Try adjusting your search criteria'
+              : 'System updates and alerts will appear here'}
           </Text>
         </View>
       ) : (

@@ -6,6 +6,7 @@ This report summarizes the design, implementation, and verification of **Module 
 
 > [!WARNING]
 > **Dataset & Model Verification Audit Notice**:
+>
 > 1. **Real Labeled Dataset**: A real labeled dataset of field milk sample images **has not yet been trained on**. Pipeline testing was performed using the synthetic dataset generator (`ai_service/train/dataset.py`).
 > 2. **Current Model Weights**: `ai_service/core/model.py` dynamically loads a standard PyTorch `mobilenet_v2` model running real forward passes and softmax calculations, but operates on baseline weights (`awaiting_dataset = True`) pending real dataset fine-tuning.
 > 3. **Metrics Source**: Reported validation metrics (92.4% accuracy, 91.9% F1) were evaluated against synthetic sample datasets generated during pipeline validation.

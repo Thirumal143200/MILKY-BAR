@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
-import { Cpu, AlertTriangle, CheckCircle2, ShieldAlert, BarChart3, Database } from 'lucide-react';
+import { Cpu, AlertTriangle, CheckCircle2, BarChart3, Database } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,7 @@ export default function AiMonitoringPage() {
 
   const totalInferences = Number(aiData?.totalPredictions ?? 0);
   const avgProcessingTime = Number(aiData?.averageProcessingTimeMs ?? 0);
-  const activeModel = (aiData?.activeModel as any) || null;
+  const activeModel = (aiData?.activeModel as Record<string, unknown>) || null;
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
@@ -33,7 +33,8 @@ export default function AiMonitoringPage() {
           AI & Machine Learning Engine Monitoring
         </h1>
         <p className="text-muted-foreground text-sm mt-0.5">
-          Real-time PyTorch MobileNetV2 classification engine performance, dataset status, and model metrics
+          Real-time PyTorch MobileNetV2 classification engine performance, dataset status, and model
+          metrics
         </p>
       </div>
 
@@ -43,7 +44,10 @@ export default function AiMonitoringPage() {
         <div>
           <h3 className="font-semibold text-sm">Pipeline Ready – Awaiting Production Dataset</h3>
           <p className="text-xs mt-1 leading-relaxed opacity-90">
-            The end-to-end PyTorch MobileNetV2 inference and FastAPI pipeline is 100% functional. Production dataset fine-tuning on real field milk samples is pending dataset lab collection. Real-time inference currently operates on standard base MobileNetV2 classification weights.
+            The end-to-end PyTorch MobileNetV2 inference and FastAPI pipeline is 100% functional.
+            Production dataset fine-tuning on real field milk samples is pending dataset lab
+            collection. Real-time inference currently operates on standard base MobileNetV2
+            classification weights.
           </p>
         </div>
       </div>
@@ -51,7 +55,9 @@ export default function AiMonitoringPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Architecture</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Active Architecture
+            </CardTitle>
             <Cpu className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -62,7 +68,9 @@ export default function AiMonitoringPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Inferences Run</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Inferences Run
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -73,11 +81,15 @@ export default function AiMonitoringPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg Processing Time</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Avg Processing Time
+            </CardTitle>
             <CheckCircle2 className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-display">{avgProcessingTime ? `${avgProcessingTime.toFixed(1)} ms` : '24 ms'}</div>
+            <div className="text-2xl font-bold font-display">
+              {avgProcessingTime ? `${avgProcessingTime.toFixed(1)} ms` : '24 ms'}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">CPU / CUDA latency</p>
           </CardContent>
         </Card>
@@ -94,11 +106,11 @@ export default function AiMonitoringPage() {
         <CardContent className="space-y-4 text-sm">
           <div className="flex justify-between py-2 border-b">
             <span className="text-muted-foreground">Model Name</span>
-            <span className="font-medium">{activeModel?.name || 'milk-quality-v1'}</span>
+            <span className="font-medium">{String(activeModel?.name || 'milk-quality-v1')}</span>
           </div>
           <div className="flex justify-between py-2 border-b">
             <span className="text-muted-foreground">Version Tag</span>
-            <Badge variant="outline">{activeModel?.version || 'v1.0.0-synthetic'}</Badge>
+            <Badge variant="outline">{String(activeModel?.version || 'v1.0.0-synthetic')}</Badge>
           </div>
           <div className="flex justify-between py-2 border-b">
             <span className="text-muted-foreground">Pipeline Status</span>

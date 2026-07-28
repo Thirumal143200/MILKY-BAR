@@ -4,7 +4,6 @@ import type {
   NotificationItem,
   NotificationCategory,
   NotificationPreferences,
-  DEFAULT_NOTIFICATION_PREFERENCES,
 } from '@milkboy/shared';
 
 interface NotificationState {

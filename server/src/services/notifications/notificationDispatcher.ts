@@ -59,7 +59,9 @@ export class NotificationDispatcher extends EventEmitter {
 
       if (payload.role) {
         const count = await notificationsService.dispatchToRole(payload.role, data);
-        log.info(`Dispatched role event '${payload.event}' to ${count} users in role '${payload.role}'`);
+        log.info(
+          `Dispatched role event '${payload.event}' to ${count} users in role '${payload.role}'`,
+        );
         return count;
       }
 

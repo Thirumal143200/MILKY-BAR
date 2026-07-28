@@ -31,14 +31,14 @@ This report summarizes the design, implementation, verification, and completion 
 
 ## 2. Technical Evidence Matrix
 
-| Component | File / Table | Status |
-| :--- | :--- | :--- |
-| Database Schema | Tables: `notifications`, `user_devices`, `system_settings` | Verified & Active |
-| Shared Package | `@milkboy/shared/types/notification.types.ts` | Compiled & Built |
-| Event Dispatcher | `server/src/services/notifications/notificationDispatcher.ts` | Active & Wired |
-| Controller & Routes | `server/src/modules/notifications/` | Active & Mounted |
-| Mobile Store & Screen | `mobile/src/store/notificationStore.ts` & `NotificationsScreen.tsx` | Active & Integrated |
-| Integration Tests | `server/src/modules/notifications/__tests__/notifications.integration.test.ts` | 11 / 11 Passed |
+| Component             | File / Table                                                                   | Status              |
+| :-------------------- | :----------------------------------------------------------------------------- | :------------------ |
+| Database Schema       | Tables: `notifications`, `user_devices`, `system_settings`                     | Verified & Active   |
+| Shared Package        | `@milkboy/shared/types/notification.types.ts`                                  | Compiled & Built    |
+| Event Dispatcher      | `server/src/services/notifications/notificationDispatcher.ts`                  | Active & Wired      |
+| Controller & Routes   | `server/src/modules/notifications/`                                            | Active & Mounted    |
+| Mobile Store & Screen | `mobile/src/store/notificationStore.ts` & `NotificationsScreen.tsx`            | Active & Integrated |
+| Integration Tests     | `server/src/modules/notifications/__tests__/notifications.integration.test.ts` | 11 / 11 Passed      |
 
 ---
 

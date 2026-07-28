@@ -9,7 +9,12 @@ import { db } from '../../database/connection.js';
 import { generateId } from '../../utils/crypto.js';
 import { AppError } from '../../utils/AppError.js';
 import { ERROR_CODES, buildPaginationMeta, calculateOffset } from '@milkboy/shared';
-import type { PaginationInput, BatchSyncPayload, BatchSyncResponse, BatchSyncResultItem } from '@milkboy/shared';
+import type {
+  PaginationInput,
+  BatchSyncPayload,
+  BatchSyncResponse,
+  BatchSyncResultItem,
+} from '@milkboy/shared';
 import { createModuleLogger } from '../../utils/logger.js';
 import { notificationDispatcher } from '../../services/notifications/notificationDispatcher.js';
 import { imageProcessor } from '../../services/image/processor.service.js';
@@ -124,13 +129,15 @@ export class ScansService {
     if (!hasPassedImages) {
       await this.updateStatus(scanId, 'rejected');
 
-      notificationDispatcher.dispatch({
-        event: 'scan:poor_quality',
-        userId,
-        title: 'Poor Image Quality',
-        message: 'All uploaded images failed quality checks. Please retake images.',
-        data: { scanId },
-      }).catch(() => {});
+      notificationDispatcher
+        .dispatch({
+          event: 'scan:poor_quality',
+          userId,
+          title: 'Poor Image Quality',
+          message: 'All uploaded images failed quality checks. Please retake images.',
+          data: { scanId },
+        })
+        .catch(() => {});
 
       throw AppError.badRequest(
         ERROR_CODES.IMG_QUALITY_TOO_LOW,
@@ -143,21 +150,25 @@ export class ScansService {
 
     log.info(`Scan ${scanId} analyzed successfully. Status: completed`);
 
-    notificationDispatcher.dispatch({
-      event: 'scan:completed',
-      userId,
-      title: 'Scan Analysis Completed',
-      message: `Milk quality scan '${scanId.substring(0, 8)}' has been successfully analyzed.`,
-      data: { scanId },
-    }).catch(() => {});
+    notificationDispatcher
+      .dispatch({
+        event: 'scan:completed',
+        userId,
+        title: 'Scan Analysis Completed',
+        message: `Milk quality scan '${scanId.substring(0, 8)}' has been successfully analyzed.`,
+        data: { scanId },
+      })
+      .catch(() => {});
 
-    notificationDispatcher.dispatch({
-      event: 'scan:ai_ready',
-      userId,
-      title: 'AI Prediction Ready',
-      message: `AI quality prediction is ready for scan '${scanId.substring(0, 8)}'.`,
-      data: { scanId },
-    }).catch(() => {});
+    notificationDispatcher
+      .dispatch({
+        event: 'scan:ai_ready',
+        userId,
+        title: 'AI Prediction Ready',
+        message: `AI quality prediction is ready for scan '${scanId.substring(0, 8)}'.`,
+        data: { scanId },
+      })
+      .catch(() => {});
 
     return predictions;
   }
@@ -188,13 +199,15 @@ export class ScansService {
     const scan = await db('scans').where('id', scanId).first();
     log.info(`Scan created: ${scanId} by user ${userId}`);
 
-    notificationDispatcher.dispatch({
-      event: 'scan:started',
-      userId,
-      title: 'Scan Started',
-      message: `Milk quality scan '${scan.title || scanId.substring(0, 8)}' has been initiated.`,
-      data: { scanId },
-    }).catch(() => {});
+    notificationDispatcher
+      .dispatch({
+        event: 'scan:started',
+        userId,
+        title: 'Scan Started',
+        message: `Milk quality scan '${scan.title || scanId.substring(0, 8)}' has been initiated.`,
+        data: { scanId },
+      })
+      .catch(() => {});
 
     return this.formatScan(scan);
   }
@@ -316,7 +329,7 @@ export class ScansService {
       images: images.map((i: Record<string, unknown>) => this.formatImage(i)),
       qualityChecks,
       predictions: predictions.map((p: Record<string, unknown>) => this.formatPrediction(p)),
-      report: report ? this.formatReport(report) : null,
+      report: report ? this.formatReport(report) : undefined,
     };
   }
 
@@ -356,68 +369,68 @@ export class ScansService {
 
   private formatScan(row: Record<string, unknown>) {
     return {
-      id: row.id,
-      userId: row.user_id,
-      status: row.status,
-      title: row.title,
-      notes: row.notes,
+      id: String(row.id),
+      userId: String(row.user_id),
+      status: String(row.status) as any,
+      title: row.title ? String(row.title) : undefined,
+      notes: row.notes ? String(row.notes) : undefined,
       location: row.latitude
         ? {
             latitude: Number(row.latitude),
             longitude: Number(row.longitude),
-            address: row.address,
+            address: row.address ? String(row.address) : undefined,
           }
         : undefined,
-      imageCount: row.image_count ?? 0,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-      completedAt: row.completed_at,
-      qualityLabel: row.quality_label,
+      imageCount: Number(row.image_count ?? 0),
+      createdAt: String(row.created_at),
+      updatedAt: String(row.updated_at),
+      completedAt: row.completed_at ? String(row.completed_at) : undefined,
+      qualityLabel: row.quality_label ? (String(row.quality_label) as any) : undefined,
       confidence: row.confidence ? Number(row.confidence) : undefined,
     };
   }
 
   private formatImage(row: Record<string, unknown>) {
     return {
-      id: row.id,
-      scanId: row.scan_id,
-      originalPath: row.original_path,
-      processedPath: row.processed_path,
-      thumbnailPath: row.thumbnail_path,
-      originalFilename: row.original_filename,
-      mimeType: row.mime_type,
-      fileSize: row.file_size,
-      width: row.width,
-      height: row.height,
+      id: String(row.id),
+      scanId: String(row.scan_id),
+      originalPath: String(row.original_path),
+      processedPath: String(row.processed_path),
+      thumbnailPath: row.thumbnail_path ? String(row.thumbnail_path) : undefined,
+      originalFilename: String(row.original_filename),
+      mimeType: String(row.mime_type),
+      fileSize: Number(row.file_size),
+      width: row.width ? Number(row.width) : undefined,
+      height: row.height ? Number(row.height) : undefined,
       qualityScore: row.quality_score ? Number(row.quality_score) : undefined,
-      qualityStatus: row.quality_status,
-      createdAt: row.created_at,
+      qualityStatus: row.quality_status ? (String(row.quality_status) as any) : undefined,
+      createdAt: String(row.created_at),
     };
   }
 
   private formatPrediction(row: Record<string, unknown>) {
     return {
-      id: row.id,
-      scanId: row.scan_id,
-      imageId: row.image_id,
-      modelVersionId: row.model_version_id,
-      qualityLabel: row.quality_label,
+      id: String(row.id),
+      scanId: String(row.scan_id),
+      imageId: String(row.image_id),
+      modelVersionId: String(row.model_version_id || ''),
+      qualityLabel: String(row.quality_label) as any,
       confidence: Number(row.confidence),
-      explanation: row.explanation,
+      explanation: String(row.explanation || ''),
       rawScores:
         typeof row.raw_scores === 'string' ? JSON.parse(row.raw_scores as string) : row.raw_scores,
-      processingTimeMs: row.processing_time_ms,
-      createdAt: row.created_at,
+      processingTimeMs: Number(row.processing_time_ms ?? 0),
+      createdAt: String(row.created_at),
     };
   }
 
   private formatReport(row: Record<string, unknown>) {
     return {
-      id: row.id,
-      scanId: row.scan_id,
-      filePath: row.file_path,
-      fileSize: row.file_size,
-      generatedAt: row.generated_at,
+      id: String(row.id),
+      scanId: String(row.scan_id),
+      filePath: String(row.file_path),
+      fileSize: Number(row.file_size),
+      generatedAt: String(row.generated_at),
     };
   }
 
@@ -501,7 +514,9 @@ export class ScansService {
 
         // Create scan record
         const scanId = generateId();
-        const createdAt = item.timestamp ? new Date(item.timestamp).toISOString() : new Date().toISOString();
+        const createdAt = item.timestamp
+          ? new Date(item.timestamp).toISOString()
+          : new Date().toISOString();
 
         await db('scans').insert({
           id: scanId,
@@ -562,26 +577,32 @@ export class ScansService {
       }
     }
 
-    log.info(`Batch sync completed for user ${userId}: ${syncedCount} synced, ${duplicateCount} duplicates, ${failedCount} failed.`);
+    log.info(
+      `Batch sync completed for user ${userId}: ${syncedCount} synced, ${duplicateCount} duplicates, ${failedCount} failed.`,
+    );
 
     if (syncedCount > 0) {
-      notificationDispatcher.dispatch({
-        event: 'sync:success',
-        userId,
-        title: 'Offline Sync Complete',
-        message: `Successfully synchronized ${syncedCount} offline scan record(s).`,
-        data: { syncedCount, duplicateCount, failedCount },
-      }).catch(() => {});
+      notificationDispatcher
+        .dispatch({
+          event: 'sync:success',
+          userId,
+          title: 'Offline Sync Complete',
+          message: `Successfully synchronized ${syncedCount} offline scan record(s).`,
+          data: { syncedCount, duplicateCount, failedCount },
+        })
+        .catch(() => {});
     }
 
     if (failedCount > 0) {
-      notificationDispatcher.dispatch({
-        event: 'sync:failed',
-        userId,
-        title: 'Offline Sync Warning',
-        message: `${failedCount} offline scan record(s) failed to sync. Retry required.`,
-        data: { failedCount },
-      }).catch(() => {});
+      notificationDispatcher
+        .dispatch({
+          event: 'sync:failed',
+          userId,
+          title: 'Offline Sync Warning',
+          message: `${failedCount} offline scan record(s) failed to sync. Retry required.`,
+          data: { failedCount },
+        })
+        .catch(() => {});
     }
 
     return {
@@ -595,4 +616,3 @@ export class ScansService {
 }
 
 export const scansService = new ScansService();
-

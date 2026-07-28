@@ -39,6 +39,7 @@
 ## 2. Files Created & Modified
 
 ### Modified Files:
+
 - [package.json](file:///c:/Users/thiru/Downloads/MILK%20BOY/mobile/package.json) (Added `@react-native-community/netinfo`)
 - [scan.types.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/packages/shared/src/types/scan.types.ts) (Added BatchSync types)
 - [001_initial_schema.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/database/migrations/001_initial_schema.ts) (Added `client_scan_id` column & index)
@@ -49,6 +50,7 @@
 - [ScanHistoryScreen.tsx](file:///c:/Users/thiru/Downloads/MILK%20BOY/mobile/src/screens/ScanHistoryScreen.tsx) (Integrated `OfflineSyncBanner`)
 
 ### Created Files:
+
 - `mobile/src/services/network.service.ts`
 - `mobile/src/services/syncWorker.ts`
 - `mobile/src/components/OfflineSyncBanner.tsx`

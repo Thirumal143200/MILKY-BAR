@@ -22,7 +22,9 @@ describe('Enterprise Notification System Integration Tests', () => {
   beforeAll(async () => {
     try {
       await down(db);
-    } catch {}
+    } catch {
+      // ignore rollback error if tables do not exist
+    }
     await up(db);
 
     roleId = 'role-producer-notif-test';
@@ -41,14 +43,29 @@ describe('Enterprise Notification System Integration Tests', () => {
 
     // Seed notification permissions
     const perms = [
-      { id: 'perm-notif-read', name: 'notifications:read', resource: 'notifications', action: 'read' },
-      { id: 'perm-notif-update', name: 'notifications:update', resource: 'notifications', action: 'update' },
-      { id: 'perm-notif-delete', name: 'notifications:delete', resource: 'notifications', action: 'delete' },
+      {
+        id: 'perm-notif-read',
+        name: 'notifications:read',
+        resource: 'notifications',
+        action: 'read',
+      },
+      {
+        id: 'perm-notif-update',
+        name: 'notifications:update',
+        resource: 'notifications',
+        action: 'update',
+      },
+      {
+        id: 'perm-notif-delete',
+        name: 'notifications:delete',
+        resource: 'notifications',
+        action: 'delete',
+      },
     ];
     await db('permissions').insert(perms);
 
     await db('role_permissions').insert(
-      perms.map((p) => ({ role_id: roleId, permission_id: p.id }))
+      perms.map((p) => ({ role_id: roleId, permission_id: p.id })),
     );
 
     testUserId = 'user-notif-001';
@@ -94,7 +111,9 @@ describe('Enterprise Notification System Integration Tests', () => {
 
     expect(count).toBe(1);
 
-    const dbNotif = await db('notifications').where({ user_id: testUserId, type: 'scan:completed' }).first();
+    const dbNotif = await db('notifications')
+      .where({ user_id: testUserId, type: 'scan:completed' })
+      .first();
     expect(dbNotif).toBeDefined();
     expect(dbNotif.title).toBe('Test Scan Completed');
     expect(dbNotif.category).toBe('scan');
@@ -110,7 +129,9 @@ describe('Enterprise Notification System Integration Tests', () => {
 
     expect(count).toBeGreaterThanOrEqual(1);
 
-    const dbNotif = await db('notifications').where({ user_id: testUserId, type: 'admin:system_warning' }).first();
+    const dbNotif = await db('notifications')
+      .where({ user_id: testUserId, type: 'admin:system_warning' })
+      .first();
     expect(dbNotif).toBeDefined();
     expect(dbNotif.category).toBe('admin');
   });
@@ -176,7 +197,9 @@ describe('Enterprise Notification System Integration Tests', () => {
     expect(res.status).toBe(201);
     expect(res.body.data.push_token).toBe(payload.token);
 
-    const dbDevice = await db('user_devices').where({ user_id: testUserId, push_token: payload.token }).first();
+    const dbDevice = await db('user_devices')
+      .where({ user_id: testUserId, push_token: payload.token })
+      .first();
     expect(dbDevice).toBeDefined();
   });
 

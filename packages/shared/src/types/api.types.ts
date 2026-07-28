@@ -22,14 +22,15 @@ export interface ApiErrorResponse {
   };
 }
 
-/** Pagination metadata */
+/** Pagination & count metadata */
 export interface ResponseMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  page?: number;
+  limit?: number;
+  total?: number;
+  totalPages?: number;
+  hasNext?: boolean;
+  hasPrev?: boolean;
+  unreadCount?: number;
 }
 
 /** Paginated query params */

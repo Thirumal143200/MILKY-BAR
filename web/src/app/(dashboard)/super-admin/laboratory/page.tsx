@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
-import { FlaskConical, CheckCircle2, XCircle, Clock, ShieldCheck } from 'lucide-react';
+import { FlaskConical, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,14 +34,17 @@ export default function LaboratoryPage() {
           Laboratory Validations & Staff Overview
         </h1>
         <p className="text-muted-foreground text-sm mt-0.5">
-          Laboratory staff workload, pending scan validation requests, confirmed vs rejected sample breakdown
+          Laboratory staff workload, pending scan validation requests, confirmed vs rejected sample
+          breakdown
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Queue</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Pending Queue
+            </CardTitle>
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
@@ -52,7 +55,9 @@ export default function LaboratoryPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Confirmed Samples</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Confirmed Samples
+            </CardTitle>
             <CheckCircle2 className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
@@ -63,7 +68,9 @@ export default function LaboratoryPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Rejected Samples</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Rejected Samples
+            </CardTitle>
             <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
@@ -74,7 +81,9 @@ export default function LaboratoryPage() {
 
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Lab Technicians</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Lab Technicians
+            </CardTitle>
             <FlaskConical className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>

@@ -20,7 +20,9 @@ describe('Batch Synchronization API Endpoint Integration Tests', () => {
     // Reset schema to ensure clean isolated test DB with latest columns
     try {
       await down(db);
-    } catch {}
+    } catch {
+      // ignore rollback error if tables do not exist
+    }
     await up(db);
 
     const roleId = 'role-producer-batch-test';

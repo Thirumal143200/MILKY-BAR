@@ -705,9 +705,18 @@ export class AdminService {
       .count('* as count')
       .first();
 
-    const confirmed = await db('lab_validations').where('result', 'confirmed').count('* as count').first();
-    const rejected = await db('lab_validations').where('result', 'rejected').count('* as count').first();
-    const inconclusive = await db('lab_validations').where('result', 'inconclusive').count('* as count').first();
+    const confirmed = await db('lab_validations')
+      .where('result', 'confirmed')
+      .count('* as count')
+      .first();
+    const rejected = await db('lab_validations')
+      .where('result', 'rejected')
+      .count('* as count')
+      .first();
+    const inconclusive = await db('lab_validations')
+      .where('result', 'inconclusive')
+      .count('* as count')
+      .first();
 
     return {
       totalLabStaff: Number(labStaff?.count ?? 0),
