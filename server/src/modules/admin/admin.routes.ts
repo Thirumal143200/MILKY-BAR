@@ -93,6 +93,26 @@ router.get(
   adminController.getUserAnalytics.bind(adminController),
 );
 router.get(
+  '/analytics/producers',
+  requirePermission('analytics', 'read'),
+  adminController.getProducerAnalytics.bind(adminController),
+);
+router.get(
+  '/analytics/consumers',
+  requirePermission('analytics', 'read'),
+  adminController.getConsumerAnalytics.bind(adminController),
+);
+router.get(
+  '/analytics/lab',
+  requirePermission('analytics', 'read'),
+  adminController.getLabAnalytics.bind(adminController),
+);
+router.get(
+  '/analytics/reports',
+  requirePermission('analytics', 'read'),
+  adminController.getReportAnalytics.bind(adminController),
+);
+router.get(
   '/analytics/milk',
   requirePermission('analytics', 'read'),
   adminController.getMilkAnalytics.bind(adminController),
@@ -101,6 +121,11 @@ router.get(
   '/analytics',
   requirePermission('analytics', 'read'),
   adminController.getAnalytics.bind(adminController),
+);
+router.get(
+  '/monitoring',
+  requirePermission('settings', 'read'),
+  adminController.getSystemMonitoring.bind(adminController),
 );
 router.get(
   '/system/health',
@@ -116,6 +141,19 @@ router.get(
   '/system/ai',
   requirePermission('settings', 'read'),
   adminController.getAiModelMonitoring.bind(adminController),
+);
+
+// Feature Flags
+router.get(
+  '/feature-flags',
+  requirePermission('feature_flags', 'read'),
+  adminController.getFeatureFlags.bind(adminController),
+);
+router.put(
+  '/feature-flags',
+  requirePermission('feature_flags', 'read'),
+  auditMiddleware('feature_flag_toggle', 'feature_flags'),
+  adminController.updateFeatureFlag.bind(adminController),
 );
 
 // Settings

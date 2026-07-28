@@ -628,6 +628,170 @@ export class AdminService {
     }
     return size;
   }
+
+  /**
+   * Get producer statistics and collection metrics.
+   */
+  async getProducerAnalytics() {
+    const producerRole = await db('roles').where('name', 'producer').first();
+    const roleId = producerRole ? producerRole.id : '';
+
+    const producers = await db('users')
+      .where('role_id', roleId)
+      .select('id', 'email', 'first_name', 'last_name', 'status', 'created_at');
+
+    const totalProducers = producers.length;
+    const activeProducers = producers.filter((p) => p.status === 'active').length;
+
+    const collections = await db('scans')
+      .join('users', 'scans.user_id', 'users.id')
+      .where('users.role_id', roleId)
+      .count('* as count')
+      .first();
+
+    return {
+      totalProducers,
+      activeProducers,
+      totalCollections: Number(collections?.count ?? 0),
+      producersList: producers.map((p) => ({
+        id: p.id,
+        email: p.email,
+        name: `${p.first_name} ${p.last_name}`,
+        status: p.status,
+        createdAt: p.created_at,
+      })),
+    };
+  }
+
+  /**
+   * Get consumer statistics and consumption metrics.
+   */
+  async getConsumerAnalytics() {
+    const consumerRole = await db('roles').where('name', 'consumer').first();
+    const roleId = consumerRole ? consumerRole.id : '';
+
+    const consumers = await db('users')
+      .where('role_id', roleId)
+      .select('id', 'email', 'first_name', 'last_name', 'status', 'created_at');
+
+    const totalConsumers = consumers.length;
+    const activeConsumers = consumers.filter((c) => c.status === 'active').length;
+
+    return {
+      totalConsumers,
+      activeConsumers,
+      consumersList: consumers.map((c) => ({
+        id: c.id,
+        email: c.email,
+        name: `${c.first_name} ${c.last_name}`,
+        status: c.status,
+        createdAt: c.created_at,
+      })),
+    };
+  }
+
+  /**
+   * Get laboratory validation metrics and review counts.
+   */
+  async getLabAnalytics() {
+    const labRole = await db('roles').where('name', 'lab_staff').first();
+    const roleId = labRole ? labRole.id : '';
+
+    const labStaff = await db('users').where('role_id', roleId).count('* as count').first();
+    const pendingReviews = await db('scans')
+      .leftJoin('lab_validations', 'scans.id', 'lab_validations.scan_id')
+      .where('scans.status', 'completed')
+      .whereNull('lab_validations.id')
+      .count('* as count')
+      .first();
+
+    const confirmed = await db('lab_validations').where('result', 'confirmed').count('* as count').first();
+    const rejected = await db('lab_validations').where('result', 'rejected').count('* as count').first();
+    const inconclusive = await db('lab_validations').where('result', 'inconclusive').count('* as count').first();
+
+    return {
+      totalLabStaff: Number(labStaff?.count ?? 0),
+      pendingReviewsCount: Number(pendingReviews?.count ?? 0),
+      confirmedCount: Number(confirmed?.count ?? 0),
+      rejectedCount: Number(rejected?.count ?? 0),
+      inconclusiveCount: Number(inconclusive?.count ?? 0),
+    };
+  }
+
+  /**
+   * Get report generation and QR verification metrics.
+   */
+  async getReportAnalytics() {
+    const totalReports = await db('reports').count('* as count').first();
+    const totalQrCodes = await db('report_qr_codes').count('* as count').first();
+    const totalAuditVerifications = await db('audit_logs')
+      .where('action', 'report_download')
+      .count('* as count')
+      .first();
+
+    return {
+      totalReportsGenerated: Number(totalReports?.count ?? 0),
+      totalQrCodesIssued: Number(totalQrCodes?.count ?? 0),
+      totalVerifications: Number(totalAuditVerifications?.count ?? 0),
+    };
+  }
+
+  /**
+   * Get full system resource & active sessions monitoring metrics.
+   */
+  async getSystemMonitoring() {
+    const activeSessions = await db('user_sessions')
+      .where('expires_at', '>', new Date().toISOString())
+      .count('* as count')
+      .first();
+
+    const memUsage = process.memoryUsage();
+    const uptimeSeconds = Math.floor(process.uptime());
+
+    return {
+      uptimeSeconds,
+      activeSessionsCount: Number(activeSessions?.count ?? 0),
+      memory: {
+        rssMb: Math.round(memUsage.rss / 1024 / 1024),
+        heapTotalMb: Math.round(memUsage.heapTotal / 1024 / 1024),
+        heapUsedMb: Math.round(memUsage.heapUsed / 1024 / 1024),
+      },
+      nodeVersion: process.version,
+      environment: config.nodeEnv,
+    };
+  }
+
+  /**
+   * List all feature flags.
+   */
+  async getFeatureFlags() {
+    return db('feature_flags').select('*');
+  }
+
+  /**
+   * Update feature flag toggle.
+   */
+  async updateFeatureFlag(name: string, enabled: boolean) {
+    const flag = await db('feature_flags').where('name', name).first();
+    if (!flag) {
+      const id = generateId();
+      await db('feature_flags').insert({
+        id,
+        name,
+        description: `Feature flag ${name}`,
+        enabled,
+        updated_at: new Date().toISOString(),
+      });
+    } else {
+      await db('feature_flags').where('name', name).update({
+        enabled,
+        updated_at: new Date().toISOString(),
+      });
+    }
+
+    log.info(`Feature flag '${name}' set to ${enabled}`);
+    return db('feature_flags').where('name', name).first();
+  }
 }
 
 export const adminService = new AdminService();

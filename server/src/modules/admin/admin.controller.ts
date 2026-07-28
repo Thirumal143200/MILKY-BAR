@@ -218,6 +218,70 @@ export class AdminController {
       next(error);
     }
   }
+
+  async getProducerAnalytics(_req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await svc.getProducerAnalytics();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getConsumerAnalytics(_req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await svc.getConsumerAnalytics();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getLabAnalytics(_req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await svc.getLabAnalytics();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getReportAnalytics(_req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await svc.getReportAnalytics();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSystemMonitoring(_req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await svc.getSystemMonitoring();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getFeatureFlags(_req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await svc.getFeatureFlags();
+      sendSuccess(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateFeatureFlag(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { name, enabled } = req.body;
+      const result = await svc.updateFeatureFlag(String(name), Boolean(enabled));
+      sendSuccess(res, result, 200, 'Feature flag updated successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const adminController = new AdminController();

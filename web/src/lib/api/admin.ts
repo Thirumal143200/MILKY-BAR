@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from './client';
+import { apiGet, apiPatch, apiPost, apiDelete, apiPut } from './client';
 import type { User, UserProfile } from '@milkboy/shared';
 
 interface PaginatedResponse<T> {
@@ -8,11 +8,14 @@ interface PaginatedResponse<T> {
 
 interface AdminUser extends User {
   roleId: string;
+  role: string;
+  status: string;
 }
 
 interface AuditLog {
   id: string;
   userId: string;
+  userEmail?: string;
   action: string;
   resource: string;
   resourceId?: string;
@@ -66,24 +69,54 @@ export const adminApi = {
     return apiGet<PaginatedResponse<AdminUser>>(`/admin/users${qs ? `?${qs}` : ''}`, token);
   },
 
-  updateUserRole: (token: string, userId: string, role: string) =>
-    apiPatch<AdminUser>(`/admin/users/${userId}/role`, { role }, token),
+  createUser: (token: string, data: Record<string, unknown>) =>
+    apiPost<AdminUser>('/admin/users', data, token),
 
-  updateUserStatus: (token: string, userId: string, status: string) =>
-    apiPatch<AdminUser>(`/admin/users/${userId}/status`, { status }, token),
+  updateUser: (token: string, userId: string, data: Record<string, unknown>) =>
+    apiPatch<AdminUser>(`/admin/users/${userId}`, data, token),
+
+  deleteUser: (token: string, userId: string) =>
+    apiDelete<null>(`/admin/users/${userId}`, token),
+
+  deactivateUser: (token: string, userId: string) =>
+    apiPost<null>(`/admin/users/${userId}/deactivate`, {}, token),
+
+  reactivateUser: (token: string, userId: string) =>
+    apiPost<null>(`/admin/users/${userId}/reactivate`, {}, token),
 
   auditLogs: (
     token: string,
-    params?: { page?: number; limit?: number; userId?: string; action?: string },
+    params?: { page?: number; limit?: number; userId?: string; action?: string; search?: string },
   ) => {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
     return apiGet<PaginatedResponse<AuditLog>>(`/admin/audit-logs${qs ? `?${qs}` : ''}`, token);
   },
 
-  systemHealth: (token: string) => apiGet<SystemHealth>('/admin/health', token),
+  systemHealth: (token: string) => apiGet<SystemHealth>('/admin/system/health', token),
+
+  systemMonitoring: (token: string) => apiGet<Record<string, unknown>>('/admin/monitoring', token),
+
+  databaseStatus: (token: string) => apiGet<Record<string, unknown>>('/admin/system/database', token),
+
+  aiModelMonitoring: (token: string) => apiGet<Record<string, unknown>>('/admin/system/ai', token),
 
   analytics: (token: string) => apiGet<AnalyticsMetrics>('/admin/analytics', token),
 
-  backup: (token: string) =>
-    apiPost<{ message: string; downloadUrl: string }>('/admin/backup', {}, token),
+  producersAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/producers', token),
+
+  consumersAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/consumers', token),
+
+  labAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/lab', token),
+
+  reportAnalytics: (token: string) => apiGet<Record<string, unknown>>('/admin/analytics/reports', token),
+
+  featureFlags: (token: string) => apiGet<Record<string, unknown>[]>('/admin/feature-flags', token),
+
+  updateFeatureFlag: (token: string, name: string, enabled: boolean) =>
+    apiPut<Record<string, unknown>>('/admin/feature-flags', { name, enabled }, token),
+
+  backupsList: (token: string) => apiGet<Record<string, unknown>[]>('/admin/backups', token),
+
+  triggerBackup: (token: string) =>
+    apiPost<Record<string, unknown>>('/admin/backups', {}, token),
 };
