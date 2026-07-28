@@ -11,6 +11,7 @@ import { AppError } from '../../utils/AppError.js';
 import { ERROR_CODES, buildPaginationMeta, calculateOffset } from '@milkboy/shared';
 import type { PaginationInput, BatchSyncPayload, BatchSyncResponse, BatchSyncResultItem } from '@milkboy/shared';
 import { createModuleLogger } from '../../utils/logger.js';
+import { notificationDispatcher } from '../../services/notifications/notificationDispatcher.js';
 import { imageProcessor } from '../../services/image/processor.service.js';
 import { inferenceService } from '../../services/ai/inference.service.js';
 
@@ -122,6 +123,15 @@ export class ScansService {
 
     if (!hasPassedImages) {
       await this.updateStatus(scanId, 'rejected');
+
+      notificationDispatcher.dispatch({
+        event: 'scan:poor_quality',
+        userId,
+        title: 'Poor Image Quality',
+        message: 'All uploaded images failed quality checks. Please retake images.',
+        data: { scanId },
+      }).catch(() => {});
+
       throw AppError.badRequest(
         ERROR_CODES.IMG_QUALITY_TOO_LOW,
         'All uploaded images failed quality checks. Please retake the images following the guidelines.',
@@ -132,6 +142,22 @@ export class ScansService {
     await this.updateStatus(scanId, 'completed');
 
     log.info(`Scan ${scanId} analyzed successfully. Status: completed`);
+
+    notificationDispatcher.dispatch({
+      event: 'scan:completed',
+      userId,
+      title: 'Scan Analysis Completed',
+      message: `Milk quality scan '${scanId.substring(0, 8)}' has been successfully analyzed.`,
+      data: { scanId },
+    }).catch(() => {});
+
+    notificationDispatcher.dispatch({
+      event: 'scan:ai_ready',
+      userId,
+      title: 'AI Prediction Ready',
+      message: `AI quality prediction is ready for scan '${scanId.substring(0, 8)}'.`,
+      data: { scanId },
+    }).catch(() => {});
 
     return predictions;
   }
@@ -161,6 +187,14 @@ export class ScansService {
 
     const scan = await db('scans').where('id', scanId).first();
     log.info(`Scan created: ${scanId} by user ${userId}`);
+
+    notificationDispatcher.dispatch({
+      event: 'scan:started',
+      userId,
+      title: 'Scan Started',
+      message: `Milk quality scan '${scan.title || scanId.substring(0, 8)}' has been initiated.`,
+      data: { scanId },
+    }).catch(() => {});
 
     return this.formatScan(scan);
   }
@@ -529,6 +563,26 @@ export class ScansService {
     }
 
     log.info(`Batch sync completed for user ${userId}: ${syncedCount} synced, ${duplicateCount} duplicates, ${failedCount} failed.`);
+
+    if (syncedCount > 0) {
+      notificationDispatcher.dispatch({
+        event: 'sync:success',
+        userId,
+        title: 'Offline Sync Complete',
+        message: `Successfully synchronized ${syncedCount} offline scan record(s).`,
+        data: { syncedCount, duplicateCount, failedCount },
+      }).catch(() => {});
+    }
+
+    if (failedCount > 0) {
+      notificationDispatcher.dispatch({
+        event: 'sync:failed',
+        userId,
+        title: 'Offline Sync Warning',
+        message: `${failedCount} offline scan record(s) failed to sync. Retry required.`,
+        data: { failedCount },
+      }).catch(() => {});
+    }
 
     return {
       syncedCount,

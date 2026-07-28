@@ -1,6 +1,6 @@
 /**
  * @module modules/notifications/notifications.routes
- * Notification route definitions.
+ * Enterprise notification route definitions.
  */
 
 import { Router } from 'express';
@@ -12,6 +12,7 @@ const router = Router();
 
 router.use(authenticate);
 
+// Preferences routes
 router.get(
   '/preferences',
   requirePermission('notifications', 'read'),
@@ -24,10 +25,38 @@ router.put(
   notificationsController.updatePreferences.bind(notificationsController),
 );
 
+// Device Push Token registration
+router.post(
+  '/tokens',
+  requirePermission('notifications', 'update'),
+  notificationsController.registerPushToken.bind(notificationsController),
+);
+
+// Unread notifications endpoint
+router.get(
+  '/unread',
+  requirePermission('notifications', 'read'),
+  notificationsController.getUnread.bind(notificationsController),
+);
+
+// Notification List
 router.get(
   '/',
   requirePermission('notifications', 'read'),
   notificationsController.list.bind(notificationsController),
+);
+
+// Mark single as read (PUT & PATCH)
+router.put(
+  '/read',
+  requirePermission('notifications', 'update'),
+  notificationsController.markAsRead.bind(notificationsController),
+);
+
+router.put(
+  '/:id/read',
+  requirePermission('notifications', 'update'),
+  notificationsController.markAsRead.bind(notificationsController),
 );
 
 router.patch(
@@ -36,18 +65,27 @@ router.patch(
   notificationsController.markAsRead.bind(notificationsController),
 );
 
+// Mark all as read (PUT & POST)
+router.put(
+  '/read-all',
+  requirePermission('notifications', 'update'),
+  notificationsController.markAllAsRead.bind(notificationsController),
+);
+
 router.post(
   '/read-all',
   requirePermission('notifications', 'update'),
   notificationsController.markAllAsRead.bind(notificationsController),
 );
 
+// Delete single notification
 router.delete(
   '/:id',
   requirePermission('notifications', 'delete'),
   notificationsController.delete.bind(notificationsController),
 );
 
+// Delete all notifications
 router.delete(
   '/',
   requirePermission('notifications', 'delete'),

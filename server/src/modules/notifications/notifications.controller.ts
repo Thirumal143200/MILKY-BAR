@@ -8,14 +8,33 @@ import type { AuthRequest } from '../../middleware/auth.js';
 import { notificationsService } from './notifications.service.js';
 import { sendSuccess } from '../../utils/response.js';
 import { paginationSchema } from '@milkboy/shared';
+import type { NotificationCategory } from '@milkboy/shared';
 
 export class NotificationsController {
   async list(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const params = paginationSchema.parse(req.query);
       const unreadOnly = req.query.unreadOnly === 'true';
-      const result = await notificationsService.listByUser(req.user!.id, { ...params, unreadOnly });
+      const category = req.query.category as NotificationCategory | undefined;
+      const search = req.query.search as string | undefined;
+
+      const result = await notificationsService.listByUser(req.user!.id, {
+        ...params,
+        unreadOnly,
+        category,
+        search,
+      });
+
       sendSuccess(res, result.data, 200, undefined, result.meta);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUnread(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await notificationsService.getUnread(req.user!.id);
+      sendSuccess(res, result.data, 200, undefined, { unreadCount: result.unreadCount });
     } catch (error) {
       next(error);
     }
@@ -70,6 +89,15 @@ export class NotificationsController {
     try {
       const preferences = await notificationsService.updatePreferences(req.user!.id, req.body);
       sendSuccess(res, preferences, 200, 'Notification preferences updated successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async registerPushToken(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const device = await notificationsService.registerPushToken(req.user!.id, req.body);
+      sendSuccess(res, device, 201, 'Push token registered successfully.');
     } catch (error) {
       next(error);
     }

@@ -103,6 +103,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     'batches:create',
     'batches:read',
     'notifications:read',
+    'notifications:update',
+    'notifications:delete',
     'feedback:create',
   ],
   consumer: [
@@ -113,6 +115,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     'predictions:read',
     'reports:read',
     'notifications:read',
+    'notifications:update',
+    'notifications:delete',
     'feedback:create',
   ],
   lab_staff: [
@@ -124,6 +128,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     'lab_validations:create',
     'lab_validations:read',
     'notifications:read',
+    'notifications:update',
+    'notifications:delete',
     'feedback:create',
   ],
 };

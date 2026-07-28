@@ -296,14 +296,17 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('notifications', (t) => {
     t.uuid('id').primary().defaultTo(knex.fn.uuid());
     t.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
+    t.string('category', 50).notNullable().defaultTo('system');
     t.string('type', 50).notNullable();
     t.string('title', 200).notNullable();
     t.text('message').notNullable();
+    t.string('priority', 20).notNullable().defaultTo('normal');
     t.json('data');
     t.boolean('read').notNullable().defaultTo(false);
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
 
     t.index('user_id');
+    t.index('category');
     t.index('read');
     t.index('created_at');
   });

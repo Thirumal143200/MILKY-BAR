@@ -76,6 +76,7 @@ app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/users`, userRoutes);
 app.use(`${apiPrefix}/batches`, batchRoutes);
 app.use(`${apiPrefix}/notifications`, notificationRoutes);
+app.use(`${apiPrefix}/notification-preferences`, notificationRoutes);
 app.use(`${apiPrefix}/feedback`, feedbackRoutes);
 app.use(`${apiPrefix}/lab`, labRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);

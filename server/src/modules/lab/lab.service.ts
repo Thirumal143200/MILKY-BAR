@@ -103,6 +103,16 @@ export class LabService {
 
     log.info(`Scan ${scanId} validated as ${data.result} by lab staff ${labStaffId}`);
 
+    const { notificationDispatcher } = await import('../../services/notifications/notificationDispatcher.js');
+    const event = data.result === 'confirmed' ? 'lab:sample_approved' : data.result === 'rejected' ? 'lab:sample_rejected' : 'lab:verification_completed';
+    notificationDispatcher.dispatch({
+      event: event as any,
+      userId: scan.user_id,
+      title: `Laboratory Sample ${data.result.toUpperCase()}`,
+      message: `Laboratory staff completed verification for scan '${scanId.substring(0, 8)}' with result: ${data.result}.`,
+      data: { scanId, validationId, result: data.result },
+    }).catch(() => {});
+
     // Fetch lab staff details for response
     const staff = await db('users').where('id', labStaffId).first();
 
