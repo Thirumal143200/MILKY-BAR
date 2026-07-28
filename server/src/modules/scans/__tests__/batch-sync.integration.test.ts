@@ -3,55 +3,64 @@
  * Integration tests for POST /api/v1/scans/batch-sync endpoint.
  */
 
+import './setup-scans-env.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
-import { createApp } from '../../../app.js';
+import jwt from 'jsonwebtoken';
+import { app } from '../../../app.js';
+import { config } from '../../../config/env.js';
 import { db } from '../../../database/connection.js';
-import { generateTokenPair } from '../../../utils/crypto.js';
-import type { Express } from 'express';
+import { up, down } from '../../../database/migrations/001_initial_schema.js';
 
 describe('Batch Synchronization API Endpoint Integration Tests', () => {
-  let app: Express;
   let authToken: string;
   let testUserId: string;
 
   beforeAll(async () => {
-    app = createApp();
+    // Reset schema to ensure clean isolated test DB with latest columns
+    try {
+      await down(db);
+    } catch {}
+    await up(db);
 
-    // Ensure database connection is ready and schema is migrated
-    await db.migrate.latest();
-
-    // Fetch or create a test role
-    let role = await db('roles').where('name', 'producer').first();
-    if (!role) {
-      role = await db('roles').first();
-    }
+    const roleId = 'role-producer-batch-test';
+    await db('roles').insert({
+      id: roleId,
+      name: 'producer',
+      display_name: 'Producer',
+    });
 
     // Create test user
     testUserId = 'test-batch-user-001';
+
+    // Delete if existing from previous runs
+    await db('scans').where('user_id', testUserId).delete();
+    await db('users').where('id', testUserId).delete();
+
     await db('users').insert({
       id: testUserId,
       email: 'batchuser@test.com',
       password_hash: 'hash123',
       first_name: 'Batch',
       last_name: 'Tester',
-      role_id: role.id,
+      role_id: roleId,
       status: 'active',
       email_verified: true,
     });
 
-    const tokenPair = await generateTokenPair({
-      id: testUserId,
-      email: 'batchuser@test.com',
-      role: 'producer',
-    });
-    authToken = tokenPair.accessToken;
+    authToken = jwt.sign(
+      { sub: testUserId, email: 'batchuser@test.com', role: 'producer', roleId },
+      config.jwt.secret,
+      { expiresIn: '15m' },
+    );
   });
 
   afterAll(async () => {
-    // Cleanup test records
-    await db('scans').where('user_id', testUserId).delete();
-    await db('users').where('id', testUserId).delete();
+    // Cleanup test records safely
+    if (testUserId) {
+      await db('scans').where('user_id', testUserId).delete();
+      await db('users').where('id', testUserId).delete();
+    }
   });
 
   it('should deny unauthorized access without token', async () => {
