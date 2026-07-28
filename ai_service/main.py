@@ -22,8 +22,19 @@ app.add_middleware(
 )
 
 @app.get("/health")
+@app.get("/api/v1/health")
 def health_check():
-    return {"status": "ok", "version": settings.VERSION}
+    return {"status": "healthy", "version": settings.VERSION}
+
+@app.get("/liveness")
+@app.get("/api/v1/liveness")
+def liveness_check():
+    return {"status": "alive", "service": "milkboy-ai"}
+
+@app.get("/readiness")
+@app.get("/api/v1/readiness")
+def readiness_check():
+    return {"status": "ready", "service": "milkboy-ai", "model": "MobileNetV2"}
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 

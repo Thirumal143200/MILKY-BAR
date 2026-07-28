@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: milkboy-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prod_secure_password_99}
+      POSTGRES_DB: ${POSTGRES_DB:-milkboy_prod}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: milkboy-redis-prod
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: milkboy-backend-prod
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DB_CLIENT=pg
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-prod_secure_password_99}@postgres:5432/${POSTGRES_DB:-milkboy_prod}
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:-production_super_secret_jwt_key_2026}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-production_super_secret_refresh_key_2026}
+      - AI_SERVICE_URL=http://ai_service:8000/api/v1
+      - STORAGE_PROVIDER=${STORAGE_PROVIDER:-local}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ai_service:
+        condition: service_healthy
+
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: milkboy-ai-prod
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_NAME=MilkBoy AI Enterprise (Prod)
+      - MODEL_VERSION=v1.0.0-production
+    volumes:
+      - ./ai_service/models:/app/models
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: milkboy-web-prod
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_prod:

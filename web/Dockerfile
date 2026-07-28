@@ -2,41 +2,40 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Copy root and workspace package files
 COPY package*.json ./
 COPY packages/shared/package*.json ./packages/shared/
-COPY server/package*.json ./server/
+COPY web/package*.json ./web/
 
 RUN npm install --workspaces --include-workspace-root
 
 COPY packages/shared ./packages/shared
-COPY server ./server
+COPY web ./web
 
 RUN npm run build --workspace=packages/shared
-RUN npm run build --workspace=server
+RUN npm run build --workspace=web
 
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache curl
-
 ENV NODE_ENV=production
-ENV PORT=4000
+ENV PORT=3000
 
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 expressjs
+    adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/shared ./packages/shared
-COPY --from=builder /app/server/dist ./server/dist
-COPY --from=builder /app/server/package.json ./server/
+COPY --from=builder /app/web ./web
 
-USER expressjs
+USER nextjs
 
-EXPOSE 4000
+EXPOSE 3000
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:4000/health || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-CMD ["npm", "run", "start", "--workspace=server"]
+CMD ["npm", "run", "start", "--workspace=web"]

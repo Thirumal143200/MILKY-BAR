@@ -33,7 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Git repository initialization with conventional commits
 - GitHub Actions CI/CD pipeline (build, test, lint, security scan)
 - Community files: README, LICENSE (MIT), CHANGELOG, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY
-- Comprehensive .gitignore for Node.js monorepo
+- Production multi-stage Dockerfiles for Backend, AI Service, and Next.js Web Dashboard
+- Docker Compose orchestrations for Dev (`docker-compose.yml`) and Prod (`docker-compose.prod.yml`)
+- Health probes (`/health`, `/liveness`, `/readiness`) on Express server and FastAPI AI service
+- Automated CLI database backup (`backup-db.ts`) and restore (`restore-db.ts`) disaster recovery scripts
+- Storage provider abstraction for local vs cloud storage
+- Expo EAS release profiles for Android APK and AAB
 
 ## [1.0.0] - TBD
 

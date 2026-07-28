@@ -57,14 +57,36 @@ if (!config.isTest) {
 // Rate limiting
 app.use(generalLimiter);
 
-// ─── Health Check ─────────────────────────────────────────
-app.get('/health', (_req, res) => {
+// ─── Health Checks ─────────────────────────────────────────
+app.get(['/health', '/api/v1/health'], (_req, res) => {
   sendSuccess(res, {
     status: 'healthy',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     environment: config.nodeEnv,
   });
+});
+
+app.get(['/liveness', '/api/v1/liveness'], (_req, res) => {
+  res.status(200).json({ status: 'alive', uptime: process.uptime() });
+});
+
+app.get(['/readiness', '/api/v1/readiness'], async (_req, res) => {
+  try {
+    const { db } = await import('./database/connection.js');
+    await db.raw('SELECT 1');
+    res.status(200).json({
+      status: 'ready',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'not_ready',
+      database: 'disconnected',
+      error: error instanceof Error ? error.message : 'Database error',
+    });
+  }
 });
 
 // ─── API Routes ───────────────────────────────────────────
