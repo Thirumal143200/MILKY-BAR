@@ -16,7 +16,7 @@
 | **Module 4** | Backend APIs & Business Logic | ✅ Complete | 100% | REST Endpoints, RBAC, Swagger Docs, Error Handler, Integration Tests |
 | **Module 5** | Native Mobile Application | ✅ Complete | 100% | React Native + Expo, 26 Screens, Zustand Stores, Navigation |
 | **Module 6** | Intelligent Camera & Image Processing | ✅ Complete | 100% | Guidance Overlays, Live Blur/Lighting Quality Analysis, Score Card |
-| **Module 7** | AI & Machine Learning Pipeline | ✅ Complete | 100% | PyTorch MobileNetV2 FastAPI Engine, Dataset Tracking, Evaluation |
+| **Module 7** | AI & Machine Learning Pipeline | 🟡 In Progress | 90% | PyTorch MobileNetV2 & API ready; Real Labeled Dataset fine-tuning pending |
 | **Module 8** | Reports, PDF & QR System | ✅ Complete | 100% | PDFKit Reports, QR Verification, CSV/Excel Exports, Sharing Links |
 | **Module 9** | Offline Synchronization | ✅ Complete | 100% | Real-time NetInfo, syncWorker Engine, POST /batch-sync API, Queue UI |
 | **Module 10**| Notifications System | 🟡 In Progress | 45% | In-DB Notification CRUD ready; FCM/Expo Push & Email/SMS pending |
@@ -115,18 +115,26 @@
 ---
 
 ### Module 7 – AI & Machine Learning Pipeline
-- **Status**: ✅ Complete
-- **Completion Percentage**: 100%
+- **Status**: 🟡 In Progress (Pipeline & Inference Architecture Complete; Real Labeled Dataset Training Pending)
+- **Completion Percentage**: 90%
 - **Evidence**:
   - **Files Created/Modified**:
-    - Python FastAPI Microservice (`ai_service/`): [main.py](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/main.py), [model.py](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/model.py), [Dockerfile](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/Dockerfile), [requirements.txt](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/requirements.txt), `ai_service/tests/test_api.py`.
-    - Node.js Integration: [inference.service.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/inference.service.ts), [processor.service.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/processor.service.ts), [ai.service.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/ai.service.ts), [ai.controller.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/ai.controller.ts), [ai.routes.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/ai.routes.ts).
+    - Python FastAPI Microservice (`ai_service/`): [main.py](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/main.py), [model.py](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/core/model.py), [Dockerfile](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/Dockerfile), [requirements.txt](file:///c:/Users/thiru/Downloads/MILK%20BOY/ai_service/requirements.txt), `ai_service/tests/test_api.py`.
+    - Node.js Integration: [inference.service.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/inference.service.ts), [processor.service.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/processor.service.ts), [ai.service.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/ai.service.ts), [ai.controller.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/ai/ai.controller.ts), [ai.routes.ts](file:///c:/Users/thiru/Downloads/MILK%20BOY/server/src/modules/scans/scans.routes.ts).
   - **Documentation**: [MODULE_7_AI_REPORT.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/MODULE_7_AI_REPORT.md), [AI_ARCHITECTURE.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/AI_ARCHITECTURE.md), [MODEL_DOCUMENTATION.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/MODEL_DOCUMENTATION.md), [MODEL_EVALUATION_REPORT.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/MODEL_EVALUATION_REPORT.md), [AI_PIPELINE.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/AI_PIPELINE.md), [DATASET_STATUS.md](file:///c:/Users/thiru/Downloads/MILK%20BOY/DATASET_STATUS.md).
   - **Tests Executed**: `ai_service/tests/test_api.py` and `ai-endpoints.integration.test.ts` (100% passing).
-  - **Features**: PyTorch MobileNetV2 architecture with softmax predictions, dataset tracking metrics, image blur/lighting check, Node.js backend client forwarding with heuristic fallback logic.
-- **Remaining Work**: None.
-- **Placeholders / Mocks / Stubs**: Node.js backend contains heuristic fallback engine when FastAPI Python service is unreachable.
-- **Known Bugs & Technical Debt**: None.
+  - **Features**: PyTorch MobileNetV2 architecture running actual forward passes and softmax calculations returning class predictions (`Good`, `Adulterated`, `Spoiled`), confidence ratings, and quality check flags.
+
+> [!WARNING]
+> **AI Dataset & Model Audit Disclaimer**:
+> 1. **Real Labeled Dataset**: **NOT YET TRAINED ON REAL FIELD DATA**. A synthetic dataset generator (`SyntheticDataGenerator` in `ai_service/train/dataset.py`) was used to validate training and inference pipelines.
+> 2. **Current Model Weights**: `ai_service/core/model.py` dynamically loads standard PyTorch `mobilenet_v2` with un-fine-tuned baseline classification weights (`awaiting_dataset = True`), appending `"[Pipeline Ready: Awaiting production dataset training]"` to output explanations.
+> 3. **Accuracy Metrics Source**: Reported accuracy metrics ($92.4\%$ validation accuracy, $91.9\%$ F1 score) were evaluated on **synthetic image samples**, not real field milk images.
+> 4. **Prerequisite for Final Production**: Before Module 15 Final Production Audit sign-off, a real labeled field milk dataset must be ingested, trained via `python train.py --data_dir <path_to_real_dataset>`, and exported to `models/milk-quality-v1/best_model.torchscript.pt`.
+
+- **Remaining Work**: Ingest real labeled field dataset, train PyTorch MobileNetV2 on real milk samples, and export fine-tuned `.torchscript.pt` weights.
+- **Placeholders / Mocks / Stubs**: Inference architecture is 100% functional but currently executes on baseline PyTorch MobileNetV2 weights with synthetic validation metrics. Express server features a local heuristic fallback engine if FastAPI service is unreachable.
+- **Known Bugs & Technical Debt**: None in code architecture.
 
 ---
 
