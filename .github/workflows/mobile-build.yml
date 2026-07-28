@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
 
       - name: Setup Expo
-        if: ${{ secrets.EXPO_TOKEN != '' }}
+        if: secrets.EXPO_TOKEN != ''
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
@@ -37,7 +37,7 @@ jobs:
           npm run lint --workspace=mobile
 
       - name: Build Android (EAS)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && secrets.EXPO_TOKEN != ''
         run: |
           cd mobile
           eas build --platform android --profile production --non-interactive
