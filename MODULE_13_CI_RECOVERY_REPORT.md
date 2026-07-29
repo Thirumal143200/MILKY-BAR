@@ -9,6 +9,7 @@ This report documents the resolution of all GitHub Actions CI failures across al
 ## 1. Root Cause Analysis by Workflow
 
 ### 1.1 `Backend Deploy` (`.github/workflows/backend-deploy.yml`)
+
 - **Root Causes**:
   1. **Missing Shared Package Build Step**: The workflow ran `npm run type-check --workspace=server` without building `@milkboy/shared` first (`npm run build --workspace=packages/shared`). As a result, the server typescript compiler could not resolve generated type definitions from `@milkboy/shared`.
   2. **Incorrect Database Environment Variable Names**: The test step specified `DB_CLIENT: sqlite3` and `DB_FILENAME: ':memory:'`. In `server/src/config/env.ts`, `config.db.client` expects `DB_CLIENT: sqlite` and `SQLITE_FILENAME: ':memory:'`. Because `DB_CLIENT` was `sqlite3`, the server environment evaluator defaulted to `postgresql` and failed database initialization.
@@ -17,12 +18,14 @@ This report documents the resolution of all GitHub Actions CI failures across al
   - Updated environment variables to `DB_CLIENT: sqlite` and `SQLITE_FILENAME: ':memory:'`.
 
 ### 1.2 `Mobile CI/CD` (`.github/workflows/mobile-build.yml`)
+
 - **Root Cause**:
   - Missing build step for `@milkboy/shared` package before running `npm run type-check --workspace=mobile` and `npm run lint --workspace=mobile`.
 - **Resolution**:
   - Inserted step `- name: Build shared package` (`npm run build --workspace=packages/shared`) immediately after `npm ci`.
 
 ### 1.3 `CI` (`.github/workflows/ci.yml`)
+
 - **Root Cause**:
   - Line ending and style issues in project root config files (`.eslintrc.cjs`, `docker-compose.prod.yml`, `docker-compose.yml`) triggered Prettier warnings during `npx prettier --check "."`.
 - **Resolution**:
@@ -32,13 +35,13 @@ This report documents the resolution of all GitHub Actions CI failures across al
 
 ## 2. Files Modified
 
-| Component / Workflow | File Path | Description of Fix |
-|---|---|---|
-| `.github` | [.github/workflows/backend-deploy.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/.github/workflows/backend-deploy.yml) | Added `npm run build --workspace=packages/shared` step and corrected `DB_CLIENT: sqlite` and `SQLITE_FILENAME: ':memory:'` env vars. |
-| `.github` | [.github/workflows/mobile-build.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/.github/workflows/mobile-build.yml) | Added `npm run build --workspace=packages/shared` step before mobile type-check and linting. |
-| `root` | [.eslintrc.cjs](file:///c:/Users/thiru/Downloads/MILK%20BOY/.eslintrc.cjs) | Formatted with Prettier to resolve style check warnings. |
-| `root` | [docker-compose.prod.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/docker-compose.prod.yml) | Formatted with Prettier to resolve style check warnings. |
-| `root` | [docker-compose.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/docker-compose.yml) | Formatted with Prettier to resolve style check warnings. |
+| Component / Workflow | File Path                                                                                                                | Description of Fix                                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `.github`            | [.github/workflows/backend-deploy.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/.github/workflows/backend-deploy.yml) | Added `npm run build --workspace=packages/shared` step and corrected `DB_CLIENT: sqlite` and `SQLITE_FILENAME: ':memory:'` env vars. |
+| `.github`            | [.github/workflows/mobile-build.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/.github/workflows/mobile-build.yml)     | Added `npm run build --workspace=packages/shared` step before mobile type-check and linting.                                         |
+| `root`               | [.eslintrc.cjs](file:///c:/Users/thiru/Downloads/MILK%20BOY/.eslintrc.cjs)                                               | Formatted with Prettier to resolve style check warnings.                                                                             |
+| `root`               | [docker-compose.prod.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/docker-compose.prod.yml)                           | Formatted with Prettier to resolve style check warnings.                                                                             |
+| `root`               | [docker-compose.yml](file:///c:/Users/thiru/Downloads/MILK%20BOY/docker-compose.yml)                                     | Formatted with Prettier to resolve style check warnings.                                                                             |
 
 ---
 

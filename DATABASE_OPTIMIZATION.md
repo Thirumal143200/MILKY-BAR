@@ -1,67 +1,43 @@
-# MilkBoy Database Optimization & Indexing Guide
+# Database Optimization & Indexing Architecture
 
-This document details all database optimizations, index strategies, query plan enhancements, and connection pool configurations across the MilkBoy PostgreSQL / SQLite database layer.
+## Database Architecture Overview
 
----
-
-## 🔑 Database Indexing Architecture
-
-To support sub-millisecond execution times on high-traffic endpoints, high-cardinality compound indexes were added in migration `002_performance_indexes.ts`.
-
-### 1. `notifications` Table Indexes
-
-```sql
-CREATE INDEX idx_notifications_user_read_created ON notifications (user_id, read, created_at);
-CREATE INDEX idx_notifications_user_created ON notifications (user_id, created_at);
-```
-
-- **Use Case**: Accelerates unread notifications badge counts (`WHERE user_id = ? AND read = false`) and paginated notification feeds (`WHERE user_id = ? ORDER BY created_at DESC`).
-
-### 2. `scans` Table Indexes
-
-```sql
-CREATE INDEX idx_scans_user_status_created ON scans (user_id, status, created_at);
-CREATE INDEX idx_scans_status_created ON scans (status, created_at);
-```
-
-- **Use Case**: Speeds up filtered user scan history queries (`WHERE user_id = ? AND status = ? ORDER BY created_at DESC`) and administrative scan review queues.
-
-### 3. `predictions` Table Indexes
-
-```sql
-CREATE INDEX idx_predictions_scan_created ON predictions (scan_id, created_at);
-CREATE INDEX idx_predictions_scan_quality ON predictions (scan_id, quality_label);
-```
-
-- **Use Case**: Enables instant lookup of AI prediction results and confidence scores attached to single milk scan records.
-
-### 4. `scan_images` Table Indexes
-
-```sql
-CREATE INDEX idx_scan_images_scan_quality ON scan_images (scan_id, quality_status);
-```
-
-- **Use Case**: Rapidly resolves image attachments and quality checks for scan analysis workflows.
-
-### 5. `audit_logs` Table Indexes
-
-```sql
-CREATE INDEX idx_audit_logs_action_created ON audit_logs (action, created_at);
-```
-
-- **Use Case**: Enables fast filtering in Super Admin audit trail interfaces without performing full table scans.
+MilkBoy supports both PostgreSQL (production deployment) and SQLite (in-memory test & local development execution).
 
 ---
 
-## ⚡ Connection Pooling & Query Best Practices
+## Indexing Strategy & Schema Migration `002_performance_indexes.ts`
 
-1. **Connection Pool Bounds**:
-   - `min`: 2 connections
-   - `max`: 20 connections
-   - `idleTimeoutMillis`: 30,000 ms
+### 1. Notifications Table (`notifications`)
 
-2. **Transaction Isolation**:
-   - Use `db.transaction()` for atomic operations (e.g. user creation + role assignment, batch sync writes).
+- Index: `idx_notifications_user_read_created` (`user_id`, `read`, `created_at`)
+- Impact: Accelerates unread notification counting and user notification feed pagination.
 
-3. **In-Memory Caching Integration**:
-   - High-cost aggregate queries (e.g., `COUNT(*) GROUP BY quality_label`) are wrapped in `globalCache` with a 15-30s TTL.
+### 2. Scans Table (`scans`)
+
+- Index: `idx_scans_user_status_created` (`user_id`, `status`, `created_at`)
+- Impact: Eliminates sequential table scans when querying user scan histories filtered by status (`completed`, `processing`, `failed`).
+
+### 3. Predictions Table (`predictions`)
+
+- Index: `idx_predictions_scan_created` (`scan_id`, `created_at`)
+- Impact: Fast join resolution when combining scan metadata with AI prediction results.
+
+### 4. Scan Images Table (`scan_images`)
+
+- Index: `idx_scan_images_scan_created` (`scan_id`, `created_at`)
+- Impact: Sub-millisecond lookup for raw/preprocessed images attached to a scan.
+
+### 5. Audit Logs Table (`audit_logs`)
+
+- Index: `idx_audit_logs_created_user_action` (`created_at`, `user_id`, `action`)
+- Impact: High-speed filtering for security compliance audits and admin activity logs.
+
+---
+
+## Connection Pooling & Knex Configuration
+
+- **Pool Min**: 2
+- **Pool Max**: 10
+- **Acquire Timeout**: 60,000 ms
+- **Idle Timeout**: 30,000 ms

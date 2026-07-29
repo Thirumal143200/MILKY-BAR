@@ -15,7 +15,7 @@ function getKnexConfig(): Knex.Config {
     return {
       client: 'sqlite3',
       connection: {
-        filename: config.db.sqliteFilename,
+        filename: process.env.SQLITE_FILENAME ?? config.db.sqliteFilename,
       },
       useNullAsDefault: true,
       pool: {

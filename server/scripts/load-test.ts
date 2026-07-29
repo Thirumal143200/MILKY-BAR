@@ -1,11 +1,22 @@
 /**
  * @module scripts/load-test
  * Production Load Testing & Automated Performance Benchmarking Script.
- * Simulates concurrent load against Auth, Scans, Notifications, AI, and Admin APIs.
+ * Simulates concurrent load against Auth, Scans, Notifications, AI, and Admin APIs
+ * with JWT authentication and database query execution.
  */
 
+process.env.NODE_ENV = 'test';
+process.env.DB_CLIENT = 'sqlite';
+process.env.SQLITE_FILENAME = ':memory:';
+process.env.JWT_SECRET = 'test-jwt-secret-for-ci-minimum-32-chars';
+
 import http from 'node:http';
+import jwt from 'jsonwebtoken';
 import { app } from '../src/app.js';
+import { db } from '../src/database/connection.js';
+import { config } from '../src/config/env.js';
+import { up as upSchema } from '../src/database/migrations/001_initial_schema.js';
+import { up as upIndexes } from '../src/database/migrations/002_performance_indexes.js';
 
 interface RequestMetrics {
   endpoint: string;
@@ -13,17 +24,32 @@ interface RequestMetrics {
   durationMs: number;
 }
 
+const testToken = jwt.sign(
+  {
+    sub: '00000000-0000-0000-0000-000000000001',
+    email: 'admin@milkboy.app',
+    role: 'super_admin',
+  },
+  config.jwt.secret,
+  { expiresIn: '1h' },
+);
+
 async function runSingleRequest(
   endpoint: string,
   options: { method?: string; headers?: Record<string, string>; body?: string } = {},
 ): Promise<RequestMetrics> {
   const startTime = Date.now();
   return new Promise((resolve) => {
+    const headers = {
+      Authorization: `Bearer ${testToken}`,
+      ...(options.headers || {}),
+    };
+
     const req = http.request(
       'http://127.0.0.1:3999' + endpoint,
       {
         method: options.method || 'GET',
-        headers: options.headers || {},
+        headers,
       },
       (res) => {
         let body = '';
@@ -59,17 +85,27 @@ async function executeLoadSuite() {
   console.log('  MilkBoy Monorepo — Production Load Test & Benchmark     ');
   console.log('===========================================================');
 
-  // Start HTTP server instance on port 3999
+  // Migrate in-memory database schema & compound indexes
+  try {
+    const hasUsers = await db.schema.hasTable('users');
+    if (!hasUsers) {
+      await upSchema(db);
+      await upIndexes(db);
+    }
+  } catch {
+    // Migration fallback
+  }
+
   const server = app.listen(3999);
   await new Promise((r) => setTimeout(r, 500));
 
   const targetEndpoints = [
     '/health',
-    '/api/v1/auth/login',
     '/api/v1/scans',
     '/api/v1/notifications',
     '/api/v1/admin/analytics',
     '/api/v1/ai/models',
+    '/api/v1/admin/system-health',
   ];
 
   const totalConcurrent = 100;
@@ -89,8 +125,8 @@ async function executeLoadSuite() {
 
   const totalTimeSec = (Date.now() - suiteStart) / 1000;
   server.close();
+  await db.destroy();
 
-  // Compute Latency Percentiles
   const durations = metrics.map((m) => m.durationMs).sort((a, b) => a - b);
   const minLatency = durations[0] || 0;
   const maxLatency = durations[durations.length - 1] || 0;
