@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0-rc1] - 2026-07-29
 
 ### Added
 
+- Module 15: Final Production Audit, Release Validation & Launch Readiness completion
+- Automated end-to-end release validation script (`server/scripts/release-validation.ts`) verifying 7 core platform workflows
+- Final release documentation suite (`FINAL_PRODUCTION_AUDIT.md`, `RELEASE_READINESS_REPORT.md`, `SYSTEM_ARCHITECTURE_FINAL.md`, `TEST_SUMMARY.md`, `KNOWN_LIMITATIONS.md`, `OPERATIONS_RUNBOOK.md`)
 - Architecture-wide security hardening and OWASP Top 10 controls verification
 - Strict Helmet HTTP security headers (CSP, HSTS with subdomains/preload, X-Frame-Options DENY, noSniff)
 - Automated security penetration testing script (`server/scripts/security-test.ts`)
