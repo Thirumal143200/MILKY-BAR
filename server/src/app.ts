@@ -1,6 +1,6 @@
 /**
  * @module app
- * Express application setup with all middleware and route mounting.
+ * Express application setup with enterprise security middleware and route mounting.
  */
 
 import express from 'express';
@@ -30,8 +30,29 @@ const app = express();
 // ─── Security Middleware ──────────────────────────────────
 app.use(
   helmet({
-    contentSecurityPolicy: config.isProd ? undefined : false,
+    contentSecurityPolicy: config.isProd
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+            imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+            connectSrc: ["'self'", 'https:'],
+            fontSrc: ["'self'", 'https:'],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: [],
+          },
+        }
+      : false,
     crossOriginEmbedderPolicy: false,
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: true,
+    },
+    frameguard: { action: 'deny' },
+    noSniff: true,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   }),
 );
 

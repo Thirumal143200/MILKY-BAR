@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Architecture-wide security hardening and OWASP Top 10 controls verification
+- Strict Helmet HTTP security headers (CSP, HSTS with subdomains/preload, X-Frame-Options DENY, noSniff)
+- Automated security penetration testing script (`server/scripts/security-test.ts`)
+- Comprehensive security documentation suite (`MODULE_14_SECURITY_REPORT.md`, `SECURITY_AUDIT.md`, `DEPENDENCY_AUDIT.md`, `API_SECURITY_REVIEW.md`, `PENETRATION_TEST_RESULTS.md`)
 - Project monorepo setup with npm workspaces (shared, server, web)
 - Shared TypeScript types for users, scans, predictions, reports, admin
 - Shared Zod validation schemas for all API inputs
