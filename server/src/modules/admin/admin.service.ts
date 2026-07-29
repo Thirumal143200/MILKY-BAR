@@ -12,6 +12,7 @@ import { generateId, hashPassword } from '../../utils/crypto.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { config } from '../../config/env.js';
+import { globalCache } from '../../utils/cache.js';
 
 const log = createModuleLogger('admin-service');
 
@@ -321,6 +322,10 @@ export class AdminService {
    * Get analytics dashboard data.
    */
   async getAnalytics() {
+    const cacheKey = 'admin:analytics:summary';
+    const cached = globalCache.get<any>(cacheKey);
+    if (cached) return cached;
+
     // 1. Quality distribution
     const qualityStats = await db('predictions')
       .select('quality_label')
@@ -354,7 +359,7 @@ export class AdminService {
       .groupBy('date')
       .orderBy('date', 'asc');
 
-    return {
+    const result = {
       summary: {
         totalUsers: Number(totalUsers?.count ?? 0),
         totalScans: Number(totalScans?.count ?? 0),
@@ -371,6 +376,9 @@ export class AdminService {
         count: Number(h.count),
       })),
     };
+
+    globalCache.set(cacheKey, result, 15); // Cache for 15 seconds
+    return result;
   }
 
   /**

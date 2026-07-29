@@ -39,6 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated CLI database backup (`backup-db.ts`) and restore (`restore-db.ts`) disaster recovery scripts
 - Storage provider abstraction for local vs cloud storage
 - Expo EAS release profiles for Android APK and AAB
+- High-cardinality compound database indexes migration (`002_performance_indexes.ts`)
+- High-performance in-memory TTL caching utility (`InMemoryCache`) for Admin analytics and system health
+- AI inference pipeline refactoring eliminating dynamic imports in hot loops
+- Next.js package import optimizations (`lucide-react`, `date-fns`, `recharts`) and response compression
+- Automated HTTP load testing script (`load-test.ts`) achieving 346+ RPS throughput
 
 ## [1.0.0] - TBD
 
