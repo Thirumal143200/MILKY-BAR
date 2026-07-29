@@ -9,11 +9,11 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: milkboy_dev
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -24,7 +24,7 @@ services:
       dockerfile: server/Dockerfile
     container_name: milkboy-backend-dev
     ports:
-      - "4000:4000"
+      - '4000:4000'
     environment:
       - NODE_ENV=development
       - PORT=4000
@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
     container_name: milkboy-ai-dev
     ports:
-      - "8000:8000"
+      - '8000:8000'
     environment:
       - PROJECT_NAME=MilkBoy AI Service (Dev)
       - MODEL_VERSION=v1.0.0-synthetic
@@ -56,7 +56,7 @@ services:
       dockerfile: web/Dockerfile
     container_name: milkboy-web-dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
