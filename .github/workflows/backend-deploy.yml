@@ -77,20 +77,16 @@ jobs:
 
       - name: Build Server image
         uses: docker/build-push-action@v5
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         with:
           context: .
           file: ./server/Dockerfile
-          push: ${{ env.DOCKER_USERNAME != '' }}
-          tags: ${{ env.DOCKER_USERNAME != '' && format('{0}/milkboy-server:latest', secrets.DOCKER_USERNAME) || 'milkboy-server:latest' }}
+          push: false
+          tags: milkboy-server:latest
 
       - name: Build AI Service image
         uses: docker/build-push-action@v5
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         with:
           context: ./ai_service
           file: ./ai_service/Dockerfile
-          push: ${{ env.DOCKER_USERNAME != '' }}
-          tags: ${{ env.DOCKER_USERNAME != '' && format('{0}/milkboy-ai:latest', secrets.DOCKER_USERNAME) || 'milkboy-ai:latest' }}
+          push: false
+          tags: milkboy-ai:latest

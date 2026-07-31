@@ -40,7 +40,7 @@ jobs:
       - name: Type Check & Lint
         run: |
           npm run type-check --workspace=mobile
-          npx eslint mobile/src --ext .ts,.tsx
+          npx eslint mobile/src --ext .ts,.tsx -c .eslintrc.cjs
 
       - name: EAS Build Status Notice
         env:
