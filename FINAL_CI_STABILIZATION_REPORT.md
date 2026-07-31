@@ -11,6 +11,7 @@ Following the completion of Modules 1–15 and the Scientific AI System Transfor
 ## Root Cause Analysis & Resolutions
 
 ### 1. Lockfile Desynchronization (`@react-native-community/netinfo`)
+
 - **Symptom**: GitHub Actions failed during `npm ci` with:
   ```text
   npm error Missing: @react-native-community/netinfo@11.5.2 from lock file
@@ -20,6 +21,7 @@ Following the completion of Modules 1–15 and the Scientific AI System Transfor
 - **Commit**: `5ba909c`
 
 ### 2. Missing Linux Platform-Specific Optional Binaries (`rollup`)
+
 - **Symptom**: Linux CI runners failed during Vite / Vitest compilation with:
   ```text
   Cannot find module '@rollup/rollup-linux-x64-gnu'
@@ -29,6 +31,7 @@ Following the completion of Modules 1–15 and the Scientific AI System Transfor
 - **Commit**: `de357e1`
 
 ### 3. Missing Linux Image Processing Binaries (`sharp`)
+
 - **Symptom**: Server image processing & report generation workflows failed on Linux with:
   ```text
   Could not load the "sharp" module using the linux-x64 runtime
@@ -41,15 +44,15 @@ Following the completion of Modules 1–15 and the Scientific AI System Transfor
 
 ## Verification Matrix across GitHub Workflows
 
-| GitHub Actions Workflow | Status | Verification Local Command | Result |
-| :--- | :---: | :--- | :---: |
-| **CI — Lint & Format** | ✅ **Passed** | `npm run lint --workspaces` & `npx prettier --check` | 0 Warnings, 0 Errors |
-| **CI — Type Check** | ✅ **Passed** | `npm run type-check --workspaces` | 0 Errors (4 Workspaces) |
-| **CI — Unit Tests** | ✅ **Passed** | `npm test --workspaces` | 83/83 Tests Passed |
-| **CI — Build All** | ✅ **Passed** | `npm run build --workspaces` | Clean Build |
-| **Backend Deploy** | ✅ **Passed** | `npm run build --workspace=server` | Clean Build |
-| **Mobile CI/CD** | ✅ **Passed** | `npm run type-check --workspace=mobile` | 0 Errors |
-| **Security Scan** | ✅ **Passed** | `npm audit --omit=dev --audit-level=high` | 0 High/Critical Vulnerabilities |
+| GitHub Actions Workflow |    Status     | Verification Local Command                           |             Result              |
+| :---------------------- | :-----------: | :--------------------------------------------------- | :-----------------------------: |
+| **CI — Lint & Format**  | ✅ **Passed** | `npm run lint --workspaces` & `npx prettier --check` |      0 Warnings, 0 Errors       |
+| **CI — Type Check**     | ✅ **Passed** | `npm run type-check --workspaces`                    |     0 Errors (4 Workspaces)     |
+| **CI — Unit Tests**     | ✅ **Passed** | `npm test --workspaces`                              |       83/83 Tests Passed        |
+| **CI — Build All**      | ✅ **Passed** | `npm run build --workspaces`                         |           Clean Build           |
+| **Backend Deploy**      | ✅ **Passed** | `npm run build --workspace=server`                   |           Clean Build           |
+| **Mobile CI/CD**        | ✅ **Passed** | `npm run type-check --workspace=mobile`              |            0 Errors             |
+| **Security Scan**       | ✅ **Passed** | `npm audit --omit=dev --audit-level=high`            | 0 High/Critical Vulnerabilities |
 
 ---
 

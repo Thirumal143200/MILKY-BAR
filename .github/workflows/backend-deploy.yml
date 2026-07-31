@@ -72,6 +72,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Notice when Docker credentials missing
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        if: env.DOCKER_USERNAME == ''
+        run: echo "DOCKER_USERNAME secret is not configured in repository secrets; skipping Docker image push."
+
       - name: Build and push Server image
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
