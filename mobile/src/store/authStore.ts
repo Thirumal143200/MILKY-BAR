@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { apiClient } from '../api/client.js';
+import { apiClient } from '../api/client';
 
 export type User = {
   id: string;

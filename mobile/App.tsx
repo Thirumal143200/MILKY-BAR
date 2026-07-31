@@ -7,39 +7,39 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import './global.css';
 
 // Zustand Auth Store
-import { useAuthStore } from './src/store/authStore.js';
+import { useAuthStore } from './src/store/authStore';
 
 // Screens
-import SplashScreen from './src/screens/SplashScreen.js';
-import OnboardingScreen from './src/screens/OnboardingScreen.js';
-import LoginScreen from './src/screens/LoginScreen.js';
-import RegisterScreen from './src/screens/RegisterScreen.js';
-import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen.js';
-import ResetPasswordScreen from './src/screens/ResetPasswordScreen.js';
-import MfaVerificationScreen from './src/screens/MfaVerificationScreen.js';
+import SplashScreen from './src/screens/SplashScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
+import MfaVerificationScreen from './src/screens/MfaVerificationScreen';
 
-import HomeScreen from './src/screens/HomeScreen.js';
-import CameraScreen from './src/screens/CameraScreen.js';
-import PreviewScreen from './src/screens/PreviewScreen.js';
-import ProcessingScreen from './src/screens/ProcessingScreen.js';
-import ResultScreen from './src/screens/ResultScreen.js';
-import ReportsScreen from './src/screens/ReportsScreen.js';
-import ReportDetailsScreen from './src/screens/ReportDetailsScreen.js';
+import HomeScreen from './src/screens/HomeScreen';
+import CameraScreen from './src/screens/CameraScreen';
+import PreviewScreen from './src/screens/PreviewScreen';
+import ProcessingScreen from './src/screens/ProcessingScreen';
+import ResultScreen from './src/screens/ResultScreen';
+import ReportsScreen from './src/screens/ReportsScreen';
+import ReportDetailsScreen from './src/screens/ReportDetailsScreen';
 
-import ScanHistoryScreen from './src/screens/ScanHistoryScreen.js';
-import ScanDetailsScreen from './src/screens/ScanDetailsScreen.js';
-import NotificationsScreen from './src/screens/NotificationsScreen.js';
-import NotificationDetailsScreen from './src/screens/NotificationDetailsScreen.js';
+import ScanHistoryScreen from './src/screens/ScanHistoryScreen';
+import ScanDetailsScreen from './src/screens/ScanDetailsScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
+import NotificationDetailsScreen from './src/screens/NotificationDetailsScreen';
 
-import ProfileScreen from './src/screens/ProfileScreen.js';
-import EditProfileScreen from './src/screens/EditProfileScreen.js';
-import SettingsScreen from './src/screens/SettingsScreen.js';
-import SecurityScreen from './src/screens/SecurityScreen.js';
-import HelpScreen from './src/screens/HelpScreen.js';
-import AboutScreen from './src/screens/AboutScreen.js';
-import PrivacyScreen from './src/screens/PrivacyScreen.js';
-import TermsScreen from './src/screens/TermsScreen.js';
-import FeedbackScreen from './src/screens/FeedbackScreen.js';
+import ProfileScreen from './src/screens/ProfileScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import SecurityScreen from './src/screens/SecurityScreen';
+import HelpScreen from './src/screens/HelpScreen';
+import AboutScreen from './src/screens/AboutScreen';
+import PrivacyScreen from './src/screens/PrivacyScreen';
+import TermsScreen from './src/screens/TermsScreen';
+import FeedbackScreen from './src/screens/FeedbackScreen';
 
 const Stack = createNativeStackNavigator();
 

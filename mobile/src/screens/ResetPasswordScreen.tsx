@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
-import { apiClient } from '../api/client.js';
+import { apiClient } from '../api/client';
 
 export default function ResetPasswordScreen({ navigation }: { navigation: any }) {
   const [token, setToken] = useState('');

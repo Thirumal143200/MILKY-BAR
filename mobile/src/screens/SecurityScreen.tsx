@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { apiClient } from '../api/client.js';
+import { apiClient } from '../api/client';
 
 export default function SecurityScreen({ navigation }: { navigation: any }) {
   const [mfaEnabled, setMfaEnabled] = useState(false);

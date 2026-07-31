@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
-import { apiClient, API_URL } from '../api/client.js';
+import { apiClient, API_URL } from '../api/client';
 
 export default function ReportDetailsScreen({
   navigation,

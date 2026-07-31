@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
-import { apiClient } from '../api/client.js';
-import { useAuthStore } from '../store/authStore.js';
+import { apiClient } from '../api/client';
+import { useAuthStore } from '../store/authStore';
 
 export default function EditProfileScreen({ navigation }: { navigation: any }) {
   const user = useAuthStore((state) => state.user);

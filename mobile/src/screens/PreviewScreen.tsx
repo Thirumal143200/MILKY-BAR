@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Image, TouchableOpacity, Text, ScrollView, SafeAreaView } from 'react-native';
-import { useSyncStore } from '../store/sync.store.js';
+import { useSyncStore } from '../store/sync.store';
 
 export default function PreviewScreen({ route, navigation }: { route: any; navigation: any }) {
   const { photoPath, simMeta } = route.params;

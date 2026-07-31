@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useNotificationStore } from '../store/notificationStore.js';
+import { useNotificationStore } from '../store/notificationStore';
 
 export default function NotificationDetailsScreen({
   navigation,

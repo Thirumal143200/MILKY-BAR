@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { apiClient } from '../api/client.js';
+import { apiClient } from '../api/client';
 
 export type Scan = {
   id: string;

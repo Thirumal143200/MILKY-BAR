@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { apiClient } from '../api/client.js';
+import { apiClient } from '../api/client';
 
 export default function ScanDetailsScreen({ navigation, route }: { navigation: any; route: any }) {
   const { scanId } = route.params || {};
