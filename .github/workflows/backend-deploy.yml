@@ -62,6 +62,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -72,30 +75,22 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Notice when Docker credentials missing
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        if: env.DOCKER_USERNAME == ''
-        run: echo "DOCKER_USERNAME secret is not configured in repository secrets; skipping Docker image push."
-
-      - name: Build and push Server image
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        if: env.DOCKER_USERNAME != ''
+      - name: Build Server image
         uses: docker/build-push-action@v5
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         with:
           context: .
           file: ./server/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/milkboy-server:latest
+          push: ${{ env.DOCKER_USERNAME != '' }}
+          tags: ${{ env.DOCKER_USERNAME != '' && format('{0}/milkboy-server:latest', secrets.DOCKER_USERNAME) || 'milkboy-server:latest' }}
 
-      - name: Build and push AI Service image
+      - name: Build AI Service image
+        uses: docker/build-push-action@v5
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        if: env.DOCKER_USERNAME != ''
-        uses: docker/build-push-action@v5
         with:
           context: ./ai_service
           file: ./ai_service/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/milkboy-ai:latest
+          push: ${{ env.DOCKER_USERNAME != '' }}
+          tags: ${{ env.DOCKER_USERNAME != '' && format('{0}/milkboy-ai:latest', secrets.DOCKER_USERNAME) || 'milkboy-ai:latest' }}
