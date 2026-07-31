@@ -6,7 +6,7 @@ COPY package*.json ./
 COPY packages/shared/package*.json ./packages/shared/
 COPY server/package*.json ./server/
 
-RUN npm install --workspaces --include-workspace-root
+RUN npm install --workspace=server --workspace=packages/shared --include-workspace-root --legacy-peer-deps
 
 COPY packages/shared ./packages/shared
 COPY server ./server

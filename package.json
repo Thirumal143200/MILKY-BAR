@@ -40,7 +40,8 @@
     "@img/sharp-linux-x64": "0.34.5",
     "@img/sharp-libvips-linux-x64": "1.2.4",
     "@rollup/rollup-linux-x64-gnu": "4.62.2",
-    "@rollup/rollup-linux-x64-musl": "4.62.2"
+    "@rollup/rollup-linux-x64-musl": "4.62.2",
+    "lightningcss-linux-x64-gnu": "1.30.2"
   },
   "engines": {
     "node": ">=20.0.0",
