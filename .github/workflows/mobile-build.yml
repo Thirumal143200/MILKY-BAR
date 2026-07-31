@@ -22,7 +22,9 @@ jobs:
           cache: 'npm'
 
       - name: Setup Expo
-        if: secrets.EXPO_TOKEN != ''
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        if: ${{ env.EXPO_TOKEN != '' }}
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
@@ -41,11 +43,15 @@ jobs:
           npx eslint mobile/src --ext .ts,.tsx -c .eslintrc.cjs
 
       - name: EAS Build Status Notice
-        if: github.ref == 'refs/heads/main' && secrets.EXPO_TOKEN == ''
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        if: ${{ github.ref == 'refs/heads/main' && env.EXPO_TOKEN == '' }}
         run: echo "EXPO_TOKEN secret is not set in repository secrets; skipping EAS cloud build."
 
       - name: Build Android (EAS)
-        if: github.ref == 'refs/heads/main' && secrets.EXPO_TOKEN != ''
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        if: ${{ github.ref == 'refs/heads/main' && env.EXPO_TOKEN != '' }}
         run: |
           cd mobile
           eas build --platform android --profile production --non-interactive
