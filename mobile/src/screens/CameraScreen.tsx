@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
-import { CameraView, useCameraPermissions, FlashMode, CameraType } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import type { FlashMode, CameraType } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CameraScreen({ navigation }: { navigation: any }) {
