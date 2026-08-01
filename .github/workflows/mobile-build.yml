@@ -54,4 +54,4 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' && env.EXPO_TOKEN != '' }}
         run: |
           cd mobile
-          eas build --platform android --profile production --non-interactive
+          eas build --platform android --profile preview --non-interactive --no-wait
