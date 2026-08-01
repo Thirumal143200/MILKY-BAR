@@ -3,7 +3,7 @@
 **Model Version**: `v1.2.0`  
 **Model Type**: Deep Convolutional Neural Network (Transfer Learning via ResNet-18)  
 **Framework**: PyTorch 2.2 / TorchScript Export  
-**Task**: 4-Class Milk Quality Categorization & Anomaly Detection  
+**Task**: 4-Class Milk Quality Categorization & Anomaly Detection
 
 ---
 
@@ -12,6 +12,7 @@
 The MilkBoy Quality Classifier evaluates spectral and visual images of milk samples to determine physical composition, freshness, and microbiological safety.
 
 ### Target Classes:
+
 1. `NORMAL`: Standard high-grade raw milk meeting fat & protein threshold specs.
 2. `MASTITIS`: Somatic cell count elevation indicating bovine sub-clinical/clinical mastitis infection.
 3. `WATERED`: Adulteration with added water resulting in lowered specific gravity.

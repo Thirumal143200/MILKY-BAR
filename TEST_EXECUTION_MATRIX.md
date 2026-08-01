@@ -7,14 +7,14 @@
 
 ## 1. Automated Test Execution Summary
 
-| Test Category | Framework / Tool | Executed Tests | Passed | Failed | Duration |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Backend Unit & Integration** | Vitest 3.2.7 | 77 | 77 | 0 | 132.96s |
-| **Web UI Components** | Vitest + React Testing Library | 6 | 6 | 0 | 24.30s |
-| **Database Backup & Restore** | Custom TypeScript Runner | 2 | 2 | 0 | 18.61s |
-| **Batch Sync API** | Supertest / Vitest | 4 | 4 | 0 | 1.47s |
-| **AI Microservice API** | Pytest / FastAPI TestClient | 5 | 5 | 0 | 9.29s |
-| **TOTAL** | | **83** | **83** | **0** | **157.26s** |
+| Test Category                  | Framework / Tool               | Executed Tests | Passed | Failed | Duration    |
+| :----------------------------- | :----------------------------- | :------------- | :----- | :----- | :---------- |
+| **Backend Unit & Integration** | Vitest 3.2.7                   | 77             | 77     | 0      | 132.96s     |
+| **Web UI Components**          | Vitest + React Testing Library | 6              | 6      | 0      | 24.30s      |
+| **Database Backup & Restore**  | Custom TypeScript Runner       | 2              | 2      | 0      | 18.61s      |
+| **Batch Sync API**             | Supertest / Vitest             | 4              | 4      | 0      | 1.47s       |
+| **AI Microservice API**        | Pytest / FastAPI TestClient    | 5              | 5      | 0      | 9.29s       |
+| **TOTAL**                      |                                | **83**         | **83** | **0**  | **157.26s** |
 
 ---
 

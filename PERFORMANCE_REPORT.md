@@ -7,14 +7,14 @@
 
 ## 1. Latency & Throughput Benchmarks
 
-| Metric | Target SLA | Measured Benchmark | Status |
-| :--- | :--- | :--- | :--- |
-| **REST API Mean Response Time** | `< 100 ms` | **18.4 ms** | 🟢 PASS |
-| **AI Inference Latency (PyTorch CPU)** | `< 100 ms` | **41.2 ms** | 🟢 PASS |
-| **Database Query Execution Time** | `< 50 ms` | **4.2 ms** | 🟢 PASS |
-| **Next.js First Load JS Size** | `< 150 kB` | **87.6 kB** | 🟢 PASS |
-| **Mobile App Cold Start Time** | `< 2.5 s` | **1.2 s** | 🟢 PASS |
-| **Batch Sync Rate (100 scans)** | `< 5.0 s` | **1.4 s** | 🟢 PASS |
+| Metric                                 | Target SLA | Measured Benchmark | Status  |
+| :------------------------------------- | :--------- | :----------------- | :------ |
+| **REST API Mean Response Time**        | `< 100 ms` | **18.4 ms**        | 🟢 PASS |
+| **AI Inference Latency (PyTorch CPU)** | `< 100 ms` | **41.2 ms**        | 🟢 PASS |
+| **Database Query Execution Time**      | `< 50 ms`  | **4.2 ms**         | 🟢 PASS |
+| **Next.js First Load JS Size**         | `< 150 kB` | **87.6 kB**        | 🟢 PASS |
+| **Mobile App Cold Start Time**         | `< 2.5 s`  | **1.2 s**          | 🟢 PASS |
+| **Batch Sync Rate (100 scans)**        | `< 5.0 s`  | **1.4 s**          | 🟢 PASS |
 
 ---
 
