@@ -1,11 +1,13 @@
 # MilkBoy Enterprise Platform — Android APK & AAB Build Guide
 
 ## Overview
+
 This document provides step-by-step instructions for building, packaging, installing, and deploying the MilkBoy Enterprise Mobile Application built on Expo SDK 57 and React Native 0.86.2.
 
 ---
 
 ## Environment Prerequisites
+
 - **Node.js**: `v20.0.0` or higher
 - **npm**: `v10.0.0` or higher
 - **Expo CLI**: `npx expo`
@@ -16,6 +18,7 @@ This document provides step-by-step instructions for building, packaging, instal
 ---
 
 ## 1. Local Prebuild Verification
+
 Before generating native builds, run local validation:
 
 ```bash
@@ -36,22 +39,27 @@ npx expo prebuild --clean
 ## 2. Generating Android Builds via EAS Cloud
 
 ### Preview APK (For Testing & Installation on Physical Devices)
+
 ```bash
 cd mobile
 eas build --platform android --profile preview
 ```
-*Output*: `.apk` standalone binary file installable directly on physical Android phones.
+
+_Output_: `.apk` standalone binary file installable directly on physical Android phones.
 
 ### Production AAB (For Google Play Store Release)
+
 ```bash
 cd mobile
 eas build --platform android --profile production
 ```
-*Output*: `.aab` (Android App Bundle) optimized for Play Store distribution.
+
+_Output_: `.aab` (Android App Bundle) optimized for Play Store distribution.
 
 ---
 
 ## 3. Local Native Android Build (Android Studio / Gradle)
+
 If building locally without cloud dependency:
 
 ```bash
@@ -64,11 +72,13 @@ npx expo prebuild
 cd android
 ./gradlew assembleRelease
 ```
-*Output location*: `mobile/android/app/build/outputs/apk/release/app-release.apk`
+
+_Output location_: `mobile/android/app/build/outputs/apk/release/app-release.apk`
 
 ---
 
 ## 4. Installing APK on Physical Android Device
+
 1. Enable **Developer Options** and **USB Debugging** on your Android phone.
 2. Connect your phone via USB.
 3. Verify connection:
@@ -83,7 +93,9 @@ cd android
 ---
 
 ## 5. Environment Variables & API Gateway Configuration
+
 Set the backend server URL in `mobile/src/api/client.ts` or via environment configuration:
+
 - **Android Emulator**: `http://10.0.2.2:3001/api/v1`
 - **Physical Device (Same Wi-Fi)**: `http://<YOUR_LOCAL_IP>:3001/api/v1`
 - **Production Server**: `https://api.milkboy.enterprise.com/api/v1`
