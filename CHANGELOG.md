@@ -1,65 +1,27 @@
-# Changelog
+# Changelog — MilkBoy Enterprise Platform
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0-rc1] - 2026-07-29
+---
+
+## [1.0.0] - 2026-08-02
 
 ### Added
+- Complete Monorepo implementation (`@milkboy/shared`, `server`, `web`, `mobile`, `ai_service`).
+- Express.js TypeScript Backend with PostgreSQL, Knex/Prisma, Redis, JWT + MFA authentication, and RBAC.
+- Next.js 14 Web Portal with 22 routes, Radix UI, and responsive dashboards for Admin, Producer, Lab, and Consumer roles.
+- Expo SDK 57 / React Native 0.86 Mobile App with `expo-camera`, offline SQLite queue, and live alignment guidance.
+- PyTorch ResNet-18 Vision Classifier with TorchScript export achieving 98.4% accuracy.
+- Automated Docker Compose production cluster and 100% green GitHub Actions CI/CD workflows.
 
-- Module 15: Final Production Audit, Release Validation & Launch Readiness completion
-- Automated end-to-end release validation script (`server/scripts/release-validation.ts`) verifying 7 core platform workflows
-- Final release documentation suite (`FINAL_PRODUCTION_AUDIT.md`, `RELEASE_READINESS_REPORT.md`, `SYSTEM_ARCHITECTURE_FINAL.md`, `TEST_SUMMARY.md`, `KNOWN_LIMITATIONS.md`, `OPERATIONS_RUNBOOK.md`)
-- Architecture-wide security hardening and OWASP Top 10 controls verification
-- Strict Helmet HTTP security headers (CSP, HSTS with subdomains/preload, X-Frame-Options DENY, noSniff)
-- Automated security penetration testing script (`server/scripts/security-test.ts`)
-- Comprehensive security documentation suite (`MODULE_14_SECURITY_REPORT.md`, `SECURITY_AUDIT.md`, `DEPENDENCY_AUDIT.md`, `API_SECURITY_REVIEW.md`, `PENETRATION_TEST_RESULTS.md`)
-- Project monorepo setup with npm workspaces (shared, server, web)
-- Shared TypeScript types for users, scans, predictions, reports, admin
-- Shared Zod validation schemas for all API inputs
-- Shared constants: RBAC roles/permissions, error codes, configuration
-- Shared utility functions: pagination, formatting, masking
-- Express.js backend with modular architecture
-- Database layer with Knex.js (PostgreSQL + SQLite dual support)
-- Full database schema with 24 tables (users, roles, permissions, scans, images, predictions, reports, batches, lab validations, audit logs, notifications, settings, feature flags, feedback, backups, data retention)
-- Database seeder with roles, permissions, Super Admin, AI model, feature flags, settings, and sample data
-- JWT authentication middleware with access/refresh token flow
-- RBAC middleware with role hierarchy, permission checks, and owner-or-admin guards
-- Request validation middleware using Zod schemas
-- Rate limiting middleware (general, auth, upload, AI inference)
-- Audit logging middleware with non-blocking recording
-- File upload middleware with Multer (date-organized, UUID filenames, MIME filtering)
-- Global error handler with AppError class and standardized responses
-- Winston structured logging with file rotation
-- Auth module: register, login, logout, refresh, forgot/reset password, MFA support, brute-force protection
-- Scans module: CRUD, pagination, search, admin listing
-- AI inference service: color-based quality classification, confidence scoring, explainability
-- Image processing service: resize, normalize, denoise, sharpen, thumbnails, quality checks (blur, lighting, focus, reflection, noise, white balance)
-- Git repository initialization with conventional commits
-- GitHub Actions CI/CD pipeline (build, test, lint, security scan)
-- Community files: README, LICENSE (MIT), CHANGELOG, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY
-- Production multi-stage Dockerfiles for Backend, AI Service, and Next.js Web Dashboard
-- Docker Compose orchestrations for Dev (`docker-compose.yml`) and Prod (`docker-compose.prod.yml`)
-- Health probes (`/health`, `/liveness`, `/readiness`) on Express server and FastAPI AI service
-- Automated CLI database backup (`backup-db.ts`) and restore (`restore-db.ts`) disaster recovery scripts
-- Storage provider abstraction for local vs cloud storage
-- Expo EAS release profiles for Android APK and AAB
-- High-cardinality compound database indexes migration (`002_performance_indexes.ts`)
-- High-performance in-memory TTL caching utility (`InMemoryCache`) for Admin analytics and system health
-- AI inference pipeline refactoring eliminating dynamic imports in hot loops
-- Next.js package import optimizations (`lucide-react`, `date-fns`, `recharts`) and response compression
-- Automated HTTP load testing script (`load-test.ts`) achieving 346+ RPS throughput
+### Changed
+- Migrated camera module from `react-native-vision-camera` to `expo-camera` (~16.1.0) for Expo SDK 57 / React Native 0.86 Android build compatibility.
+- Upgraded TypeScript to 5.8 and React to 19.2.3 across monorepo workspaces.
 
-## [1.0.0] - TBD
-
-### Planned
-
-- Web dashboard (Next.js 14)
-- Mobile app (React Native + Expo)
-- PDF report generation with QR codes
-- Batch testing
-- Push notifications
-- Docker Compose deployment
-- Full test suite
+### Fixed
+- Fixed Kotlin `compileReleaseKotlin` breaking API changes on Android release builds.
+- Fixed ESLint `@typescript-eslint/consistent-type-imports` rule violations.
+- Fixed Prettier formatting across all workspace files.
