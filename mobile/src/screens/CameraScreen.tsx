@@ -1,19 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
-import { Camera, useCameraDevice, useFrameProcessor } from 'react-native-vision-camera';
+import { CameraView, useCameraPermissions, FlashMode, CameraType } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { runOnJS } from 'react-native-reanimated';
 
 export default function CameraScreen({ navigation }: { navigation: any }) {
   const insets = useSafeAreaInsets();
-  const [hasPermission, setHasPermission] = useState(false);
-  const [deviceType, setDeviceType] = useState<'back' | 'front'>('back');
-  const device = useCameraDevice(deviceType);
-  const camera = useRef<Camera>(null);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [flash, setFlash] = useState<FlashMode>('auto');
+  const cameraRef = useRef<CameraView>(null);
 
   // Live Settings
-  const [flash, setFlash] = useState<'off' | 'on' | 'auto'>('auto');
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0);
   const [showGrid, setShowGrid] = useState(true);
 
   // Simulator controls (essential for emulator testing)
@@ -29,61 +27,16 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
 
   useEffect(() => {
     (async () => {
-      const status = await Camera.requestCameraPermission();
-      setHasPermission(status === 'granted');
-      if (status !== 'granted') {
-        setIsSimulator(true); // Fallback to simulator immediately on emulator
+      if (!permission) {
+        const res = await requestPermission();
+        if (!res.granted) {
+          setIsSimulator(true);
+        }
+      } else if (!permission.granted) {
+        setIsSimulator(true);
       }
     })();
-  }, []);
-
-  // Frame processor for real-time AI guidance (Active on real camera device)
-  const frameProcessor = useFrameProcessor((frame: any) => {
-    'worklet';
-    try {
-      const buffer = frame.toArrayBuffer();
-      const pixels = new Uint8Array(buffer);
-
-      let sumBrightness = 0;
-      let sumGradient = 0;
-      let count = 0;
-
-      for (let i = 0; i < pixels.length; i += 1000) {
-        const p = pixels[i];
-        sumBrightness += p;
-        count++;
-
-        if (i + 4 < pixels.length) {
-          sumGradient += Math.abs(p - pixels[i + 4]);
-        }
-      }
-
-      const avgBrightness = count > 0 ? sumBrightness / count : 0;
-      const avgGradient = count > 0 ? sumGradient / count : 0;
-
-      // Guidance calculations
-      let warning: string | null = null;
-      let score = 100;
-
-      if (avgBrightness < 50) {
-        warning = 'Increase Lighting';
-        score -= 30;
-      } else if (avgBrightness > 220) {
-        warning = 'Reduce Reflection';
-        score -= 25;
-      }
-
-      if (avgGradient < 5) {
-        warning = 'Image Too Blurry';
-        score -= 35;
-      }
-
-      runOnJS(setQualityWarning)(warning);
-      runOnJS(setQualityScore)(Math.max(0, score));
-    } catch {
-      // Fallback
-    }
-  }, []);
+  }, [permission]);
 
   // Run Real-time calculator for Simulator
   useEffect(() => {
@@ -126,8 +79,8 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
     }
   }, [simBrightness, simBlur, simDistance, simGlare, isSimulator]);
 
-  const toggleCamera = () => {
-    setDeviceType((prev) => (prev === 'back' ? 'front' : 'back'));
+  const toggleCameraFacing = () => {
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
 
   const takePhoto = async () => {
@@ -139,7 +92,7 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
       return;
     }
 
-    if (isSimulator || !camera.current) {
+    if (isSimulator || !cameraRef.current) {
       // Simulator flow
       const mockPhoto = {
         path: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&q=80&w=600',
@@ -153,19 +106,21 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
       navigation.navigate('Preview', { photoPath: mockPhoto.path, simMeta: mockPhoto });
     } else {
       try {
-        const photo = await camera.current.takePhoto({
-          flash: flash,
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
         });
-        navigation.navigate('Preview', {
-          photoPath: photo.path,
-          simMeta: {
-            brightness: 128,
-            blur: 0.1,
-            distance: 15,
-            glare: 0,
-            qualityScore,
-          },
-        });
+        if (photo?.uri) {
+          navigation.navigate('Preview', {
+            photoPath: photo.uri,
+            simMeta: {
+              brightness: 128,
+              blur: 0.1,
+              distance: 15,
+              glare: 0,
+              qualityScore,
+            },
+          });
+        }
       } catch (err: any) {
         Alert.alert('Capture Failed', err.message || 'An error occurred during capture.');
       }
@@ -194,7 +149,7 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={toggleCamera}>
+          <TouchableOpacity onPress={toggleCameraFacing}>
             <Text className="text-white text-sm font-semibold">🔄 FLIP</Text>
           </TouchableOpacity>
         </View>
@@ -212,15 +167,13 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
 
       {/* Camera Panel */}
       <View className="flex-1 justify-center items-center relative bg-gray-900">
-        {!isSimulator && device && hasPermission ? (
-          <Camera
-            ref={camera}
+        {!isSimulator && permission?.granted ? (
+          <CameraView
+            ref={cameraRef}
             style={StyleSheet.absoluteFill}
-            device={device}
-            isActive={true}
-            photo={true}
+            facing={facing}
+            flash={flash}
             zoom={zoom}
-            frameProcessor={frameProcessor}
           />
         ) : (
           <View className="w-full h-full justify-center items-center">
@@ -359,7 +312,7 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
         className="bg-black py-4 items-center justify-center flex-row space-x-12"
       >
         <TouchableOpacity
-          onPress={() => setZoom((z) => Math.max(1, z - 0.5))}
+          onPress={() => setZoom((z) => Math.max(0, z - 0.1))}
           className="w-10 h-10 bg-gray-800 rounded-full justify-center items-center"
         >
           <Text className="text-white font-bold text-xs">-</Text>
@@ -376,7 +329,7 @@ export default function CameraScreen({ navigation }: { navigation: any }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => setZoom((z) => Math.min(5, z + 0.5))}
+          onPress={() => setZoom((z) => Math.min(1, z + 0.1))}
           className="w-10 h-10 bg-gray-800 rounded-full justify-center items-center"
         >
           <Text className="text-white font-bold text-xs">+</Text>

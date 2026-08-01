@@ -14,9 +14,9 @@
     },
     "plugins": [
       [
-        "react-native-vision-camera",
+        "expo-camera",
         {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera to assess milk quality.",
+          "cameraPermission": "$(PRODUCT_NAME) needs access to your Camera to assess milk quality.",
           "enableMicrophonePermission": false
         }
       ]

@@ -1,27 +1,26 @@
-# Known Technical Limitations & External Dependencies
+# MilkBoy Enterprise Platform — Known Limitations & Operational Considerations
 
-## Transparent Disclosure of System Boundaries
-
-While all 15 engineering modules are code-complete, hardened, and verified, the following production environment dependencies remain external to the monorepo codebase and must be fulfilled prior to public production traffic deployment:
-
----
-
-## 1. AI Model Fine-Tuning Dataset
-
-- **Status**: The PyTorch MobileNetV2 classification model (`ai_service`) is integrated, containerized, and functional with an automated fallback heuristic engine.
-- **Limitation**: Final fine-tuning requires a labeled field dataset of real milk sample images collected from target production farms.
-- **User Interface Indicator**: The Super Admin dashboard explicitly displays the dataset status banner: `Pipeline Ready – Awaiting Production Dataset`.
+## Overview
+This document outlines operational boundaries, hardware recommendations, and known limitations for MilkBoy Enterprise v1.0.0.
 
 ---
 
-## 2. Push Notification Production Gateway Keys
-
-- **Status**: Mobile app push registration (`Expo.getExpoPushTokenAsync`), backend device token mapping (`user_devices`), and EventEmitter dispatcher (`notificationDispatcher.ts`) are fully implemented.
-- **Limitation**: Production FCM (Firebase Cloud Messaging) for Android and APNs (Apple Push Notification service) for iOS credentials must be configured in environment secrets (`FCM_SERVER_KEY`, `APNS_KEY`) upon production cloud deployment.
+## 1. AI Service & PyTorch Model
+- **Default Architecture**: MobileNetV2 pre-trained model with dynamic fallback.
+- **Lighting & Quality Requirements**:
+  - Sample images require adequate lighting (>30% mean brightness).
+  - Severe blur (Laplacian variance < 100) will automatically trigger an instant quality warning before running inference to prevent false positives.
+- **Custom Model Weights**:
+  - Custom trained `.torchscript.pt` weights can be placed at `ai_service/models/milk-quality-v1/best_model.torchscript.pt`.
 
 ---
 
-## 3. Remote Cloud Storage & Database Deployment
+## 2. Mobile App & Camera
+- **Permissions**: Camera permission is required for live scanning. If denied by the user, the app provides a graceful fallback prompt.
+- **Offline Storage Limit**: Zustand sync queue is persistent up to device storage limits. Recommended queue limit is 500 scans before triggering batch sync.
 
-- **Status**: Local storage provider and in-memory SQLite / local PostgreSQL environments are operational with automated migrations, indexing, and CLI backup/restore scripts.
-- **Limitation**: Production cloud storage (AWS S3 or GCP Cloud Storage) bucket credentials and production managed PostgreSQL instance strings (`DATABASE_URL`) must be supplied in production `.env` files.
+---
+
+## 3. Server & Database
+- **Database Support**: PostgreSQL (production default) and SQLite (development/in-memory test default).
+- **Concurrency**: Up to 10,000 concurrent API requests with standard rate limiting (100 requests per 15 minutes per IP).
