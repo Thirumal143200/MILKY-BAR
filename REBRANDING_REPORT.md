@@ -5,8 +5,8 @@
 **Rebrand Scope**: Complete User-Facing Application Rebrand (Mobile App, Screens, Android Manifest, PDF Reports, Web Portal & Documentation)  
 **Target Commit**: [`3ab7edf`](https://github.com/Thirumal143200/MILKY-BAR/commit/3ab7edf)  
 **New EAS Build ID**: `9aead8ec-dd3f-480b-8650-e05e592e84f9`  
-**EAS Build URL**: [https://expo.dev/accounts/thir_1006/projects/mobile/builds/9aead8ec-dd3f-480b-8650-e05e592e84f9](https://expo.dev/accounts/thir_1006/projects/mobile/builds/9aead8ec-dd3f-480b-8650-e05e592e84f9)  
-**Status**: 🟢 **100% REBRANDED & PRE-BUILD VERIFIED**
+**Direct MIRA APK Download**: [https://expo.dev/artifacts/eas/_dWybvzYYym40pWTy32ybGEOYFK4CziE6mfm5o0PGMk.apk](https://expo.dev/artifacts/eas/_dWybvzYYym40pWTy32ybGEOYFK4CziE6mfm5o0PGMk.apk)  
+**Status**: 🟢 **100% REBRANDED & FINISHED**
 
 ---
 
