@@ -1,9 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// In a real production app, this should be configurable via env vars
-// We'll point this to the backend server running locally on port 3001
-export const API_URL = 'http://10.0.2.2:3001/api/v1'; // Android Emulator default host alias pointing to Express backend
+export const API_URL =
+  process.env.EXPO_PUBLIC_API_URL || 'https://milkboy-server.onrender.com/api/v1';
 
 export const apiClient = axios.create({
   baseURL: API_URL,

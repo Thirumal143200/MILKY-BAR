@@ -9,6 +9,7 @@
 ## 1. Executive Summary
 
 Following physical Android device runtime testing, a focused engineering audit and stabilization sprint was executed across all 10 critical modules. Key fixes include:
+
 1. **UI Rendering**: Implemented explicit React Native `StyleSheet` styling and high-contrast dark themes alongside NativeWind v4 across all screens to guarantee professional, non-plain rendering regardless of native CSS transformer state.
 2. **Authentication Flow**: Resolved password Zod validation parsing, auto-activated registered user accounts (`email_verified: true`), aligned role enums, updated `ResetPassword` API payloads (`newPassword`), and enabled rich error feedback.
 3. **Camera & AI Pipeline**: Verified native hardware camera permissions, zoom/flash/focus controls, and added automated offline pipeline fallback when network connectivity is degraded.
@@ -20,6 +21,7 @@ Following physical Android device runtime testing, a focused engineering audit a
 ## 2. Comprehensive Bug Audit, Root Causes & Fixes
 
 ### 🐛 Bug 1: Unstyled / Plain Black-and-White UI Rendering
+
 - **Symptom**: Screens on physical Android devices appeared as plain unstyled elements.
 - **Root Cause**: NativeWind v4 CSS interop transformer in production standalone builds requires explicit native fallbacks when CSS class interop is unfulfilled by standard React Native `View`/`Text`/`TextInput` elements.
 - **Root Cause Fix**: Refactored all screens (`LoginScreen`, `RegisterScreen`, `HomeScreen`, `SplashScreen`, `ProfileScreen`, `NotificationsScreen`, `ReportsScreen`, `ReportDetailsScreen`, `SettingsScreen`, `MfaVerificationScreen`, `ForgotPasswordScreen`, `ResetPasswordScreen`, `ProcessingScreen`, `ResultScreen`, `ScanHistoryScreen`, `ScanDetailsScreen`) with dual `StyleSheet` + NativeWind styling.
@@ -28,6 +30,7 @@ Following physical Android device runtime testing, a focused engineering audit a
 ---
 
 ### 🐛 Bug 2: Registration & Authentication Failures
+
 - **Symptom**: User registration failed regardless of password or gave generic errors.
 - **Root Causes**:
   1. Backend Zod `registerSchema` requires min 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special character (e.g. `@`, `#`). Unstructured API error responses hid validation details from users.
@@ -47,6 +50,7 @@ Following physical Android device runtime testing, a focused engineering audit a
 ---
 
 ### 🐛 Bug 3: Camera Hardware Permissions & Simulator Fallback
+
 - **Symptom**: Simulator mode auto-enabled on physical device launch.
 - **Root Cause**: Inverted permission logic in `CameraScreen.tsx` set `setIsSimulator(true)` when permissions were granted.
 - **Root Cause Fix**: Corrected permission check in `CameraScreen.tsx` to set `setIsSimulator(false)` when `permission.granted` is true, enabling native hardware camera preview, flash toggling, zoom, grid, and shutter capture on physical devices.
@@ -55,6 +59,7 @@ Following physical Android device runtime testing, a focused engineering audit a
 ---
 
 ### 🐛 Bug 4: AI Pipeline & Offline Fallback Handling
+
 - **Symptom**: Processing screen hung or crashed when network request was delayed or offline.
 - **Root Cause**: Missing offline store fallback handling in `ProcessingScreen.tsx` when server API requests timed out.
 - **Root Cause Fix**: Added automated offline queue persistence (`useSyncStore`) with local quality evaluation calculation and seamless `ResultScreen` transition.
@@ -63,6 +68,7 @@ Following physical Android device runtime testing, a focused engineering audit a
 ---
 
 ### 🐛 Bug 5: Certified Quality Reports & QR Code Sharing
+
 - **Symptom**: Report view lacked fallback structures and digital QR verification.
 - **Root Cause Fix**: Refactored `ReportsScreen` and `ReportDetailsScreen` to render certified report metadata, digital QR verification codes (`/reports/:id/qr`), native OS `Share` dialogs, and PDF export triggers.
 - **Files Modified**:
@@ -73,14 +79,14 @@ Following physical Android device runtime testing, a focused engineering audit a
 
 ## 3. Local Verification Results — 100% PASS
 
-| Verification Suite | Target Requirement | Execution Output | Status |
-| :--- | :--- | :--- | :--- |
-| **TypeScript Type Check** | 0 errors across 4 workspaces | `tsc --noEmit` → **0 errors** | 🟢 **PASS** |
-| **ESLint Audit** | 0 errors or warnings | `eslint src/` → **0 errors, 0 warnings** | 🟢 **PASS** |
-| **Unit & Integration Tests** | 100% pass rate | **77 Express + 6 Web = 83/83 Passed** | 🟢 **PASS** |
-| **Expo Doctor Health Check** | 20/20 checks passed | `npx expo-doctor` → **20/20 passed** | 🟢 **PASS** |
-| **Expo Clean Prebuild** | Native Android project clean | `npx expo prebuild --clean` → **√ Finished prebuild** | 🟢 **PASS** |
-| **Prettier Formatting** | 100% compliant code style | `npx prettier --write .` → **Clean** | 🟢 **PASS** |
+| Verification Suite           | Target Requirement           | Execution Output                                      | Status      |
+| :--------------------------- | :--------------------------- | :---------------------------------------------------- | :---------- |
+| **TypeScript Type Check**    | 0 errors across 4 workspaces | `tsc --noEmit` → **0 errors**                         | 🟢 **PASS** |
+| **ESLint Audit**             | 0 errors or warnings         | `eslint src/` → **0 errors, 0 warnings**              | 🟢 **PASS** |
+| **Unit & Integration Tests** | 100% pass rate               | **77 Express + 6 Web = 83/83 Passed**                 | 🟢 **PASS** |
+| **Expo Doctor Health Check** | 20/20 checks passed          | `npx expo-doctor` → **20/20 passed**                  | 🟢 **PASS** |
+| **Expo Clean Prebuild**      | Native Android project clean | `npx expo prebuild --clean` → **√ Finished prebuild** | 🟢 **PASS** |
+| **Prettier Formatting**      | 100% compliant code style    | `npx prettier --write .` → **Clean**                  | 🟢 **PASS** |
 
 ---
 
