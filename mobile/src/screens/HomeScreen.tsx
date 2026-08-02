@@ -7,6 +7,7 @@ import {
   Image,
   RefreshControl,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSyncStore } from '../store/sync.store';
@@ -24,7 +25,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     if (!silent) setIsLoading(true);
     try {
       const res = await apiListScans();
-      // Ensure we extract the data array
       if (res && res.data) {
         setServerScans(res.data);
       } else if (Array.isArray(res)) {
@@ -40,29 +40,28 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   useEffect(() => {
     loadServerScans();
-  }, [loadServerScans, queue]); // Reload when queue changes (meaning sync completed)
+  }, [loadServerScans, queue]);
 
   const onRefresh = () => {
     setRefreshing(true);
     loadServerScans(true);
   };
 
-  // Combine queue (local pending) and server scans
-  // If scan is local but status is synced, check if it's already in serverScans
   const getCombinedScans = () => {
     const pendingAndFailed = queue.filter(
       (item) => item.status === 'pending' || item.status === 'syncing' || item.status === 'failed',
     );
 
-    // Map pending scans to common format
     const formattedPending = pendingAndFailed.map((item) => ({
       id: item.id,
       status: item.status,
-      createdAt: new Date(item.timestamp).toISOString(),
-      qualityLabel: (item.prediction as any)?.qualityLabel || null,
-      confidence: (item.prediction as any)?.confidence || null,
-      isLocal: true,
+      createdAt: item.timestamp ? new Date(item.timestamp).toISOString() : new Date().toISOString(),
+      qualityLabel:
+        (item.prediction as any)?.qualityClass || (item.prediction as any)?.qualityLabel || null,
+      confidence:
+        (item.prediction as any)?.confidenceScore || (item.prediction as any)?.confidence || null,
       imageUri: item.imageUri,
+      isLocal: true,
     }));
 
     return [...formattedPending, ...serverScans];
@@ -70,226 +69,435 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const combinedScans = getCombinedScans();
 
-  // Statistics calculation
-  const totalScans = combinedScans.length;
-  const freshCount = combinedScans.filter(
-    (s) => s.qualityLabel === 'excellent' || s.qualityLabel === 'good',
-  ).length;
-  const spoiledCount = combinedScans.filter(
-    (s) => s.qualityLabel === 'spoiled' || s.qualityLabel === 'adulterated',
-  ).length;
-
-  const getLabelColor = (label: string) => {
-    if (!label) return 'text-gray-500';
-    switch (label.toLowerCase()) {
-      case 'excellent':
-      case 'good':
-        return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-      case 'acceptable':
-      case 'poor':
-        return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-      case 'adulterated':
-      case 'spoiled':
-        return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+      case 'synced':
+        return '#4ade80';
+      case 'pending':
+        return '#facc15';
+      case 'syncing':
+        return '#38bdf8';
+      case 'failed':
+        return '#f87171';
       default:
-        return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+        return '#9ca3af';
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'synced':
-      case 'completed':
-        return 'text-green-500';
-      case 'syncing':
-      case 'analyzing':
-        return 'text-blue-500';
-      case 'failed':
-      case 'rejected':
-        return 'text-red-500';
+  const getLabelColor = (label: string) => {
+    switch (label?.toLowerCase()) {
+      case 'fresh':
+      case 'normal':
+        return {
+          color: '#4ade80',
+          borderColor: 'rgba(74, 222, 128, 0.3)',
+          backgroundColor: 'rgba(74, 222, 128, 0.1)',
+        };
+      case 'spoiled':
+      case 'mastitis':
+        return {
+          color: '#f87171',
+          borderColor: 'rgba(248, 113, 113, 0.3)',
+          backgroundColor: 'rgba(248, 113, 113, 0.1)',
+        };
+      case 'adulterated':
+      case 'watered':
+      case 'contaminated':
+        return {
+          color: '#fb923c',
+          borderColor: 'rgba(251, 146, 60, 0.3)',
+          backgroundColor: 'rgba(251, 146, 60, 0.1)',
+        };
       default:
-        return 'text-gray-500';
+        return {
+          color: '#9ca3af',
+          borderColor: 'rgba(156, 163, 175, 0.3)',
+          backgroundColor: 'rgba(156, 163, 175, 0.1)',
+        };
     }
   };
 
   return (
-    <View style={{ paddingTop: insets.top }} className="flex-1 bg-gray-900">
-      <UploadSyncManager />
-
-      {/* Top Header */}
-      <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-800">
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Profile')}
-          className="w-10 h-10 bg-gray-800 rounded-full justify-center items-center border border-gray-700"
-        >
-          <Text className="text-white text-base font-bold">👤</Text>
-        </TouchableOpacity>
-
-        <View className="items-center">
-          <Text className="text-2xl font-extrabold text-white tracking-tight">MilkBoy</Text>
-          <Text className="text-xs text-blue-400 font-semibold uppercase tracking-wider">
-            Quality Portal
-          </Text>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 16) }]}>
+      {/* Top Bar Header */}
+      <View style={styles.header}>
+        <View style={styles.headerTitleRow}>
+          <Text style={styles.headerIcon}>🥛</Text>
+          <Text style={styles.headerTitle}>MilkBoy</Text>
         </View>
 
-        <View className="flex-row space-x-2">
+        <View style={styles.headerActions}>
           <TouchableOpacity
             onPress={() => navigation.navigate('Notifications')}
-            className="w-10 h-10 bg-gray-800 rounded-full justify-center items-center border border-gray-700 relative"
+            style={styles.actionButton}
           >
-            <Text className="text-white text-base">🔔</Text>
-            <View className="absolute top-1 right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-gray-900" />
+            <Text style={styles.actionIcon}>🔔</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={styles.actionButton}
+          >
+            <Text style={styles.actionIcon}>👤</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Statistics Cards */}
-      <View className="px-4 py-4 flex-row space-x-2">
-        <View className="flex-1 bg-gray-800/40 border border-gray-800 p-3 rounded-2xl">
-          <Text className="text-gray-400 text-xs font-bold uppercase mb-1">Total Scans</Text>
-          <Text className="text-white text-2xl font-black">{totalScans}</Text>
-        </View>
-        <View className="flex-1 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-2xl">
-          <Text className="text-emerald-400 text-xs font-bold uppercase mb-1">Fresh/Good</Text>
-          <Text className="text-emerald-500 text-2xl font-black">{freshCount}</Text>
-        </View>
-        <View className="flex-1 bg-rose-500/10 border border-rose-500/20 p-3 rounded-2xl">
-          <Text className="text-rose-400 text-xs font-bold uppercase mb-1">Spoiled Alerts</Text>
-          <Text className="text-rose-500 text-2xl font-black">{spoiledCount}</Text>
-        </View>
+      {/* Sync Manager Banner */}
+      <View style={styles.syncBanner}>
+        <UploadSyncManager />
       </View>
 
-      {/* Main Content Area */}
-      <View className="flex-1 px-4 py-2">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-lg font-extrabold text-white">Recent Quality Scans</Text>
-          {isLoading && <ActivityIndicator size="small" color="#3b82f6" />}
-        </View>
+      {/* Activity Feed Header */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('ScanHistory')}>
+          <Text style={styles.seeAllText}>See All ›</Text>
+        </TouchableOpacity>
+      </View>
 
-        {combinedScans.length === 0 ? (
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-4xl mb-4">🥛</Text>
-            <Text className="text-gray-400 font-semibold text-lg text-center mb-1">
-              No Scans Recorded Yet
-            </Text>
-            <Text className="text-gray-500 text-sm text-center px-8">
-              Tap "New Scan" below to capture a milk sample and run an instant AI quality analysis.
+      {/* Scan History Feed */}
+      <View style={styles.feedContainer}>
+        {isLoading && !refreshing ? (
+          <View style={styles.centerBox}>
+            <ActivityIndicator size="large" color="#3b82f6" />
+            <Text style={styles.loadingText}>Fetching Quality History...</Text>
+          </View>
+        ) : combinedScans.length === 0 ? (
+          <View style={styles.centerBox}>
+            <Text style={styles.emptyIcon}>📷</Text>
+            <Text style={styles.emptyTitle}>No Scans Available</Text>
+            <Text style={styles.emptySubtitle}>
+              Tap the button below to start a new milk analysis.
             </Text>
           </View>
         ) : (
           <FlatList
             data={combinedScans}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, idx) => item.id || `scan-${idx}`}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#38bdf8" />
             }
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() =>
-                  item.status === 'completed' || item.status === 'synced'
-                    ? navigation.navigate('Result', {
-                        scanId: item.id,
-                        prediction: {
-                          qualityLabel: item.qualityLabel,
-                          confidence: item.confidence,
-                          explanation:
-                            item.notes || 'Heuristic quality test successfully performed.',
-                        },
-                      })
-                    : null
-                }
-                className="flex-row bg-gray-800/40 border border-gray-800/80 p-4 mb-3 rounded-2xl items-center"
-              >
-                {/* Image Preview / Icon Placeholder */}
-                {item.imageUri ? (
-                  <Image
-                    source={{ uri: item.imageUri }}
-                    className="w-16 h-16 rounded-xl bg-gray-800 border border-gray-700"
-                  />
-                ) : (
-                  <View className="w-16 h-16 rounded-xl bg-blue-600/10 border border-blue-500/20 justify-center items-center">
-                    <Text className="text-2xl">🥛</Text>
-                  </View>
-                )}
+            contentContainerStyle={styles.listPadding}
+            renderItem={({ item }) => {
+              const labelStyle = getLabelColor(item.qualityLabel);
+              return (
+                <TouchableOpacity
+                  style={styles.scanCard}
+                  onPress={() =>
+                    item.isLocal
+                      ? navigation.navigate('ScanDetails', { scanId: item.id, isLocal: true })
+                      : navigation.navigate('ScanDetails', { scanId: item.id })
+                  }
+                  activeOpacity={0.8}
+                >
+                  {item.imageUri ? (
+                    <Image source={{ uri: item.imageUri }} style={styles.scanImage} />
+                  ) : (
+                    <View style={styles.scanPlaceholder}>
+                      <Text style={styles.scanPlaceholderIcon}>🥛</Text>
+                    </View>
+                  )}
 
-                <View className="ml-4 flex-1">
-                  <Text className="font-extrabold text-white text-base">
-                    {new Date(item.createdAt).toLocaleString()}
-                  </Text>
-                  <View className="flex-row items-center mt-1">
-                    <Text
-                      className={`text-xs font-bold uppercase tracking-wider ${getStatusColor(item.status)}`}
-                    >
-                      {item.status.toUpperCase()}
-                    </Text>
-                    {item.isLocal && (
-                      <View className="ml-2 bg-blue-600/20 px-1.5 py-0.5 rounded border border-blue-500/20">
-                        <Text className="text-[10px] text-blue-400 font-bold uppercase">
-                          Pending Sync
-                        </Text>
-                      </View>
-                    )}
-                  </View>
+                  <View style={styles.scanInfo}>
+                    <Text style={styles.scanTime}>{new Date(item.createdAt).toLocaleString()}</Text>
 
-                  {item.qualityLabel ? (
-                    <View className="flex-row items-center mt-2">
-                      <View
-                        className={`px-2 py-0.5 rounded-full border ${getLabelColor(item.qualityLabel)}`}
-                      >
-                        <Text className="text-[10px] font-extrabold uppercase tracking-wide">
-                          {item.qualityLabel}
-                        </Text>
-                      </View>
-                      {item.confidence && (
-                        <Text className="text-xs text-gray-400 ml-2 font-bold">
-                          {(item.confidence * 100).toFixed(1)}%
-                        </Text>
+                    <View style={styles.statusRow}>
+                      <Text style={[styles.statusBadge, { color: getStatusColor(item.status) }]}>
+                        {item.status.toUpperCase()}
+                      </Text>
+                      {item.isLocal && (
+                        <View style={styles.pendingBadge}>
+                          <Text style={styles.pendingText}>Pending Sync</Text>
+                        </View>
                       )}
                     </View>
-                  ) : null}
-                </View>
 
-                {(item.status === 'completed' || item.status === 'synced') && (
-                  <Text className="text-gray-500 text-lg font-bold">›</Text>
-                )}
-              </TouchableOpacity>
-            )}
+                    {item.qualityLabel ? (
+                      <View style={styles.labelRow}>
+                        <View style={[styles.qualityPill, labelStyle]}>
+                          <Text style={[styles.qualityPillText, { color: labelStyle.color }]}>
+                            {item.qualityLabel}
+                          </Text>
+                        </View>
+                        {item.confidence && (
+                          <Text style={styles.confidenceText}>
+                            {(item.confidence * 100).toFixed(1)}%
+                          </Text>
+                        )}
+                      </View>
+                    ) : null}
+                  </View>
+
+                  <Text style={styles.chevron}>›</Text>
+                </TouchableOpacity>
+              );
+            }}
           />
         )}
       </View>
 
-      {/* Floating Shutter Button */}
-      <View className="items-center pb-6">
+      {/* Floating Shutter Action Button */}
+      <View style={styles.shutterContainer}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Camera')}
-          className="bg-blue-600 px-8 py-4 rounded-full flex-row items-center space-x-2 shadow-lg shadow-blue-500/30"
+          style={styles.shutterButton}
+          activeOpacity={0.85}
         >
-          <Text className="text-white text-lg font-bold tracking-wide">📷 New Scan</Text>
+          <Text style={styles.shutterText}>📷 New Milk Scan</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Custom Bottom Tab Bar Hub */}
-      <View className="flex-row bg-gray-950/80 border-t border-gray-900 justify-around py-3">
-        <TouchableOpacity onPress={() => loadServerScans()} className="items-center">
-          <Text className="text-lg">🏠</Text>
-          <Text className="text-[10px] text-blue-500 font-bold mt-0.5">Home</Text>
+      {/* Bottom Navigation Bar Hub */}
+      <View style={[styles.navHub, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+        <TouchableOpacity onPress={() => loadServerScans()} style={styles.navTab}>
+          <Text style={styles.navIcon}>🏠</Text>
+          <Text style={[styles.navText, styles.navTextActive]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ScanHistory')}
-          className="items-center"
-        >
-          <Text className="text-lg">📁</Text>
-          <Text className="text-[10px] text-gray-400 font-bold mt-0.5">History</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('ScanHistory')} style={styles.navTab}>
+          <Text style={styles.navIcon}>📁</Text>
+          <Text style={styles.navText}>History</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Reports')} className="items-center">
-          <Text className="text-lg">📊</Text>
-          <Text className="text-[10px] text-gray-400 font-bold mt-0.5">Reports</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Reports')} style={styles.navTab}>
+          <Text style={styles.navIcon}>📊</Text>
+          <Text style={styles.navText}>Reports</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')} className="items-center">
-          <Text className="text-lg">⚙️</Text>
-          <Text className="text-[10px] text-gray-400 font-bold mt-0.5">Settings</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.navTab}>
+          <Text style={styles.navIcon}>⚙️</Text>
+          <Text style={styles.navText}>Settings</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerIcon: {
+    fontSize: 28,
+  },
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: -0.5,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#1e293b',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  actionIcon: {
+    fontSize: 18,
+  },
+  syncBanner: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginVertical: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  seeAllText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#38bdf8',
+  },
+  feedContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  centerBox: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    color: '#94a3b8',
+    marginTop: 12,
+    fontSize: 14,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+  listPadding: {
+    paddingBottom: 20,
+  },
+  scanCard: {
+    flexDirection: 'row',
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  scanImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    backgroundColor: '#0f172a',
+  },
+  scanPlaceholder: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.2)',
+  },
+  scanPlaceholderIcon: {
+    fontSize: 24,
+  },
+  scanInfo: {
+    flex: 1,
+    marginLeft: 14,
+  },
+  scanTime: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  statusBadge: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  pendingBadge: {
+    marginLeft: 8,
+    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  pendingText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#38bdf8',
+  },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  qualityPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  qualityPillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  confidenceText: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginLeft: 8,
+    fontWeight: '700',
+  },
+  chevron: {
+    fontSize: 20,
+    color: '#64748b',
+    fontWeight: '700',
+  },
+  shutterContainer: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  shutterButton: {
+    backgroundColor: '#2563eb',
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 30,
+    elevation: 6,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  shutterText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  navHub: {
+    flexDirection: 'row',
+    backgroundColor: '#020617',
+    borderTopWidth: 1,
+    borderTopColor: '#1e293b',
+    justifyContent: 'space-around',
+    paddingTop: 10,
+  },
+  navTab: {
+    alignItems: 'center',
+  },
+  navIcon: {
+    fontSize: 20,
+  },
+  navText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#64748b',
+    marginTop: 2,
+  },
+  navTextActive: {
+    color: '#38bdf8',
+  },
+});

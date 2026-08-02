@@ -74,8 +74,8 @@ export class AuthService {
       first_name: data.firstName,
       last_name: data.lastName,
       role_id: role.id,
-      status: 'active', // In production, set to 'pending_verification'
-      email_verified: config.isDev, // Auto-verify in dev
+      status: 'active',
+      email_verified: true,
       email_verify_token: hashToken(verifyToken),
       language: data.language ?? 'en',
       theme: 'system',

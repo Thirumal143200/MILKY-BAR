@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient } from '../api/client';
 
@@ -18,35 +28,54 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     try {
       const response = await apiClient.post('/auth/login', { email, password });
 
-      // Save tokens
-      await AsyncStorage.setItem('jwt_token', response.data.accessToken);
-      await AsyncStorage.setItem('refresh_token', response.data.refreshToken);
-      await AsyncStorage.setItem('user_role', response.data.user.role);
+      // Save tokens and user metadata
+      if (response.data?.accessToken) {
+        await AsyncStorage.setItem('jwt_token', response.data.accessToken);
+      }
+      if (response.data?.refreshToken) {
+        await AsyncStorage.setItem('refresh_token', response.data.refreshToken);
+      }
+      if (response.data?.user?.role) {
+        await AsyncStorage.setItem('user_role', response.data.user.role);
+      }
 
       navigation.replace('Home');
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      Alert.alert('Login Failed', err.response?.data?.message || 'Invalid credentials');
+    } catch (error: any) {
+      const errorData = error.response?.data?.error || error.response?.data;
+      const message = errorData?.message || 'Invalid email or password.';
+      Alert.alert('Login Failed', message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900 px-6">
-      <View className="w-full max-w-sm">
-        <Text className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 text-center">
-          MilkBoy
-        </Text>
-        <Text className="text-lg text-gray-500 text-center mb-8">Sign in to your account</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      className="flex-1 bg-gray-900 justify-center items-center px-6"
+    >
+      <View style={styles.cardContainer} className="w-full max-w-sm">
+        {/* Brand Header */}
+        <View style={styles.headerBox}>
+          <Text style={styles.logoIcon}>🥛</Text>
+          <Text style={styles.titleText} className="text-4xl font-extrabold text-white text-center">
+            MilkBoy
+          </Text>
+          <Text style={styles.subtitleText} className="text-gray-400 text-center">
+            Enterprise Milk Quality Verification
+          </Text>
+        </View>
 
-        <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 space-y-4 border border-gray-100 dark:border-gray-700">
-          <View>
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Email
+        {/* Login Form Card */}
+        <View style={styles.card} className="bg-gray-800 rounded-3xl p-6 border border-gray-700">
+          <View style={styles.inputGroup}>
+            <Text style={styles.label} className="text-sm font-semibold text-gray-300 mb-1">
+              Email Address
             </Text>
             <TextInput
-              className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600"
+              style={styles.input}
+              className="bg-gray-700 text-white px-4 py-3 rounded-xl border border-gray-600"
               placeholder="producer@example.com"
               placeholderTextColor="#9ca3af"
               keyboardType="email-address"
@@ -56,12 +85,13 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
             />
           </View>
 
-          <View className="mt-4">
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+          <View style={styles.inputGroup}>
+            <Text style={styles.label} className="text-sm font-semibold text-gray-300 mb-1">
               Password
             </Text>
             <TextInput
-              className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600"
+              style={styles.input}
+              className="bg-gray-700 text-white px-4 py-3 rounded-xl border border-gray-600"
               placeholder="••••••••"
               placeholderTextColor="#9ca3af"
               secureTextEntry
@@ -70,23 +100,144 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
             />
           </View>
 
+          {/* Action Button */}
           <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}
-            className={`mt-6 bg-blue-600 py-4 rounded-xl flex-row justify-center items-center ${isLoading ? 'opacity-70' : ''}`}
+            activeOpacity={0.8}
+            className="mt-6 bg-blue-600 py-4 rounded-xl flex-row justify-center items-center"
           >
-            <Text className="text-white font-bold text-lg">
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={styles.buttonText} className="text-white font-bold text-lg">
+                Sign In
+              </Text>
+            )}
           </TouchableOpacity>
+
+          {/* Navigation Links */}
+          <View style={styles.linksContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+              <Text style={styles.linkText}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')} className="mt-6">
-          <Text className="text-blue-600 text-center font-medium">
-            Don't have an account? Sign Up
+        {/* Registration Link */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Register')}
+          style={styles.signUpContainer}
+        >
+          <Text style={styles.signUpText}>
+            Don't have an account? <Text style={styles.signUpHighlight}>Sign Up</Text>
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  cardContainer: {
+    width: '100%',
+    maxWidth: 400,
+  },
+  headerBox: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  logoIcon: {
+    fontSize: 48,
+    marginBottom: 8,
+  },
+  titleText: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#ffffff',
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
+  subtitleText: {
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  card: {
+    backgroundColor: '#1e293b',
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#334155',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#cbd5e1',
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: '#0f172a',
+    color: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#475569',
+    fontSize: 15,
+  },
+  button: {
+    marginTop: 12,
+    backgroundColor: '#2563eb',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  linksContainer: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  linkText: {
+    color: '#38bdf8',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  signUpContainer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  signUpText: {
+    color: '#94a3b8',
+    fontSize: 14,
+  },
+  signUpHighlight: {
+    color: '#38bdf8',
+    fontWeight: '700',
+  },
+});

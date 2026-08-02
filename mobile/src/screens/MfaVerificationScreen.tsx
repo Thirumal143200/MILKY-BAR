@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { apiClient } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 
@@ -14,22 +23,20 @@ export default function MfaVerificationScreen({
   const [isLoading, setIsLoading] = useState(false);
   const setSession = useAuthStore((state) => state.setSession);
 
-  // We expect user credentials details passed from login screen if MFA is required
   const { email, password } = route.params || {};
 
   const handleVerifyOtp = async () => {
-    if (!code) {
-      Alert.alert('Error', 'Please enter the 6-digit verification code.');
+    if (!code.trim()) {
+      Alert.alert('Error', 'Please enter the 6-digit authentication code.');
       return;
     }
 
     setIsLoading(true);
     try {
-      // In our login flow, if MFA is required, we can submit email, password, and the mfaCode directly
       const response = await apiClient.post('/auth/login', {
         email,
         password,
-        mfaCode: code,
+        mfaCode: code.trim(),
       });
 
       const data = response.data.data || response.data;
@@ -38,32 +45,32 @@ export default function MfaVerificationScreen({
         { text: 'OK', onPress: () => navigation.replace('Home') },
       ]);
     } catch (error: any) {
-      Alert.alert(
-        'Verification Failed',
-        error.response?.data?.message || 'Invalid verification code.',
-      );
+      const errorData = error.response?.data?.error || error.response?.data;
+      const message = errorData?.message || 'Invalid verification code.';
+      Alert.alert('Verification Failed', message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900 justify-center px-6">
-      <View className="w-full max-w-sm self-center">
-        <Text className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2 text-center">
-          MFA Verification
-        </Text>
-        <Text className="text-base text-gray-500 dark:text-gray-400 text-center mb-8">
-          Enter the 6-digit authentication code from your authenticator app to log in.
-        </Text>
+    <SafeAreaView style={styles.container} className="flex-1 bg-gray-900 justify-center px-6">
+      <View style={styles.cardContainer}>
+        {/* Header */}
+        <View style={styles.headerBox}>
+          <Text style={styles.iconText}>🛡️</Text>
+          <Text style={styles.titleText}>MFA Verification</Text>
+          <Text style={styles.subtitleText}>
+            Enter the 6-digit code from your authenticator app to complete sign in.
+          </Text>
+        </View>
 
-        <View className="space-y-4">
-          <View>
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Authentication Code
-            </Text>
+        {/* Form Card */}
+        <View style={styles.card}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Authentication Code</Text>
             <TextInput
-              className="bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-center text-2xl font-bold tracking-widest"
+              style={[styles.input, styles.otpInput]}
               placeholder="000000"
               placeholderTextColor="#9ca3af"
               keyboardType="number-pad"
@@ -74,20 +81,117 @@ export default function MfaVerificationScreen({
           </View>
 
           <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleVerifyOtp}
             disabled={isLoading}
-            className={`w-full mt-4 bg-blue-600 py-4 rounded-xl items-center ${isLoading ? 'opacity-70' : ''}`}
+            activeOpacity={0.8}
           >
-            <Text className="text-white font-bold text-lg">
-              {isLoading ? 'Verifying...' : 'Verify & Sign In'}
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={styles.buttonText}>Verify & Sign In</Text>
+            )}
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.replace('Login')} className="mt-6">
-          <Text className="text-blue-600 dark:text-blue-400 text-center font-medium">Cancel</Text>
+        {/* Back Link */}
+        <TouchableOpacity onPress={() => navigation.replace('Login')} style={styles.backContainer}>
+          <Text style={styles.backText}>Cancel</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  cardContainer: {
+    width: '100%',
+    maxWidth: 400,
+  },
+  headerBox: {
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  iconText: {
+    fontSize: 44,
+    marginBottom: 8,
+  },
+  titleText: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#ffffff',
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
+  subtitleText: {
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
+    marginTop: 6,
+  },
+  card: {
+    backgroundColor: '#1e293b',
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#334155',
+    elevation: 4,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#cbd5e1',
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: '#0f172a',
+    color: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#475569',
+    fontSize: 15,
+  },
+  otpInput: {
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: 8,
+  },
+  button: {
+    marginTop: 8,
+    backgroundColor: '#2563eb',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  backContainer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  backText: {
+    color: '#64748b',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+});

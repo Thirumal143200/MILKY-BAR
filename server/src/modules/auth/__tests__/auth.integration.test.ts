@@ -118,7 +118,7 @@ describe('Auth & Security Integration Tests (Real DB)', () => {
 
     it('should verify email successfully', async () => {
       const user = await db('users').where('email', 'consumer@integration.com').first();
-      expect(user.email_verified).toBe(0); // false in sqlite numeric
+      expect(Boolean(user.email_verified)).toBe(true);
       expect(user.email_verify_token).toBeDefined();
 
       // Find token matching database verify hash

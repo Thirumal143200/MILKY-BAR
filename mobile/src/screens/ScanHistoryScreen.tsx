@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { apiListScans } from '../api/client';
@@ -24,13 +25,12 @@ export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
     if (!silent) setLoading(true);
     try {
       const res = await apiListScans();
-      if (res && res.data) {
-        setScans(res.data);
-      } else if (Array.isArray(res)) {
-        setScans(res);
+      const data = res?.data || res;
+      if (Array.isArray(data)) {
+        setScans(data);
       }
     } catch (e) {
-      console.error('Failed to load scan history', e);
+      console.warn('Failed to load scan history', e);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -55,49 +55,34 @@ export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
         (scan.qualityLabel && scan.qualityLabel.toLowerCase().includes(search.toLowerCase()));
 
       const matchesStatus =
-        !filterStatus || scan.status.toLowerCase() === filterStatus.toLowerCase();
+        !filterStatus || scan.status?.toLowerCase() === filterStatus.toLowerCase();
 
       return matchesSearch && matchesStatus;
     });
   };
 
-  const getLabelColor = (label: string) => {
-    if (!label) return 'text-gray-500';
-    switch (label.toLowerCase()) {
-      case 'excellent':
-      case 'good':
-        return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-      case 'acceptable':
-      case 'poor':
-        return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-      case 'adulterated':
-      case 'spoiled':
-        return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
-      default:
-        return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-    }
-  };
-
   const filteredScans = getFilteredScans();
 
   return (
-    <View style={{ paddingTop: insets.top }} className="flex-1 bg-gray-900 px-4">
-      {/* Header */}
-      <View className="flex-row items-center mb-4 mt-2">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <Text className="text-white text-lg">← Back</Text>
-        </TouchableOpacity>
-        <Text className="text-white text-3xl font-bold">Scan History</Text>
-      </View>
-
-      {/* Offline Sync Status & Queue Banner */}
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 16) }]}>
       <OfflineSyncBanner />
 
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backText}>‹ Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Scan History</Text>
+        <TouchableOpacity onPress={() => loadScans()} style={styles.refreshBtn}>
+          <Text style={styles.refreshIcon}>🔄</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Search Input */}
-      <View className="mb-4">
+      <View style={styles.searchBox}>
         <TextInput
-          className="bg-gray-800 text-white px-4 py-3 rounded-2xl border border-gray-700"
-          placeholder="Search scans (e.g. Excellent, Spoiled...)"
+          style={styles.searchInput}
+          placeholder="Filter by title, quality, notes..."
           placeholderTextColor="#9ca3af"
           value={search}
           onChangeText={setSearch}
@@ -105,83 +90,74 @@ export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
       </View>
 
       {/* Filter Tabs */}
-      <View className="flex-row space-x-2 mb-6">
-        <TouchableOpacity
-          onPress={() => setFilterStatus(null)}
-          className={`px-4 py-2 rounded-xl border ${
-            filterStatus === null ? 'bg-blue-600 border-blue-600' : 'bg-transparent border-gray-700'
-          }`}
-        >
-          <Text className="text-white font-semibold text-xs">All</Text>
-        </TouchableOpacity>
-
-        {['completed', 'failed'].map((status) => (
+      <View style={styles.filterRow}>
+        {[
+          { label: 'All', value: null },
+          { label: 'Completed', value: 'completed' },
+          { label: 'Pending', value: 'pending' },
+          { label: 'Failed', value: 'failed' },
+        ].map((tab) => (
           <TouchableOpacity
-            key={status}
-            onPress={() => setFilterStatus(status)}
-            className={`px-4 py-2 rounded-xl border capitalize ${
-              filterStatus === status
-                ? 'bg-blue-600 border-blue-600'
-                : 'bg-transparent border-gray-700'
-            }`}
+            key={tab.label}
+            onPress={() => setFilterStatus(tab.value)}
+            style={[styles.filterTab, filterStatus === tab.value && styles.filterTabActive]}
           >
-            <Text className="text-white font-semibold text-xs">{status}</Text>
+            <Text
+              style={[
+                styles.filterTabText,
+                filterStatus === tab.value && styles.filterTabTextActive,
+              ]}
+            >
+              {tab.label}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      {loading ? (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#3b82f6" />
+      {/* Scan List */}
+      {loading && !refreshing ? (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#38bdf8" />
+          <Text style={styles.loadingText}>Loading Scan Archives...</Text>
         </View>
       ) : filteredScans.length === 0 ? (
-        <View className="flex-1 items-center justify-center py-20">
-          <Text className="text-4xl mb-4">📂</Text>
-          <Text className="text-gray-400 font-semibold text-lg text-center">No scans found</Text>
-          <Text className="text-gray-500 text-sm text-center mt-1">
-            Try adjusting your search criteria or swipe down to refresh.
+        <View style={styles.centerContainer}>
+          <Text style={styles.emptyIcon}>📂</Text>
+          <Text style={styles.emptyTitle}>No Scans Found</Text>
+          <Text style={styles.emptySubtitle}>
+            Try adjusting your search query or filter criteria.
           </Text>
         </View>
       ) : (
         <FlatList
           data={filteredScans}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => item.id || `hist-${index}`}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#38bdf8" />
           }
+          contentContainerStyle={styles.listPadding}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => navigation.navigate('ScanDetails', { scanId: item.id })}
-              className="bg-gray-800/40 border border-gray-800 p-4 mb-3 rounded-2xl flex-row justify-between items-center"
+              style={styles.card}
+              activeOpacity={0.8}
             >
-              <View className="flex-1">
-                <Text className="text-white font-extrabold text-base">
-                  {new Date(item.createdAt).toLocaleString()}
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>
+                  {item.title || `Milk Scan #${item.id.slice(0, 8)}`}
                 </Text>
-
-                <Text className="text-gray-500 text-xs font-bold uppercase mt-1">
-                  Status: {item.status}
-                </Text>
-
-                {item.qualityLabel ? (
-                  <View className="flex-row items-center mt-2">
-                    <View
-                      className={`px-2.5 py-0.5 rounded-full border ${getLabelColor(item.qualityLabel)}`}
-                    >
-                      <Text className="text-[10px] font-extrabold uppercase tracking-wide">
-                        {item.qualityLabel}
-                      </Text>
-                    </View>
-                    {item.confidence && (
-                      <Text className="text-xs text-gray-400 font-bold ml-2">
-                        {(item.confidence * 100).toFixed(1)}%
-                      </Text>
-                    )}
-                  </View>
-                ) : null}
+                <Text style={styles.cardStatus}>{item.status?.toUpperCase() || 'COMPLETED'}</Text>
               </View>
 
-              <Text className="text-gray-500 text-xl font-bold">›</Text>
+              <Text style={styles.cardDate}>
+                {new Date(item.createdAt || item.timestamp || Date.now()).toLocaleString()}
+              </Text>
+
+              {item.qualityLabel && (
+                <View style={styles.qualityPill}>
+                  <Text style={styles.qualityText}>Assessment: {item.qualityLabel}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           )}
         />
@@ -189,3 +165,148 @@ export default function ScanHistoryScreen({ navigation }: { navigation: any }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1e293b',
+  },
+  backBtn: {
+    paddingVertical: 4,
+  },
+  backText: {
+    color: '#38bdf8',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  headerTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  refreshBtn: {
+    paddingVertical: 4,
+  },
+  refreshIcon: {
+    fontSize: 18,
+  },
+  searchBox: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+  },
+  searchInput: {
+    backgroundColor: '#1e293b',
+    color: '#ffffff',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+    fontSize: 14,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  filterTab: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: '#1e293b',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  filterTabActive: {
+    backgroundColor: '#2563eb',
+    borderColor: '#2563eb',
+  },
+  filterTabText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#94a3b8',
+  },
+  filterTabTextActive: {
+    color: '#ffffff',
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    color: '#94a3b8',
+    marginTop: 12,
+    fontSize: 14,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+  },
+  listPadding: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  card: {
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  cardTitle: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  cardStatus: {
+    color: '#38bdf8',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  cardDate: {
+    color: '#64748b',
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  qualityPill: {
+    backgroundColor: 'rgba(37, 99, 235, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  qualityText: {
+    color: '#38bdf8',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+});

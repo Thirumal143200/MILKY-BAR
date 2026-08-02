@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SplashScreen({ navigation }: { navigation: any }) {
@@ -7,7 +7,6 @@ export default function SplashScreen({ navigation }: { navigation: any }) {
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
   useEffect(() => {
-    // Start animation
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -21,7 +20,6 @@ export default function SplashScreen({ navigation }: { navigation: any }) {
       }),
     ]).start();
 
-    // Check token after 2 seconds
     const checkAuth = setTimeout(async () => {
       try {
         const token = await AsyncStorage.getItem('jwt_token');
@@ -39,27 +37,76 @@ export default function SplashScreen({ navigation }: { navigation: any }) {
   }, [fadeAnim, scaleAnim, navigation]);
 
   return (
-    <View className="flex-1 bg-gray-900 justify-center items-center">
+    <View style={styles.container} className="flex-1 bg-gray-900 justify-center items-center">
       <Animated.View
-        style={{
-          opacity: fadeAnim,
-          transform: [{ scale: scaleAnim }],
-        }}
-        className="items-center"
+        style={[
+          styles.contentBox,
+          {
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
       >
-        {/* Neon style milk icon mockup */}
-        <View className="w-24 h-24 bg-blue-600/20 border-2 border-blue-500 rounded-3xl justify-center items-center shadow-lg shadow-blue-500/50 mb-6">
-          <Text className="text-4xl">🥛</Text>
+        <View style={styles.iconBox}>
+          <Text style={styles.iconText}>🥛</Text>
         </View>
-        <Text className="text-5xl font-extrabold text-white tracking-wider mb-2">MilkBoy</Text>
-        <Text className="text-blue-400 font-semibold text-lg uppercase tracking-widest">
-          AI Quality Scan
-        </Text>
+        <Text style={styles.titleText}>MilkBoy</Text>
+        <Text style={styles.subtitleText}>AI QUALITY SCAN</Text>
       </Animated.View>
 
-      <View className="absolute bottom-12 items-center">
-        <Text className="text-gray-500 text-xs tracking-wider">POWERED BY DEEPLEARNING</Text>
+      <View style={styles.footerBox}>
+        <Text style={styles.footerText}>POWERED BY DEEPLEARNING</Text>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentBox: {
+    alignItems: 'center',
+  },
+  iconBox: {
+    width: 96,
+    height: 96,
+    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+    borderWidth: 2,
+    borderColor: '#3b82f6',
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  iconText: {
+    fontSize: 44,
+  },
+  titleText: {
+    fontSize: 44,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  subtitleText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#38bdf8',
+    letterSpacing: 3,
+  },
+  footerBox: {
+    position: 'absolute',
+    bottom: 48,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 11,
+    color: '#64748b',
+    letterSpacing: 2,
+    fontWeight: '600',
+  },
+});
