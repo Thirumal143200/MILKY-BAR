@@ -94,7 +94,7 @@ export class AuthService {
       .dispatch({
         event: 'auth:register',
         userId: user.id,
-        title: 'Welcome to MilkBoy!',
+        title: 'Welcome to MIRA!',
         message: `Your ${roleName} account has been created successfully.`,
       })
       .catch(() => {});

@@ -50,7 +50,7 @@ export default function SplashScreen({ navigation }: { navigation: any }) {
         <View style={styles.iconBox}>
           <Text style={styles.iconText}>🥛</Text>
         </View>
-        <Text style={styles.titleText}>MilkBoy</Text>
+        <Text style={styles.titleText}>MIRA</Text>
         <Text style={styles.subtitleText}>AI QUALITY SCAN</Text>
       </Animated.View>
 

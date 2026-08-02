@@ -1,12 +1,12 @@
-# 🥛 MilkBoy Enterprise Platform
+# 🥛 MIRA Enterprise Platform
 
 [![CI Pipeline](https://github.com/Thirumal143200/MILKY-BAR/actions/workflows/ci.yml/badge.svg)](https://github.com/Thirumal143200/MILKY-BAR/actions/workflows/ci.yml)
 [![Backend Deploy](https://github.com/Thirumal143200/MILKY-BAR/actions/workflows/backend-deploy.yml/badge.svg)](https://github.com/Thirumal143200/MILKY-BAR/actions/workflows/backend-deploy.yml)
 [![Mobile Build](https://github.com/Thirumal143200/MILKY-BAR/actions/workflows/mobile-build.yml/badge.svg)](https://github.com/Thirumal143200/MILKY-BAR/actions/workflows/mobile-build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0--rc1-blue.svg)](https://github.com/Thirumal143200/MILKY-BAR)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Thirumal143200/MILKY-BAR)
 
-MilkBoy is a full-stack, edge-compatible AI mobile and web monorepo designed for real-time milk quality classification, adulteration detection, laboratory sample validation, and supply chain tracking.
+MIRA is a full-stack, edge-compatible AI mobile and web monorepo designed for real-time milk quality classification, adulteration detection, laboratory sample validation, and supply chain tracking.
 
 ---
 

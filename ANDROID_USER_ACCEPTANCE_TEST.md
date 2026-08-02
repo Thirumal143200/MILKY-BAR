@@ -2,7 +2,7 @@
 
 **Target Build**: EAS Standalone Preview APK  
 **EAS Build ID**: `8f22ea99-90e8-47b7-9a1e-16a30ef6c878`  
-**Direct Download URL**: [https://expo.dev/artifacts/eas/hCKz9C1HRvDCvpN42MmijsMZzq6Pv9tjKWPIpIzdAIg.apk](https://expo.dev/artifacts/eas/hCKz9C1HRvDCvpN42MmijsMZzq6Pv9tjKWPIpIzdAIg.apk)  
+**Direct Download URL**: [https://expo.dev/artifacts/eas/hCKz9C1HRvDCvpN42MmijsMZzq6Pv9tjKWPIpIzdAIg.apk](https://expo.dev/artifacts/eas/hCKz9C1HRvDCvpN42MmijsMZzq6Pv9tjKWPIpIzdAIg.apk)
 
 ---
 

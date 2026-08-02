@@ -69,7 +69,7 @@ function LoginForm() {
           <div className="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center">
             <Droplets className="h-5 w-5 text-white" />
           </div>
-          <span className="font-display font-bold text-white text-xl">MilkBoy</span>
+          <span className="font-display font-bold text-white text-xl">MIRA</span>
         </div>
 
         <div className="relative">
@@ -100,7 +100,7 @@ function LoginForm() {
             <div className="h-9 w-9 rounded-xl gradient-brand flex items-center justify-center">
               <Droplets className="h-4 w-4 text-white" />
             </div>
-            <span className="font-display font-bold text-xl">MilkBoy</span>
+            <span className="font-display font-bold text-xl">MIRA</span>
           </div>
 
           <div>

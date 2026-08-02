@@ -60,7 +60,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
         <View style={styles.headerBox}>
           <Text style={styles.logoIcon}>🥛</Text>
           <Text style={styles.titleText} className="text-4xl font-extrabold text-white text-center">
-            MilkBoy
+            MIRA
           </Text>
           <Text style={styles.subtitleText} className="text-gray-400 text-center">
             Enterprise Milk Quality Verification

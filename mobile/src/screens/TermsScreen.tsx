@@ -19,9 +19,9 @@ export default function TermsScreen({ navigation }: { navigation: any }) {
           <View>
             <Text className="text-white font-extrabold text-lg mb-2">1. Terms Acceptance</Text>
             <Text className="text-gray-300 text-sm leading-relaxed">
-              By accessing and logging into the MilkBoy platform, you agree to comply with and be
-              bound by these terms. If you do not accept these terms, please delete your credentials
-              and remove the application.
+              By accessing and logging into the MIRA platform, you agree to comply with and be bound
+              by these terms. If you do not accept these terms, please delete your credentials and
+              remove the application.
             </Text>
           </View>
 

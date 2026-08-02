@@ -7,10 +7,10 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 
 export const metadata: Metadata = {
-  title: { default: 'MilkBoy — AI Milk Quality Detection', template: '%s | MilkBoy' },
+  title: { default: 'MIRA — AI Milk Quality Detection', template: '%s | MIRA' },
   description:
     'Enterprise-grade AI-powered milk quality detection and monitoring platform for producers, labs, and consumers.',
-  keywords: ['milk quality', 'AI detection', 'food safety', 'dairy', 'MilkBoy'],
+  keywords: ['milk quality', 'AI detection', 'food safety', 'dairy', 'MIRA'],
   robots: { index: false, follow: false },
 };
 

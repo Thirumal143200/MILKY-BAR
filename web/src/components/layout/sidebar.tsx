@@ -109,7 +109,7 @@ export function Sidebar() {
           </div>
           {!sidebarCollapsed && (
             <span className="font-display font-bold text-sidebar-foreground text-lg truncate">
-              MilkBoy
+              MIRA
             </span>
           )}
         </div>

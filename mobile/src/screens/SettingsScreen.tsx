@@ -32,7 +32,7 @@ export default function SettingsScreen({ navigation }: { navigation: any }) {
     {
       title: 'LEGAL & ABOUT',
       items: [
-        { label: 'About MilkBoy', icon: 'ℹ️', route: 'About' },
+        { label: 'About MIRA', icon: 'ℹ️', route: 'About' },
         { label: 'Privacy Policy', icon: '🛡️', route: 'Privacy' },
         { label: 'Terms of Service', icon: '📜', route: 'Terms' },
       ],

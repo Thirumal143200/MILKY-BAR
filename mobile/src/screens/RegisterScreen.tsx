@@ -76,7 +76,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
           {/* Header */}
           <View style={styles.headerBox}>
             <Text style={styles.logoIcon}>🥛</Text>
-            <Text style={styles.titleText}>Join MilkBoy</Text>
+            <Text style={styles.titleText}>Join MIRA</Text>
             <Text style={styles.subtitleText}>Create a new enterprise account</Text>
           </View>
 

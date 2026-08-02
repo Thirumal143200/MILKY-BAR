@@ -124,7 +124,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
           <Text style={styles.headerIcon}>🥛</Text>
-          <Text style={styles.headerTitle}>MilkBoy</Text>
+          <Text style={styles.headerTitle}>MIRA</Text>
         </View>
 
         <View style={styles.headerActions}>

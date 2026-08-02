@@ -101,10 +101,10 @@ export class PdfService {
         size: 'A4',
         margins: { top: 50, bottom: 50, left: 50, right: 50 },
         info: {
-          Title: `MilkBoy Quality Report - ${data.scan.id}`,
-          Author: 'MilkBoy AI Quality Detection',
+          Title: `MIRA Quality Report - ${data.scan.id}`,
+          Author: 'MIRA AI Quality Detection',
           Subject: 'Milk Quality Analysis Report',
-          Creator: 'MilkBoy v1.0.0',
+          Creator: 'MIRA v1.0.0',
         },
       });
 
@@ -117,7 +117,7 @@ export class PdfService {
       doc
         .fontSize(24)
         .fillColor('#1a1a2e')
-        .text('🥛 MilkBoy', { align: 'center' })
+        .text('🥛 MIRA', { align: 'center' })
         .fontSize(14)
         .fillColor('#4a4a6a')
         .text('Milk Quality Analysis Report', { align: 'center' })
@@ -274,14 +274,14 @@ export class PdfService {
         .fillColor('#999')
         .text('─'.repeat(80), { align: 'center' })
         .moveDown(0.2)
-        .text('This report was generated automatically by MilkBoy AI Quality Detection System.', {
+        .text('This report was generated automatically by MIRA AI Quality Detection System.', {
           align: 'center',
         })
         .text(
           'Results are based on visual image analysis and should be confirmed by laboratory testing for critical decisions.',
           { align: 'center' },
         )
-        .text(`© ${new Date().getFullYear()} MilkBoy. All rights reserved.`, { align: 'center' });
+        .text(`© ${new Date().getFullYear()} MIRA. All rights reserved.`, { align: 'center' });
 
       doc.end();
 
